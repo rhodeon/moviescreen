@@ -17,7 +17,9 @@ func main() {
 	app.Config.Parse()
 
 	routeHandlers := common.RouteHandlers{
-		Misc: handlers.NewMiscHandler(app.Config),
+		Error:  handlers.NewErrorHandler(),
+		Misc:   handlers.NewMiscHandler(app.Config),
+		Movies: handlers.NewMovieHandler(app.Config),
 	}
 
 	srv := &http.Server{

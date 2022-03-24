@@ -6,9 +6,22 @@ import (
 
 // RouteHandlers hosts the handlers to be passed into the router.
 type RouteHandlers struct {
-	Misc MiscHandler
+	Error  ErrorHandler
+	Misc   MiscHandler
+	Movies MovieHandler
+}
+
+type ErrorHandler interface {
+	NotFound(ctx *gin.Context)
+	MethodNotAllowed(ctx *gin.Context)
+	InternalServer(ctx *gin.Context)
 }
 
 type MiscHandler interface {
 	HealthCheck(ctx *gin.Context)
+}
+
+type MovieHandler interface {
+	GetById(ctx *gin.Context)
+	List(ctx *gin.Context)
 }

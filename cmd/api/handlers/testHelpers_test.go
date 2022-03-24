@@ -24,7 +24,9 @@ var testConfig = common.Config{
 }
 
 var testRouteHandlers = common.RouteHandlers{
-	Misc: NewMiscHandler(testConfig),
+	Error:  NewErrorHandler(),
+	Misc:   NewMiscHandler(testConfig),
+	Movies: NewMovieHandler(testConfig),
 }
 
 // parseResponse parses a http response and returns the code, body and header.
