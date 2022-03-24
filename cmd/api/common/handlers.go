@@ -24,4 +24,5 @@ type MiscHandler interface {
 type MovieHandler interface {
 	GetById(ctx *gin.Context)
 	List(ctx *gin.Context)
+	Create(ctx *gin.Context)
 }
