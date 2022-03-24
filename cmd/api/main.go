@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/rhodeon/moviescreen/cmd/api/common"
+	"github.com/rhodeon/moviescreen/cmd/api/handlers"
 	"github.com/rhodeon/moviescreen/cmd/api/internal"
 	"log"
 	"net/http"
@@ -14,9 +16,13 @@ func main() {
 	app := internal.Application{}
 	app.Config.Parse()
 
+	routeHandlers := common.RouteHandlers{
+		Misc: handlers.NewMiscHandler(app.Config),
+	}
+
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", app.Config.Port),
-		Handler:      app.Router(),
+		Handler:      app.Router(routeHandlers),
 		IdleTimeout:  1 * time.Minute,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,

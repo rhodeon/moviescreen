@@ -2,7 +2,7 @@ package internal
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/rhodeon/moviescreen/cmd/api/handlers"
+	"github.com/rhodeon/moviescreen/cmd/api/common"
 	"path"
 )
 
@@ -11,11 +11,11 @@ const (
 	apiVersionRoute = "/v1"
 )
 
-func (app Application) Router() *gin.Engine {
+// Router returns a gin Engine which associates the handlers with their routes.
+func (app Application) Router(handlers common.RouteHandlers) *gin.Engine {
 	router := gin.Default()
-	miscHandler := handlers.NewMiscHandler(app.Config)
 
-	router.GET(withVersion("healthcheck"), miscHandler.HealthCheck)
+	router.GET(withVersion("healthcheck"), handlers.Misc.HealthCheck)
 	return router
 }
 

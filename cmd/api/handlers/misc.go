@@ -7,15 +7,11 @@ import (
 	"net/http"
 )
 
-type MiscHandler interface {
-	HealthCheck(ctx *gin.Context)
-}
-
 type miscHandler struct {
 	config common.Config
 }
 
-func NewMiscHandler(config common.Config) MiscHandler {
+func NewMiscHandler(config common.Config) common.MiscHandler {
 	return &miscHandler{config: config}
 }
 
