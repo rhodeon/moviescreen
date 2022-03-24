@@ -2,7 +2,7 @@ package response
 
 const (
 	ErrMessage404 = "resource not found"
-	ErrMessage405 = "page not found"
+	ErrMessage405 = "method not allowed"
 	ErrMessage500 = "internal server error"
 )
 
