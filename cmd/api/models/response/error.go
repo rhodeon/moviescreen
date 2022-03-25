@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/http"
 	"strings"
 )
 
@@ -17,17 +18,17 @@ const (
 type Error struct {
 	Status  string `json:"status"`
 	Code    int    `json:"code"`
-	Message string `json:"message"`
+	Message any    `json:"message"`
 }
 
-func NewErrorResponse(code int, message string) *Error {
+func NewErrorResponse(code int, message any) *Error {
 	return &Error{Status: "error", Code: code, Message: message}
 }
 
 // BadRequestError returns a 400 error with the specific reason.
 // Usually due to an error in the JSON to response model conversion.
 func BadRequestError(err error) *Error {
-	response := NewErrorResponse(400, "")
+	response := NewErrorResponse(http.StatusBadRequest, "")
 
 	// possible JSON errors
 	var syntaxError *json.SyntaxError
@@ -74,5 +75,12 @@ func BadRequestError(err error) *Error {
 		response.Message = fmt.Sprintf("bad request")
 	}
 
+	return response
+}
+
+// UnprocessableEntityError returns a 422 error.
+// It occurs due to a request which failed validation.
+func UnprocessableEntityError(errMessages map[string]string) *Error {
+	response := NewErrorResponse(http.StatusUnprocessableEntity, errMessages)
 	return response
 }

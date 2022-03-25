@@ -68,15 +68,9 @@ func (m movieHandler) List(ctx *gin.Context) {
 
 // Create adds a new movie to the database, and returns the newly created movie.
 func (m movieHandler) Create(ctx *gin.Context) {
-	movieRequest := request.Movie{}
-
-	err := ctx.BindJSON(&movieRequest)
+	movieRequest := &request.Movie{}
+	err := handleJsonRequest(ctx, movieRequest)
 	if err != nil {
-		// return a BadRequestError on failed binding
-		ctx.JSON(
-			http.StatusBadRequest,
-			response.BadRequestError(err),
-		)
 		return
 	}
 
