@@ -8,7 +8,9 @@ type ClientRequest interface {
 
 	// Validate handles complex and type-specific validations not covered by
 	// the validator library.
-	Validate(errMessages map[string]string)
+	// The first error incurred for each field is returned.
+	// valid is true if no error is incurred.
+	Validate() (errs map[string]string, valid bool)
 }
 
 const (

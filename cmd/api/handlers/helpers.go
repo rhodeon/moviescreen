@@ -13,12 +13,11 @@ import (
 func handleJsonRequest(ctx *gin.Context, request request.ClientRequest) error {
 	err := ctx.ShouldBindJSON(&request)
 	if err != nil {
-		// check if the error is due to validation and respond
+		// check if the error is due to tag validations and respond
 		// with a UnprocessableEntityError if so
 		var ve validator.ValidationErrors
 		if errors.As(err, &ve) {
 			errs := request.ValidationErrors(ve)
-			request.Validate(errs)
 			ctx.AbortWithStatusJSON(
 				http.StatusUnprocessableEntity,
 				response.UnprocessableEntityError(errs),
@@ -32,6 +31,15 @@ func handleJsonRequest(ctx *gin.Context, request request.ClientRequest) error {
 			response.BadRequestError(err),
 		)
 		return err
+	}
+
+	// validate the response fields with custom checks
+	if errs, valid := request.Validate(); !valid {
+		ctx.AbortWithStatusJSON(
+			http.StatusUnprocessableEntity,
+			response.UnprocessableEntityError(errs),
+		)
+		return errors.New("failed custom validation")
 	}
 
 	return err

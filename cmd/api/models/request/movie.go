@@ -2,6 +2,7 @@ package request
 
 import (
 	"github.com/rhodeon/moviescreen/cmd/api/models/response"
+	"strings"
 	"time"
 )
 import "github.com/go-playground/validator/v10"
@@ -68,11 +69,24 @@ func (request *Movie) ValidationErrors(errs validator.ValidationErrors) map[stri
 	return errMessages
 }
 
-func (request *Movie) Validate(errMessages map[string]string) {
+func (request *Movie) Validate() (map[string]string, bool) {
+	errMessages := map[string]string{}
+
 	if _, exists := errMessages["year"]; !exists {
 		// validate that Year is not in the future
 		if request.Year > time.Now().Year() {
 			errMessages["year"] = "must not be in the future"
 		}
 	}
+
+	if _, exists := errMessages["genres"]; !exists {
+		// ensure no empty genre is passed
+		for _, genre := range request.Genres {
+			if strings.TrimSpace(genre) == "" {
+				errMessages["genres"] = "must not have any blank item"
+			}
+		}
+	}
+
+	return errMessages, len(errMessages) == 0
 }
