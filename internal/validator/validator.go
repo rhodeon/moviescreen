@@ -1,12 +1,15 @@
 package validator
 
-// Validator
+// A Validator is associated with a struct and has its Errors populated by fields
+// and messages which fail validation rules.
+// Type of the associated struct.
 type Validator struct {
+	Type   string
 	Errors map[string][]string
 }
 
-func New() *Validator {
-	return &Validator{Errors: map[string][]string{}}
+func New(structType string) *Validator {
+	return &Validator{Type: structType, Errors: map[string][]string{}}
 }
 
 // Valid checks if the validator has any errors.

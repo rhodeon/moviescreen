@@ -27,7 +27,7 @@ func (request *Movie) ToResponse(id int, version int) response.Movie {
 }
 
 func (request *Movie) Validate() *validator.Validator {
-	v := validator.New()
+	v := validator.New("movie")
 	const (
 		fieldTitle   = "title"
 		fieldYear    = "year"

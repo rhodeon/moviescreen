@@ -16,20 +16,29 @@ func NewErrorHandler() common.ErrorHandler {
 func (e errorHandler) NotFound(ctx *gin.Context) {
 	ctx.JSON(
 		http.StatusNotFound,
-		response.NewErrorResponse(http.StatusNotFound, response.ErrMessage404),
+		response.ErrorResponse(
+			http.StatusNotFound,
+			response.GenericError(response.ErrMessage404),
+		),
 	)
 }
 
 func (e errorHandler) MethodNotAllowed(ctx *gin.Context) {
 	ctx.JSON(
 		http.StatusMethodNotAllowed,
-		response.NewErrorResponse(http.StatusMethodNotAllowed, response.ErrMessage405),
+		response.ErrorResponse(
+			http.StatusMethodNotAllowed,
+			response.GenericError(response.ErrMessage405),
+		),
 	)
 }
 
 func (e errorHandler) InternalServer(ctx *gin.Context) {
 	ctx.JSON(
-		http.StatusMethodNotAllowed,
-		response.NewErrorResponse(http.StatusInternalServerError, response.ErrMessage500),
+		http.StatusInternalServerError,
+		response.ErrorResponse(
+			http.StatusInternalServerError,
+			response.GenericError(response.ErrMessage500),
+		),
 	)
 }

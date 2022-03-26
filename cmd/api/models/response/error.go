@@ -16,20 +16,40 @@ const (
 	ErrMessage500 = "internal server error"
 )
 
+// Error represents the data of an error in a response.
 type Error struct {
-	Status  string `json:"status"`
-	Code    int    `json:"code"`
-	Message any    `json:"message"`
+	// Type of the request which incurs an error.
+	// It is "generic" if the error is independent of the request fields,
+	// as in the cases of 404 and 405 errors, amongst others.
+	Type string `json:"type"`
+
+	// Data of the error content.
+	// For a "generic" Type, the Data consists only of a single "message" key.
+	Data map[string]string `json:"data"`
 }
 
-func NewErrorResponse(code int, message any) *Error {
-	return &Error{Status: "error", Code: code, Message: message}
+// NewError is a constructor for a new error.
+func NewError(errorType string, errors map[string]string) Error {
+	return Error{
+		Type: errorType,
+		Data: errors,
+	}
+}
+
+// GenericError returns an Error which a "generic" Type.
+func GenericError(message string) Error {
+	return Error{
+		Type: "generic",
+		Data: map[string]string{
+			"message": message,
+		},
+	}
 }
 
 // BadRequestError returns a 400 error with the specific reason.
 // Usually due to an error in the JSON to response model conversion.
-func BadRequestError(err error) *Error {
-	response := NewErrorResponse(http.StatusBadRequest, "")
+func BadRequestError(err error) BaseResponse {
+	var errorMessage string
 
 	// possible JSON errors
 	var syntaxError *json.SyntaxError
@@ -41,22 +61,22 @@ func BadRequestError(err error) *Error {
 	switch {
 	case errors.Is(err, io.EOF):
 		// due to an empty JSON request body
-		response.Message = "empty JSON request"
+		errorMessage = "empty JSON request"
 
 	case errors.Is(err, io.ErrUnexpectedEOF):
 		// due to a malformed JSON request
-		response.Message = "body contains malformed JSON"
+		errorMessage = "body contains malformed JSON"
 
 	case errors.As(err, &syntaxError):
 		// due to a malformed JSON request
-		response.Message = fmt.Sprintf("body contains malformed JSON (at character %d)", syntaxError.Offset)
+		errorMessage = fmt.Sprintf("body contains malformed JSON (at character %d)", syntaxError.Offset)
 
 	case errors.As(err, &unmarshalTypeError):
 		// due to incompatible JSON-to-Go mapping
 		if unmarshalTypeError.Field != "" {
-			response.Message = fmt.Sprintf("body contains incorrect JSON type for field %q", unmarshalTypeError.Field)
+			errorMessage = fmt.Sprintf("body contains incorrect JSON type for field %q", unmarshalTypeError.Field)
 		}
-		response.Message = fmt.Sprintf("body contains incorrect JSON type (at character %d)", unmarshalTypeError.Offset)
+		errorMessage = fmt.Sprintf("body contains incorrect JSON type (at character %d)", unmarshalTypeError.Offset)
 
 	case errors.As(err, &invalidUnmarshalError):
 		// due to invalid target.
@@ -65,23 +85,23 @@ func BadRequestError(err error) *Error {
 
 	case err.Error() == bodyTooLargeError:
 		// due to JSON size larger than max limit
-		response.Message = "JSON request body cannot be greater than 1MB"
+		errorMessage = "JSON request body cannot be greater than 1MB"
 
 	case strings.HasPrefix(err.Error(), unknownFieldPrefix):
 		// due to unknown field in JSON request
 		field := strings.TrimPrefix(err.Error(), unknownFieldPrefix)
-		response.Message = fmt.Sprintf("unknown field: %s", field)
+		errorMessage = fmt.Sprintf("unknown field: %s", field)
 
 	default:
-		response.Message = fmt.Sprintf("bad request")
+		errorMessage = fmt.Sprintf("bad request")
 	}
 
-	return response
+	return ErrorResponse(http.StatusBadRequest, GenericError(errorMessage))
 }
 
 // UnprocessableEntityError returns a 422 error.
 // It occurs due to a request which failed validation.
-func UnprocessableEntityError(v *validator.Validator) *Error {
+func UnprocessableEntityError(v *validator.Validator) BaseResponse {
 	// extract the first error of each validation field
 	// to display in the error response
 	firstErrors := map[string]string{}
@@ -89,6 +109,8 @@ func UnprocessableEntityError(v *validator.Validator) *Error {
 		firstErrors[field] = errs[0]
 	}
 
-	response := NewErrorResponse(http.StatusUnprocessableEntity, firstErrors)
-	return response
+	return ErrorResponse(
+		http.StatusUnprocessableEntity,
+		NewError(v.Type, firstErrors),
+	)
 }
