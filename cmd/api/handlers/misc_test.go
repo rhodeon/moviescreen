@@ -24,10 +24,15 @@ func Test_miscHandler_HealthCheck(t *testing.T) {
 
 	testhelpers.AssertEqual(t, code, http.StatusOK)
 
-	wantBody, _ := json.Marshal(response.HealthCheck{
-		Status:      "available",
-		Environment: "testing",
-		Version:     "1.0.0",
-	})
+	wantBody, _ := json.Marshal(
+		response.SuccessResponse(
+			http.StatusOK,
+			response.HealthCheck{
+				Status:      "available",
+				Environment: "testing",
+				Version:     "1.0.0",
+			},
+		),
+	)
 	testhelpers.AssertEqual(t, body, string(wantBody))
 }
