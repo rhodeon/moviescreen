@@ -38,7 +38,6 @@ func (m movieHandler) GetById(ctx *gin.Context) {
 				Year:    2009,
 				Runtime: 150,
 				Genres:  []string{"action", "romance"},
-				Version: 1,
 			},
 		),
 	)
@@ -57,7 +56,6 @@ func (m movieHandler) List(ctx *gin.Context) {
 					Year:    2009,
 					Runtime: 150,
 					Genres:  []string{"action", "romance"},
-					Version: 1,
 				},
 				{
 					Id:      19489343,
@@ -65,7 +63,6 @@ func (m movieHandler) List(ctx *gin.Context) {
 					Year:    2012,
 					Runtime: 1,
 					Genres:  []string{"comedy", "drama"},
-					Version: 1,
 				},
 			},
 		),
@@ -83,6 +80,6 @@ func (m movieHandler) Create(ctx *gin.Context) {
 	// return the newly created movie
 	ctx.JSON(
 		http.StatusOK,
-		movieRequest.ToResponse(0, 1),
+		movieRequest.ToResponse(0),
 	)
 }
