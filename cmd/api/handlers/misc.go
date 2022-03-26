@@ -19,10 +19,13 @@ func NewMiscHandler(config common.Config) common.MiscHandler {
 func (h *miscHandler) HealthCheck(ctx *gin.Context) {
 	ctx.JSON(
 		http.StatusOK,
-		response.HealthCheck{
-			Status:      "available",
-			Environment: h.config.Env,
-			Version:     h.config.Version,
-		},
+		response.SuccessResponse(
+			http.StatusOK,
+			response.HealthCheck{
+				Status:      "available",
+				Environment: h.config.Env,
+				Version:     h.config.Version,
+			},
+		),
 	)
 }
