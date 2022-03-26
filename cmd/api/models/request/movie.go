@@ -2,16 +2,17 @@ package request
 
 import (
 	"github.com/rhodeon/moviescreen/cmd/api/models/response"
-	"strings"
+	"github.com/rhodeon/moviescreen/internal/validator"
+	"github.com/rhodeon/moviescreen/internal/validator/rules"
 	"time"
+	"unicode/utf8"
 )
-import "github.com/go-playground/validator/v10"
 
 type Movie struct {
-	Title   string   `json:"title" binding:"required,max=500"`
-	Year    int      `json:"year" binding:"required,gte=1888"`
-	Runtime int      `json:"runtime" binding:"required,gt=0"`
-	Genres  []string `json:"genres" binding:"required,min=1,unique"`
+	Title   string   `json:"title"`
+	Year    int      `json:"year"`
+	Runtime int      `json:"runtime"`
+	Genres  []string `json:"genres"`
 }
 
 func (request *Movie) ToResponse(id int, version int) response.Movie {
@@ -25,68 +26,29 @@ func (request *Movie) ToResponse(id int, version int) response.Movie {
 	}
 }
 
-func (request *Movie) ValidationErrors(errs validator.ValidationErrors) map[string]string {
-	errMessages := map[string]string{}
+func (request *Movie) Validate() *validator.Validator {
+	v := validator.New()
+	const (
+		fieldTitle   = "title"
+		fieldYear    = "year"
+		fieldRuntime = "runtime"
+		fieldGenres  = "genres"
+	)
 
-	for _, ve := range errs {
-		switch ve.StructField() {
-		case "Title":
-			switch ve.Tag() {
-			case tagRequired:
-				errMessages["title"] = "required field"
-			case tagMaximum:
-				errMessages["title"] = "must have a maximum of 500 characters"
-			}
+	v.Check(request.Title != "", fieldTitle, "must be provided")
+	v.Check(utf8.RuneCountInString(request.Title) <= 500, fieldTitle, "must not have more than 500 characters")
 
-		case "Year":
-			switch ve.Tag() {
-			case tagRequired:
-				errMessages["year"] = "required field"
-			case tagGreaterThanOrEqual:
-				errMessages["year"] = "must not be before 1888"
-			}
+	v.Check(request.Year != 0, fieldYear, "must be provided")
+	v.Check(request.Year >= 1888, fieldYear, "must not be before 1888")
+	v.Check(request.Year <= time.Now().Year(), fieldYear, "must not be in the future")
 
-		case "Runtime":
-			switch ve.Tag() {
-			case tagRequired:
-				errMessages["runtime"] = "required field"
-			case tagGreaterThan:
-				errMessages["runtime"] = "must be greater than 0"
-			}
+	v.Check(request.Runtime != 0, fieldRuntime, "must be provided")
+	v.Check(request.Runtime > 0, fieldRuntime, "must be a positive integer")
 
-		case "Genres":
-			switch ve.Tag() {
-			case tagRequired:
-				errMessages["genres"] = "required field"
-			case tagMinimum:
-				errMessages["genres"] = "must contain at least one item"
-			case tagUnique:
-				errMessages["genres"] = "must have unique items"
-			}
-		}
-	}
+	v.Check(request.Genres != nil, fieldGenres, "must be provided")
+	v.Check(len(request.Genres) >= 1, fieldGenres, "must have at least 1 genre")
+	v.Check(rules.NotBlank(request.Genres), fieldGenres, "must not have any blank genres")
+	v.Check(rules.Unique(request.Genres), fieldGenres, "must have unique genres")
 
-	return errMessages
-}
-
-func (request *Movie) Validate() (map[string]string, bool) {
-	errMessages := map[string]string{}
-
-	if _, exists := errMessages["year"]; !exists {
-		// validate that Year is not in the future
-		if request.Year > time.Now().Year() {
-			errMessages["year"] = "must not be in the future"
-		}
-	}
-
-	if _, exists := errMessages["genres"]; !exists {
-		// ensure no empty genre is passed
-		for _, genre := range request.Genres {
-			if strings.TrimSpace(genre) == "" {
-				errMessages["genres"] = "must not have any blank item"
-			}
-		}
-	}
-
-	return errMessages, len(errMessages) == 0
+	return v
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/rhodeon/moviescreen/internal/validator"
 	"io"
 	"net/http"
 	"strings"
@@ -80,7 +81,14 @@ func BadRequestError(err error) *Error {
 
 // UnprocessableEntityError returns a 422 error.
 // It occurs due to a request which failed validation.
-func UnprocessableEntityError(errMessages map[string]string) *Error {
-	response := NewErrorResponse(http.StatusUnprocessableEntity, errMessages)
+func UnprocessableEntityError(v *validator.Validator) *Error {
+	// extract the first error of each validation field
+	// to display in the error response
+	firstErrors := map[string]string{}
+	for field, errs := range v.Errors {
+		firstErrors[field] = errs[0]
+	}
+
+	response := NewErrorResponse(http.StatusUnprocessableEntity, firstErrors)
 	return response
 }

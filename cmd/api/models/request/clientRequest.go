@@ -1,26 +1,10 @@
 package request
 
-import "github.com/go-playground/validator/v10"
+import "github.com/rhodeon/moviescreen/internal/validator"
 
+// ClientRequest is the generic interface which all request models have to satisfy.
 type ClientRequest interface {
-	// ValidationErrors returns the errors incurred during validation.
-	ValidationErrors(errs validator.ValidationErrors) map[string]string
-
-	// Validate handles complex and type-specific validations not covered by
-	// the validator library.
-	// The first error incurred for each field is returned.
-	// valid is true if no error is incurred.
-	Validate() (errs map[string]string, valid bool)
+	// Validate handles data validation in the request against specified rules.
+	// A validator instance which holds all incurred validations is returned.
+	Validate() *validator.Validator
 }
-
-const (
-	tagRequired           = "required"
-	tagEmail              = "email"
-	tagUnique             = "unique"
-	tagMaximum            = "max"
-	tagMinimum            = "min"
-	tagGreaterThan        = "gt"
-	tagGreaterThanOrEqual = "gte"
-	tagLessThan           = "lt"
-	tagLessThanOrEqual    = "lte"
-)

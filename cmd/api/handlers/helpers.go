@@ -1,11 +1,10 @@
 package handlers
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"github.com/rhodeon/moviescreen/cmd/api/models/request"
 	"github.com/rhodeon/moviescreen/cmd/api/models/response"
+	"github.com/rhodeon/moviescreen/internal/validator"
 	"net/http"
 )
 
@@ -13,19 +12,7 @@ import (
 func handleJsonRequest(ctx *gin.Context, request request.ClientRequest) error {
 	err := ctx.ShouldBindJSON(&request)
 	if err != nil {
-		// check if the error is due to tag validations and respond
-		// with a UnprocessableEntityError if so
-		var ve validator.ValidationErrors
-		if errors.As(err, &ve) {
-			errs := request.ValidationErrors(ve)
-			ctx.AbortWithStatusJSON(
-				http.StatusUnprocessableEntity,
-				response.UnprocessableEntityError(errs),
-			)
-			return err
-		}
-
-		// otherwise, respond with a BadRequestError
+		// respond with a BadRequestError
 		ctx.AbortWithStatusJSON(
 			http.StatusBadRequest,
 			response.BadRequestError(err),
@@ -34,12 +21,12 @@ func handleJsonRequest(ctx *gin.Context, request request.ClientRequest) error {
 	}
 
 	// validate the response fields with custom checks
-	if errs, valid := request.Validate(); !valid {
+	if v := request.Validate(); !v.Valid() {
 		ctx.AbortWithStatusJSON(
 			http.StatusUnprocessableEntity,
-			response.UnprocessableEntityError(errs),
+			response.UnprocessableEntityError(v),
 		)
-		return errors.New("failed custom validation")
+		return validator.NewError()
 	}
 
 	return err
