@@ -80,6 +80,9 @@ func (m movieHandler) Create(ctx *gin.Context) {
 	// return the newly created movie
 	ctx.JSON(
 		http.StatusOK,
-		movieRequest.ToResponse(0),
+		response.SuccessResponse(
+			http.StatusOK,
+			movieRequest.ToResponse(0),
+		),
 	)
 }
