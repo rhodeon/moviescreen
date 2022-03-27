@@ -93,7 +93,7 @@ func BadRequestError(err error) BaseResponse {
 		errorMessage = fmt.Sprintf("unknown field: %s", field)
 
 	default:
-		errorMessage = fmt.Sprintf("bad request")
+		errorMessage = fmt.Sprintf(err.Error())
 	}
 
 	return ErrorResponse(http.StatusBadRequest, GenericError(errorMessage))

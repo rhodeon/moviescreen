@@ -1,6 +1,7 @@
 package request
 
 import (
+	"github.com/rhodeon/moviescreen/cmd/api/models/common/types"
 	"github.com/rhodeon/moviescreen/cmd/api/models/response"
 	"github.com/rhodeon/moviescreen/internal/validator"
 	"github.com/rhodeon/moviescreen/internal/validator/rules"
@@ -9,10 +10,10 @@ import (
 )
 
 type Movie struct {
-	Title   string   `json:"title"`
-	Year    int      `json:"year"`
-	Runtime int      `json:"runtime"`
-	Genres  []string `json:"genres"`
+	Title   string        `json:"title"`
+	Year    int           `json:"year"`
+	Runtime types.Runtime `json:"runtime"`
+	Genres  []string      `json:"genres"`
 }
 
 func (request *Movie) ToResponse(id int) response.Movie {
@@ -20,7 +21,7 @@ func (request *Movie) ToResponse(id int) response.Movie {
 		Id:      id,
 		Title:   request.Title,
 		Year:    request.Year,
-		Runtime: response.Runtime(request.Runtime),
+		Runtime: request.Runtime,
 		Genres:  request.Genres,
 	}
 }
