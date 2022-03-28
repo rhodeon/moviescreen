@@ -1,6 +1,8 @@
 package response
 
-import "github.com/rhodeon/moviescreen/cmd/api/models/common/types"
+import (
+	"github.com/rhodeon/moviescreen/internal/types"
+)
 
 type Movie struct {
 	Id      int           `json:"id,omitempty"`

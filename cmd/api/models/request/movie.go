@@ -1,8 +1,8 @@
 package request
 
 import (
-	"github.com/rhodeon/moviescreen/cmd/api/models/common/types"
 	"github.com/rhodeon/moviescreen/cmd/api/models/response"
+	"github.com/rhodeon/moviescreen/internal/types"
 	"github.com/rhodeon/moviescreen/internal/validator"
 	"github.com/rhodeon/moviescreen/internal/validator/rules"
 	"time"
