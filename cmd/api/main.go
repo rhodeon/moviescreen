@@ -9,12 +9,19 @@ import (
 	"net/http"
 	"time"
 
+	_ "github.com/lib/pq"
 	"github.com/rhodeon/prettylog"
 )
 
 func main() {
 	app := internal.Application{}
+
+	// setup server configuration
 	app.Config.Parse()
+	err := app.Config.Validate()
+	if err != nil {
+		prettylog.FatalError(err)
+	}
 
 	routeHandlers := common.RouteHandlers{
 		Error:  handlers.NewErrorHandler(),
@@ -30,7 +37,16 @@ func main() {
 		WriteTimeout: 10 * time.Second,
 	}
 
+	// open database connection
+	db, err := openDb(app.Config)
+	if err != nil {
+		prettylog.FatalError(err)
+	}
+	defer db.Close()
+	prettylog.InfoF("Database connection pool established")
+
+	// start server
 	prettylog.InfoF("Starting %s server on %s", app.Config.Env, srv.Addr)
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	log.Fatal(err)
 }
