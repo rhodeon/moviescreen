@@ -5,6 +5,8 @@ import (
 	"github.com/rhodeon/moviescreen/cmd/api/common"
 	"github.com/rhodeon/moviescreen/cmd/api/handlers"
 	"github.com/rhodeon/moviescreen/cmd/api/internal"
+	"github.com/rhodeon/moviescreen/domain/repository"
+	"github.com/rhodeon/moviescreen/infrastructure/database"
 	"log"
 	"net/http"
 	"time"
@@ -14,13 +16,27 @@ import (
 )
 
 func main() {
-	app := internal.Application{}
-
 	// setup server configuration
-	app.Config.Parse()
-	err := app.Config.Validate()
+	config := common.Config{}
+	config.Parse()
+	err := config.Validate()
 	if err != nil {
 		prettylog.FatalError(err)
+	}
+
+	// open database connection
+	db, err := openDb(config)
+	if err != nil {
+		prettylog.FatalError(err)
+	}
+	defer db.Close()
+	prettylog.InfoF("Database connection pool established")
+
+	app := internal.Application{
+		Config: config,
+		Repositories: repository.Repositories{
+			Movies: database.MovieController{Db: db},
+		},
 	}
 
 	routeHandlers := common.RouteHandlers{
@@ -36,14 +52,6 @@ func main() {
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
-
-	// open database connection
-	db, err := openDb(app.Config)
-	if err != nil {
-		prettylog.FatalError(err)
-	}
-	defer db.Close()
-	prettylog.InfoF("Database connection pool established")
 
 	// start server
 	prettylog.InfoF("Starting %s server on %s", app.Config.Env, srv.Addr)
