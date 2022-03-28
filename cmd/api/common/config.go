@@ -13,8 +13,11 @@ type Config struct {
 	Port    int
 
 	Db struct {
-		Dsn     string
-		SslMode string
+		Dsn          string
+		SslMode      string
+		MaxOpenConns int
+		MaxIdleConns int
+		MaxIdleTime  string
 	}
 }
 
@@ -23,8 +26,11 @@ func (c *Config) Parse() {
 	flag.StringVar(&c.Version, "version", c.defaultVersion(), "API version")
 	flag.IntVar(&c.Port, "port", c.defaultPort(), "API server port")
 
-	flag.StringVar(&c.Db.Dsn, "dsn", c.defaultDsn(), "PostgreSQL DSN")
-	flag.StringVar(&c.Db.SslMode, "ssl-mode", c.defaultSslMode(), "PostgreSQL SSL requirement")
+	flag.StringVar(&c.Db.Dsn, "db-dsn", c.defaultDsn(), "PostgreSQL DSN")
+	flag.StringVar(&c.Db.SslMode, "db-ssl-mode", c.defaultSslMode(), "PostgreSQL SSL requirement")
+	flag.IntVar(&c.Db.MaxOpenConns, "db-max-open-conns", c.defaultMaxOpenConns(), "PostgreSQL maximum number of open connections")
+	flag.IntVar(&c.Db.MaxIdleConns, "db-max-idle-conns", c.defaultMaxIdleConns(), "PostgreSQL maximum number of idle connections")
+	flag.StringVar(&c.Db.MaxIdleTime, "db-max-idle-time", c.defaultMaxIdleTime(), "PostgreSQL maximumn idle time")
 
 	flag.Parse()
 }
@@ -83,4 +89,37 @@ func (c *Config) defaultSslMode() string {
 		return sslMode
 	}
 	return defaultSslMode
+}
+
+func (c *Config) defaultMaxOpenConns() int {
+	const defMaxOpenConns = 25
+
+	if maxOpenConns, exists := os.LookupEnv("DB_MAX_OPEN_CONNS"); exists {
+		port, err := strconv.Atoi(maxOpenConns)
+		if err == nil {
+			return port
+		}
+	}
+	return defMaxOpenConns
+}
+
+func (c *Config) defaultMaxIdleConns() int {
+	const defMaxIdleConns = 25
+
+	if maxIdleConns, exists := os.LookupEnv("DB_MAX_IDLE_CONNS"); exists {
+		port, err := strconv.Atoi(maxIdleConns)
+		if err == nil {
+			return port
+		}
+	}
+	return defMaxIdleConns
+}
+
+func (c *Config) defaultMaxIdleTime() string {
+	const defMaxIdleTime = "15m"
+
+	if maxIdleTime, exists := os.LookupEnv("DB_MAX_IDLE_TIME"); exists {
+		return maxIdleTime
+	}
+	return defMaxIdleTime
 }
