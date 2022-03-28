@@ -7,17 +7,17 @@ import (
 )
 
 var createMovieTestCases = map[string]struct {
-	request      request.Movie
+	request      request.MovieRequest
 	wantResponse response.BaseResponse
 }{
 	"valid request": {
-		request: request.Movie{
+		request: request.MovieRequest{
 			Title:   "The Shawshank Redemption",
 			Year:    1994,
 			Runtime: 142,
 			Genres:  []string{"Drama"},
 		},
-		wantResponse: response.SuccessResponse(200, response.Movie{
+		wantResponse: response.SuccessResponse(200, response.MovieResponse{
 			Title:   "The Shawshank Redemption",
 			Year:    1994,
 			Runtime: 142,
@@ -26,7 +26,7 @@ var createMovieTestCases = map[string]struct {
 	},
 
 	"missing required fields": {
-		request: request.Movie{},
+		request: request.MovieRequest{},
 		wantResponse: response.ErrorResponse(422, response.Error{
 			Type: "movie",
 			Data: map[string]string{
@@ -39,7 +39,7 @@ var createMovieTestCases = map[string]struct {
 	},
 
 	"title with over 500 characters": {
-		request: request.Movie{
+		request: request.MovieRequest{
 			Title:   "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
 			Year:    1994,
 			Runtime: 142,
@@ -54,7 +54,7 @@ var createMovieTestCases = map[string]struct {
 	},
 
 	"year before 1888": {
-		request: request.Movie{
+		request: request.MovieRequest{
 			Title:   "The Shawshank Redemption",
 			Year:    1666,
 			Runtime: 142,
@@ -69,7 +69,7 @@ var createMovieTestCases = map[string]struct {
 	},
 
 	"year in the future": {
-		request: request.Movie{
+		request: request.MovieRequest{
 			Title:   "The Shawshank Redemption",
 			Year:    time.Now().Year() + 5,
 			Runtime: 142,
@@ -84,7 +84,7 @@ var createMovieTestCases = map[string]struct {
 	},
 
 	"negative runtime": {
-		request: request.Movie{
+		request: request.MovieRequest{
 			Title:   "The Shawshank Redemption",
 			Year:    1994,
 			Runtime: -142,
@@ -99,7 +99,7 @@ var createMovieTestCases = map[string]struct {
 	},
 
 	"empty genres": {
-		request: request.Movie{
+		request: request.MovieRequest{
 			Title:   "The Shawshank Redemption",
 			Year:    1994,
 			Runtime: 142,
@@ -114,7 +114,7 @@ var createMovieTestCases = map[string]struct {
 	},
 
 	"blank genre": {
-		request: request.Movie{
+		request: request.MovieRequest{
 			Title:   "The Shawshank Redemption",
 			Year:    1994,
 			Runtime: 142,
@@ -129,7 +129,7 @@ var createMovieTestCases = map[string]struct {
 	},
 
 	"duplicate genres": {
-		request: request.Movie{
+		request: request.MovieRequest{
 			Title:   "The Shawshank Redemption",
 			Year:    1994,
 			Runtime: 142,

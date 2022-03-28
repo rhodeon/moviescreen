@@ -27,7 +27,7 @@ func Test_miscHandler_HealthCheck(t *testing.T) {
 	wantBody, _ := json.Marshal(
 		response.SuccessResponse(
 			http.StatusOK,
-			response.HealthCheck{
+			response.HealthCheckResponse{
 				Status:      "available",
 				Environment: "testing",
 				Version:     "1.0.0",

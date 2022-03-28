@@ -9,15 +9,15 @@ import (
 	"unicode/utf8"
 )
 
-type Movie struct {
+type MovieRequest struct {
 	Title   string        `json:"title"`
 	Year    int           `json:"year"`
 	Runtime types.Runtime `json:"runtime"`
 	Genres  []string      `json:"genres"`
 }
 
-func (request *Movie) ToResponse(id int) response.Movie {
-	return response.Movie{
+func (request *MovieRequest) ToResponse(id int) response.MovieResponse {
+	return response.MovieResponse{
 		Id:      id,
 		Title:   request.Title,
 		Year:    request.Year,
@@ -26,7 +26,7 @@ func (request *Movie) ToResponse(id int) response.Movie {
 	}
 }
 
-func (request *Movie) Validate() *validator.Validator {
+func (request *MovieRequest) Validate() *validator.Validator {
 	v := validator.New("movie")
 	const (
 		fieldTitle   = "title"

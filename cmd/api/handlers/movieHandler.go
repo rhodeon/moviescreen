@@ -32,7 +32,7 @@ func (m movieHandler) GetById(ctx *gin.Context) {
 		http.StatusOK,
 		response.SuccessResponse(
 			http.StatusOK,
-			response.Movie{
+			response.MovieResponse{
 				Id:      19489443,
 				Title:   "Where they are",
 				Year:    2009,
@@ -49,7 +49,7 @@ func (m movieHandler) List(ctx *gin.Context) {
 		http.StatusOK,
 		response.SuccessResponse(
 			http.StatusOK,
-			[]response.Movie{
+			[]response.MovieResponse{
 				{
 					Id:      19489443,
 					Title:   "Where they are",
@@ -71,7 +71,7 @@ func (m movieHandler) List(ctx *gin.Context) {
 
 // Create adds a new movie to the database, and returns the newly created movie.
 func (m movieHandler) Create(ctx *gin.Context) {
-	movieRequest := &request.Movie{}
+	movieRequest := &request.MovieRequest{}
 	err := handleJsonRequest(ctx, movieRequest)
 	if err != nil {
 		return

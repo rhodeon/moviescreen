@@ -4,7 +4,7 @@ import (
 	"github.com/rhodeon/moviescreen/internal/types"
 )
 
-type Movie struct {
+type MovieResponse struct {
 	Id      int           `json:"id,omitempty"`
 	Title   string        `json:"title,omitempty"`
 	Year    int           `json:"year,omitempty"`

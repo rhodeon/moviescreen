@@ -21,7 +21,7 @@ func (h *miscHandler) HealthCheck(ctx *gin.Context) {
 		http.StatusOK,
 		response.SuccessResponse(
 			http.StatusOK,
-			response.HealthCheck{
+			response.HealthCheckResponse{
 				Status:      "available",
 				Environment: h.config.Env,
 				Version:     h.config.Version,
