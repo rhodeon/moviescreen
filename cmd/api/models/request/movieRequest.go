@@ -1,7 +1,7 @@
 package request
 
 import (
-	"github.com/rhodeon/moviescreen/cmd/api/models/response"
+	"github.com/rhodeon/moviescreen/domain/models"
 	"github.com/rhodeon/moviescreen/internal/types"
 	"github.com/rhodeon/moviescreen/internal/validator"
 	"github.com/rhodeon/moviescreen/internal/validator/rules"
@@ -16,9 +16,8 @@ type MovieRequest struct {
 	Genres  []string      `json:"genres"`
 }
 
-func (request *MovieRequest) ToResponse(id int) response.MovieResponse {
-	return response.MovieResponse{
-		Id:      id,
+func (request *MovieRequest) ToModel() models.Movie {
+	return models.Movie{
 		Title:   request.Title,
 		Year:    request.Year,
 		Runtime: request.Runtime,

@@ -5,6 +5,7 @@ import (
 	"github.com/rhodeon/moviescreen/cmd/api/models/request"
 	"github.com/rhodeon/moviescreen/cmd/api/models/response"
 	"github.com/rhodeon/moviescreen/internal/validator"
+	"github.com/rhodeon/prettylog"
 	"net/http"
 )
 
@@ -30,4 +31,17 @@ func handleJsonRequest(ctx *gin.Context, request request.ClientRequest) error {
 	}
 
 	return err
+}
+
+// handleInternalServerError logs the error and sends
+// a generic 500 error response to the client.
+func handleInternalServerError(ctx *gin.Context, err error) {
+	prettylog.ErrorF("internal server error: %s", err.Error())
+	ctx.AbortWithStatusJSON(
+		http.StatusInternalServerError,
+		response.ErrorResponse(
+			http.StatusInternalServerError,
+			response.GenericError(response.ErrMessage500),
+		),
+	)
 }

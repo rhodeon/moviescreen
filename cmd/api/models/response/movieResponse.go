@@ -10,4 +10,5 @@ type MovieResponse struct {
 	Year    int           `json:"year,omitempty"`
 	Runtime types.Runtime `json:"runtime,omitempty"`
 	Genres  []string      `json:"genres,omitempty"`
+	Version int           `json:"version,omitempty"`
 }

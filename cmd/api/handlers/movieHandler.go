@@ -5,16 +5,21 @@ import (
 	"github.com/rhodeon/moviescreen/cmd/api/common"
 	"github.com/rhodeon/moviescreen/cmd/api/models/request"
 	"github.com/rhodeon/moviescreen/cmd/api/models/response"
+	"github.com/rhodeon/moviescreen/domain/repository"
 	"net/http"
 	"strconv"
 )
 
 type movieHandler struct {
-	config common.Config
+	config       common.Config
+	repositories repository.Repositories
 }
 
-func NewMovieHandler(config common.Config) common.MovieHandler {
-	return &movieHandler{config: config}
+func NewMovieHandler(config common.Config, repositories repository.Repositories) common.MovieHandler {
+	return &movieHandler{
+		config:       config,
+		repositories: repositories,
+	}
 }
 
 // GetById returns a movie with the specified id.
@@ -77,12 +82,20 @@ func (m movieHandler) Create(ctx *gin.Context) {
 		return
 	}
 
-	// return the newly created movie
+	// attempt to create a new movie in the repository from the request
+	newMovie := movieRequest.ToModel()
+	err = m.repositories.Movies.Create(&newMovie)
+	if err != nil {
+		handleInternalServerError(ctx, err)
+		return
+	}
+
+	// return the newly created movie response
 	ctx.JSON(
-		http.StatusOK,
+		http.StatusCreated,
 		response.SuccessResponse(
-			http.StatusOK,
-			movieRequest.ToResponse(0),
+			http.StatusCreated,
+			newMovie.ToResponse(),
 		),
 	)
 }

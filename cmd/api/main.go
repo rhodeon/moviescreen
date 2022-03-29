@@ -42,7 +42,7 @@ func main() {
 	routeHandlers := common.RouteHandlers{
 		Error:  handlers.NewErrorHandler(),
 		Misc:   handlers.NewMiscHandler(app.Config),
-		Movies: handlers.NewMovieHandler(app.Config),
+		Movies: handlers.NewMovieHandler(app.Config, app.Repositories),
 	}
 
 	srv := &http.Server{
