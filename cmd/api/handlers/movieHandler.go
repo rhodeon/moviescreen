@@ -144,3 +144,33 @@ func (m movieHandler) Update(ctx *gin.Context) {
 		),
 	)
 }
+
+// Delete deletes the movie with the given id parameter from the repository.
+func (m movieHandler) Delete(ctx *gin.Context) {
+	// validate id
+	id, err := parseQueryId(ctx)
+	if err != nil {
+		return
+	}
+
+	// attempt to delete movie from the repository
+	err = m.repositories.Movies.Delete(id)
+	if err != nil {
+		if errors.Is(err, repository.ErrRecordNotFound) {
+			NewErrorHandler().NotFound(ctx)
+		} else {
+			handleInternalServerError(ctx, err)
+		}
+		return
+	}
+
+	// return a success message with an empty "data" field
+	// on a successful delete
+	ctx.JSON(
+		http.StatusOK,
+		response.SuccessResponse(
+			http.StatusOK,
+			struct{}{},
+		),
+	)
+}

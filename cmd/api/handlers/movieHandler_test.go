@@ -84,3 +84,25 @@ func Test_movieHandler_Update(t *testing.T) {
 		})
 	}
 }
+
+func TestMovieHandler_Delete(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	app := newTestApp(t)
+	testCases := deleteMovieTestCases
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			rr := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodDelete, path.Join("/v1/movies", tc.requestId), nil)
+			app.Router(testRouteHandlers).ServeHTTP(rr, req)
+			code, body, _ := parseResponse(t, rr.Result())
+
+			// assert status code
+			testhelpers.AssertEqual(t, code, tc.wantCode)
+
+			// assert response body
+			wantBody, _ := json.Marshal(tc.wantBody)
+			testhelpers.AssertEqual(t, body, string(wantBody))
+		})
+	}
+}

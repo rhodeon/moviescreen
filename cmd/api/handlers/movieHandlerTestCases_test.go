@@ -245,3 +245,46 @@ var updateMovieTestCases = map[string]struct {
 		),
 	},
 }
+
+var deleteMovieTestCases = map[string]struct {
+	requestId string
+	wantCode  int
+	wantBody  response.BaseResponse
+}{
+	"valid request": {
+		requestId: "1",
+		wantCode:  200,
+		wantBody: response.SuccessResponse(
+			200,
+			struct{}{},
+		),
+	},
+
+	"non-integer id": {
+		requestId: "one",
+		wantCode:  404,
+		wantBody: response.ErrorResponse(
+			404,
+			response.Error{
+				Type: "generic",
+				Data: map[string]string{
+					"message": response.ErrMessage404,
+				},
+			},
+		),
+	},
+
+	"non-existent id": {
+		requestId: "99",
+		wantCode:  404,
+		wantBody: response.ErrorResponse(
+			404,
+			response.Error{
+				Type: "generic",
+				Data: map[string]string{
+					"message": response.ErrMessage404,
+				},
+			},
+		),
+	},
+}

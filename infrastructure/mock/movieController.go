@@ -58,7 +58,12 @@ func (m MovieController) Update(id int, movie *models.Movie) error {
 	return repository.ErrRecordNotFound
 }
 
-func (m MovieController) Delete(movie models.Movie) error {
-	//TODO implement me
-	panic("implement me")
+func (m MovieController) Delete(id int) error {
+	for _, movie := range movies {
+		if movie.Id == id {
+			// delete nothing as mock data is not persistent
+			return nil
+		}
+	}
+	return repository.ErrRecordNotFound
 }

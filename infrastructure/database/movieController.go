@@ -66,7 +66,26 @@ func (m MovieController) Update(id int, movie *models.Movie) error {
 	return nil
 }
 
-func (m MovieController) Delete(movie models.Movie) error {
-	//TODO implement me
-	panic("implement me")
+// Delete removes the movie with the given id from the database.
+// An error is returned if no movie with the id is found.
+func (m MovieController) Delete(id int) error {
+	stmt := `DELETE FROM movies 
+	WHERE id = $1`
+
+	result, err := m.Db.Exec(stmt, id)
+	if err != nil {
+		return err
+	}
+
+	// check if no row was deleted and return a "record not found" error
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return repository.ErrRecordNotFound
+	}
+
+	return nil
 }
