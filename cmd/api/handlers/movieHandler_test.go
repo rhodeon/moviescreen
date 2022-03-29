@@ -8,11 +8,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"path"
-	"strconv"
 	"testing"
 )
 
-func Test_movieHandler_Create(t *testing.T) {
+func TestMovieHandler_Create(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	app := newTestApp(t)
 
@@ -38,7 +37,7 @@ func Test_movieHandler_Create(t *testing.T) {
 	}
 }
 
-func Test_movieHandler_GetById(t *testing.T) {
+func TestMovieHandler_GetById(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	app := newTestApp(t)
 
@@ -47,7 +46,7 @@ func Test_movieHandler_GetById(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			rr := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodGet, path.Join("/v1/movies", strconv.Itoa(tc.requestId)), nil)
+			req := httptest.NewRequest(http.MethodGet, path.Join("/v1/movies", tc.requestId), nil)
 			app.Router(testRouteHandlers).ServeHTTP(rr, req)
 			code, body, _ := parseResponse(t, rr.Result())
 
@@ -61,7 +60,7 @@ func Test_movieHandler_GetById(t *testing.T) {
 	}
 }
 
-func Test_movieHandler_Update(t *testing.T) {
+func TestMovieHandler_Update(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	app := newTestApp(t)
 
@@ -71,7 +70,7 @@ func Test_movieHandler_Update(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			jsonRequest, _ := json.Marshal(tc.requestBody)
 			rr := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodPut, path.Join("/v1/movies", strconv.Itoa(tc.requestId)), bytes.NewReader(jsonRequest))
+			req := httptest.NewRequest(http.MethodPut, path.Join("/v1/movies", tc.requestId), bytes.NewReader(jsonRequest))
 			app.Router(testRouteHandlers).ServeHTTP(rr, req)
 			code, body, _ := parseResponse(t, rr.Result())
 

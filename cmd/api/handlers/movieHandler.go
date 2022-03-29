@@ -55,7 +55,7 @@ func (m movieHandler) Create(ctx *gin.Context) {
 // GetById returns a movie with the specified id.
 func (m movieHandler) GetById(ctx *gin.Context) {
 	// validate id
-	id, err := parseQueryId(ctx)
+	id, err := parseParamId(ctx)
 	if err != nil {
 		return
 	}
@@ -111,7 +111,7 @@ func (m movieHandler) List(ctx *gin.Context) {
 // Update changes the data of the movie with the given ID query in the repository.
 func (m movieHandler) Update(ctx *gin.Context) {
 	// validate id
-	id, err := parseQueryId(ctx)
+	id, err := parseParamId(ctx)
 	if err != nil {
 		return
 	}
@@ -148,7 +148,7 @@ func (m movieHandler) Update(ctx *gin.Context) {
 // Delete deletes the movie with the given id parameter from the repository.
 func (m movieHandler) Delete(ctx *gin.Context) {
 	// validate id
-	id, err := parseQueryId(ctx)
+	id, err := parseParamId(ctx)
 	if err != nil {
 		return
 	}

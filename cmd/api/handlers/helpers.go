@@ -47,10 +47,10 @@ func handleInternalServerError(ctx *gin.Context, err error) {
 	)
 }
 
-// parseQueryId attempts to convert the "id" query of a request
+// parseParamId attempts to convert the "id" parameter of a request
 // and find its integer value.
 // A 404 response is returned if a failure occurs.
-func parseQueryId(ctx *gin.Context) (int, error) {
+func parseParamId(ctx *gin.Context) (int, error) {
 	idString := ctx.Param("id")
 	id, err := strconv.Atoi(idString)
 	if err != nil {

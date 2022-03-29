@@ -162,12 +162,12 @@ var createMovieTestCases = map[string]struct {
 }
 
 var getMovieByIdTestCases = map[string]struct {
-	requestId int
+	requestId string
 	wantCode  int
 	wantBody  response.BaseResponse
 }{
 	"valid request": {
-		requestId: 1,
+		requestId: "1",
 		wantCode:  200,
 		wantBody: response.SuccessResponse(
 			200,
@@ -182,8 +182,22 @@ var getMovieByIdTestCases = map[string]struct {
 		),
 	},
 
-	"non-existing id": {
-		requestId: 99,
+	"non-integer id": {
+		requestId: "one",
+		wantCode:  404,
+		wantBody: response.ErrorResponse(
+			404,
+			response.Error{
+				Type: "generic",
+				Data: map[string]string{
+					"message": response.ErrMessage404,
+				},
+			},
+		),
+	},
+
+	"non-existent id": {
+		requestId: "99",
 		wantCode:  404,
 		wantBody: response.ErrorResponse(
 			404,
@@ -198,13 +212,13 @@ var getMovieByIdTestCases = map[string]struct {
 }
 
 var updateMovieTestCases = map[string]struct {
-	requestId   int
+	requestId   string
 	requestBody request.MovieRequest
 	wantCode    int
 	wantBody    response.BaseResponse
 }{
 	"valid request": {
-		requestId: 1,
+		requestId: "1",
 		requestBody: request.MovieRequest{
 			Title:   "In The Heights",
 			Year:    2021,
@@ -225,8 +239,28 @@ var updateMovieTestCases = map[string]struct {
 		),
 	},
 
-	"non-existing id": {
-		requestId: 99,
+	"non-integer id": {
+		requestId: "one",
+		requestBody: request.MovieRequest{
+			Title:   "In The Heights",
+			Year:    2021,
+			Runtime: 110,
+			Genres:  []string{"musical", "comedy"},
+		},
+		wantCode: 404,
+		wantBody: response.ErrorResponse(
+			404,
+			response.Error{
+				Type: "generic",
+				Data: map[string]string{
+					"message": response.ErrMessage404,
+				},
+			},
+		),
+	},
+
+	"non-existent id": {
+		requestId: "99",
 		requestBody: request.MovieRequest{
 			Title:   "In The Heights",
 			Year:    2021,
