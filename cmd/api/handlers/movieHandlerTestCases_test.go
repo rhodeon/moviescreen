@@ -17,11 +17,13 @@ var createMovieTestCases = map[string]struct {
 			Runtime: 142,
 			Genres:  []string{"Drama"},
 		},
-		wantResponse: response.SuccessResponse(200, response.MovieResponse{
+		wantResponse: response.SuccessResponse(201, response.MovieResponse{
+			Id:      3,
 			Title:   "The Shawshank Redemption",
 			Year:    1994,
 			Runtime: 142,
 			Genres:  []string{"Drama"},
+			Version: 1,
 		}),
 	},
 

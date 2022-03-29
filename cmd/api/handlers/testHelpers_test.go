@@ -3,6 +3,8 @@ package handlers
 import (
 	"github.com/rhodeon/moviescreen/cmd/api/common"
 	"github.com/rhodeon/moviescreen/cmd/api/internal"
+	"github.com/rhodeon/moviescreen/domain/repository"
+	"github.com/rhodeon/moviescreen/infrastructure/mock"
 	"github.com/rhodeon/moviescreen/internal/testhelpers"
 	"io"
 	"net/http"
@@ -23,10 +25,14 @@ var testConfig = common.Config{
 	Port:    4000,
 }
 
+var testRepos = repository.Repositories{
+	Movies: mock.MovieController{},
+}
+
 var testRouteHandlers = common.RouteHandlers{
 	Error:  NewErrorHandler(),
 	Misc:   NewMiscHandler(testConfig),
-	Movies: NewMovieHandler(testConfig),
+	Movies: NewMovieHandler(testConfig, testRepos),
 }
 
 // parseResponse parses a http response and returns the code, body and header.

@@ -7,6 +7,7 @@ import (
 	"github.com/rhodeon/moviescreen/cmd/api/models/response"
 	"github.com/rhodeon/moviescreen/domain/repository"
 	"net/http"
+	"path"
 	"strconv"
 )
 
@@ -91,11 +92,13 @@ func (m movieHandler) Create(ctx *gin.Context) {
 	}
 
 	// return the newly created movie response
+	resp := newMovie.ToResponse()
+	ctx.Header("Location", path.Join("/v1/movies", strconv.Itoa(resp.Id)))
 	ctx.JSON(
 		http.StatusCreated,
 		response.SuccessResponse(
 			http.StatusCreated,
-			newMovie.ToResponse(),
+			resp,
 		),
 	)
 }
