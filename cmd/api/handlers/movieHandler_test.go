@@ -25,14 +25,17 @@ func Test_movieHandler_Create(t *testing.T) {
 			req := httptest.NewRequest(http.MethodPost, "/v1/movies/", bytes.NewReader(requestJson))
 			app.Router(testRouteHandlers).ServeHTTP(rr, req)
 
-			code, body, _ := parseResponse(t, rr.Result())
+			code, body, headers := parseResponse(t, rr.Result())
 
 			// assert code
-			testhelpers.AssertEqual(t, code, tc.wantResponse.Status)
+			testhelpers.AssertEqual(t, code, tc.wantCode)
 
 			// assert body
-			wantBody, _ := json.Marshal(tc.wantResponse)
+			wantBody, _ := json.Marshal(tc.wantBody)
 			testhelpers.AssertEqual(t, body, string(wantBody))
+
+			// assert headers
+			assertHeaders(t, headers, tc.wantHeaders)
 		})
 	}
 }

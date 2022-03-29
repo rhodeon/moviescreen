@@ -8,6 +8,7 @@ import (
 	"github.com/rhodeon/moviescreen/internal/testhelpers"
 	"io"
 	"net/http"
+	"reflect"
 	"testing"
 )
 
@@ -43,4 +44,18 @@ func parseResponse(t *testing.T, result *http.Response) (int, string, http.Heade
 	testhelpers.AssertFatalError(t, err)
 	defer result.Body.Close()
 	return result.StatusCode, string(body), result.Header
+}
+
+func assertHeaders(t *testing.T, gotHeaders http.Header, wantHeaders http.Header) {
+	t.Helper()
+
+	for key, wantValue := range wantHeaders {
+		if gotValue, exists := gotHeaders[key]; exists {
+			if !reflect.DeepEqual(gotValue, wantValue) {
+				t.Errorf("\nGot:\t%v\nWant:\t%v", gotValue, wantValue)
+			}
+		} else {
+			t.Errorf("header with key %q not found", key)
+		}
+	}
 }

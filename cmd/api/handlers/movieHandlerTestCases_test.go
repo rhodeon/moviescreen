@@ -3,12 +3,15 @@ package handlers
 import (
 	"github.com/rhodeon/moviescreen/cmd/api/models/request"
 	"github.com/rhodeon/moviescreen/cmd/api/models/response"
+	"net/http"
 	"time"
 )
 
 var createMovieTestCases = map[string]struct {
-	request      request.MovieRequest
-	wantResponse response.BaseResponse
+	request     request.MovieRequest
+	wantCode    int
+	wantBody    response.BaseResponse
+	wantHeaders http.Header
 }{
 	"valid request": {
 		request: request.MovieRequest{
@@ -17,7 +20,8 @@ var createMovieTestCases = map[string]struct {
 			Runtime: 142,
 			Genres:  []string{"Drama"},
 		},
-		wantResponse: response.SuccessResponse(201, response.MovieResponse{
+		wantCode: 201,
+		wantBody: response.SuccessResponse(201, response.MovieResponse{
 			Id:      3,
 			Title:   "The Shawshank Redemption",
 			Year:    1994,
@@ -25,11 +29,15 @@ var createMovieTestCases = map[string]struct {
 			Genres:  []string{"Drama"},
 			Version: 1,
 		}),
+		wantHeaders: map[string][]string{
+			"Location": {"/v1/movies/3"},
+		},
 	},
 
 	"missing required fields": {
-		request: request.MovieRequest{},
-		wantResponse: response.ErrorResponse(422, response.Error{
+		request:  request.MovieRequest{},
+		wantCode: 422,
+		wantBody: response.ErrorResponse(422, response.Error{
 			Type: "movie",
 			Data: map[string]string{
 				"genres":  "must be provided",
@@ -47,7 +55,8 @@ var createMovieTestCases = map[string]struct {
 			Runtime: 142,
 			Genres:  []string{"Drama"},
 		},
-		wantResponse: response.ErrorResponse(422, response.Error{
+		wantCode: 422,
+		wantBody: response.ErrorResponse(422, response.Error{
 			Type: "movie",
 			Data: map[string]string{
 				"title": "must not have more than 500 characters",
@@ -62,7 +71,8 @@ var createMovieTestCases = map[string]struct {
 			Runtime: 142,
 			Genres:  []string{"Drama"},
 		},
-		wantResponse: response.ErrorResponse(422, response.Error{
+		wantCode: 422,
+		wantBody: response.ErrorResponse(422, response.Error{
 			Type: "movie",
 			Data: map[string]string{
 				"year": "must not be before 1888",
@@ -77,7 +87,8 @@ var createMovieTestCases = map[string]struct {
 			Runtime: 142,
 			Genres:  []string{"Drama"},
 		},
-		wantResponse: response.ErrorResponse(422, response.Error{
+		wantCode: 422,
+		wantBody: response.ErrorResponse(422, response.Error{
 			Type: "movie",
 			Data: map[string]string{
 				"year": "must not be in the future",
@@ -92,7 +103,8 @@ var createMovieTestCases = map[string]struct {
 			Runtime: -142,
 			Genres:  []string{"Drama"},
 		},
-		wantResponse: response.ErrorResponse(422, response.Error{
+		wantCode: 422,
+		wantBody: response.ErrorResponse(422, response.Error{
 			Type: "movie",
 			Data: map[string]string{
 				"runtime": "must be a positive integer",
@@ -107,7 +119,8 @@ var createMovieTestCases = map[string]struct {
 			Runtime: 142,
 			Genres:  []string{},
 		},
-		wantResponse: response.ErrorResponse(422, response.Error{
+		wantCode: 422,
+		wantBody: response.ErrorResponse(422, response.Error{
 			Type: "movie",
 			Data: map[string]string{
 				"genres": "must have at least 1 genre",
@@ -122,7 +135,8 @@ var createMovieTestCases = map[string]struct {
 			Runtime: 142,
 			Genres:  []string{"Drama", ""},
 		},
-		wantResponse: response.ErrorResponse(422, response.Error{
+		wantCode: 422,
+		wantBody: response.ErrorResponse(422, response.Error{
 			Type: "movie",
 			Data: map[string]string{
 				"genres": "must not have any blank genres",
@@ -137,7 +151,8 @@ var createMovieTestCases = map[string]struct {
 			Runtime: 142,
 			Genres:  []string{"Drama", "Drama"},
 		},
-		wantResponse: response.ErrorResponse(422, response.Error{
+		wantCode: 422,
+		wantBody: response.ErrorResponse(422, response.Error{
 			Type: "movie",
 			Data: map[string]string{
 				"genres": "must have unique genres",
