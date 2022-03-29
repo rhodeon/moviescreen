@@ -7,6 +7,7 @@ import (
 	"github.com/rhodeon/moviescreen/internal/validator"
 	"github.com/rhodeon/prettylog"
 	"net/http"
+	"strconv"
 )
 
 // handleJsonRequest ensures a JSON request is properly formed and validated.
@@ -44,4 +45,17 @@ func handleInternalServerError(ctx *gin.Context, err error) {
 			response.GenericError(response.ErrMessage500),
 		),
 	)
+}
+
+// parseQueryId attempts to convert the "id" query of a request
+// and find its integer value.
+// A 404 response is returned if a failure occurs.
+func parseQueryId(ctx *gin.Context) (int, error) {
+	idString := ctx.Param("id")
+	id, err := strconv.Atoi(idString)
+	if err != nil {
+		NewErrorHandler().NotFound(ctx)
+		return 0, err
+	}
+	return id, nil
 }

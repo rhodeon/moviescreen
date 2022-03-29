@@ -47,9 +47,23 @@ func (m MovieController) Get(id int) (models.Movie, error) {
 	return movie, nil
 }
 
-func (m MovieController) Update(movie models.Movie) error {
-	//TODO implement me
-	panic("implement me")
+// Update replaces the data of the movie in the database with those in the passed-in movie.
+func (m MovieController) Update(id int, movie *models.Movie) error {
+	stmt := `UPDATE movies 
+	SET title = $1, year = $2, runtime = $3, genres = $4, version = version + 1
+	WHERE id = $5
+	RETURNING id, version`
+
+	row := m.Db.QueryRow(stmt, movie.Title, movie.Year, movie.Runtime, pq.Array(movie.Genres), id)
+	err := row.Scan(&movie.Id, &movie.Version)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return repository.ErrRecordNotFound
+		} else {
+			return err
+		}
+	}
+	return nil
 }
 
 func (m MovieController) Delete(movie models.Movie) error {

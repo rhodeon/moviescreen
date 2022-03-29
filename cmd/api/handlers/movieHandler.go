@@ -54,17 +54,14 @@ func (m movieHandler) Create(ctx *gin.Context) {
 
 // GetById returns a movie with the specified id.
 func (m movieHandler) GetById(ctx *gin.Context) {
-	id := ctx.Param("id")
-
-	// return a 404 error if the id can't be resolved
-	idValue, err := strconv.Atoi(id)
+	// validate id
+	id, err := parseQueryId(ctx)
 	if err != nil {
-		NewErrorHandler().NotFound(ctx)
 		return
 	}
 
 	// attempt to fetch movie from the repository
-	movie, err := m.repositories.Movies.Get(idValue)
+	movie, err := m.repositories.Movies.Get(id)
 	if err != nil {
 		// return a 404 error if the movie id doesn't exist in the repository
 		if errors.Is(err, repository.ErrRecordNotFound) {
@@ -107,6 +104,43 @@ func (m movieHandler) List(ctx *gin.Context) {
 					Genres:  []string{"comedy", "drama"},
 				},
 			},
+		),
+	)
+}
+
+// Update changes the data of the movie with the given ID query in the repository.
+func (m movieHandler) Update(ctx *gin.Context) {
+	// validate id
+	id, err := parseQueryId(ctx)
+	if err != nil {
+		return
+	}
+
+	// valid request
+	movieRequest := &request.MovieRequest{}
+	err = handleJsonRequest(ctx, movieRequest)
+	if err != nil {
+		return
+	}
+
+	// attempt to update movie in the repository
+	updatedMovie := movieRequest.ToModel()
+	err = m.repositories.Movies.Update(id, &updatedMovie)
+	if err != nil {
+		if errors.Is(err, repository.ErrRecordNotFound) {
+			NewErrorHandler().NotFound(ctx)
+		} else {
+			handleInternalServerError(ctx, err)
+		}
+		return
+	}
+
+	// return updated movie
+	ctx.JSON(
+		http.StatusOK,
+		response.SuccessResponse(
+			http.StatusOK,
+			updatedMovie.ToResponse(),
 		),
 	)
 }

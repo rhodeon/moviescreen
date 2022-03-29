@@ -196,3 +196,52 @@ var getMovieByIdTestCases = map[string]struct {
 		),
 	},
 }
+
+var updateMovieTestCases = map[string]struct {
+	requestId   int
+	requestBody request.MovieRequest
+	wantCode    int
+	wantBody    response.BaseResponse
+}{
+	"valid request": {
+		requestId: 1,
+		requestBody: request.MovieRequest{
+			Title:   "In The Heights",
+			Year:    2021,
+			Runtime: 110,
+			Genres:  []string{"musical", "comedy"},
+		},
+		wantCode: 200,
+		wantBody: response.SuccessResponse(
+			200,
+			response.MovieResponse{
+				Id:      1,
+				Title:   "In The Heights",
+				Year:    2021,
+				Runtime: 110,
+				Genres:  []string{"musical", "comedy"},
+				Version: 2,
+			},
+		),
+	},
+
+	"non-existing id": {
+		requestId: 99,
+		requestBody: request.MovieRequest{
+			Title:   "In The Heights",
+			Year:    2021,
+			Runtime: 110,
+			Genres:  []string{"musical", "comedy"},
+		},
+		wantCode: 404,
+		wantBody: response.ErrorResponse(
+			404,
+			response.Error{
+				Type: "generic",
+				Data: map[string]string{
+					"message": response.ErrMessage404,
+				},
+			},
+		),
+	},
+}

@@ -25,4 +25,5 @@ type MovieHandler interface {
 	GetById(ctx *gin.Context)
 	List(ctx *gin.Context)
 	Create(ctx *gin.Context)
+	Update(ctx *gin.Context)
 }

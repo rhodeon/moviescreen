@@ -47,9 +47,15 @@ func (m MovieController) Get(id int) (models.Movie, error) {
 	return models.Movie{}, repository.ErrRecordNotFound
 }
 
-func (m MovieController) Update(movie models.Movie) error {
-	//TODO implement me
-	panic("implement me")
+func (m MovieController) Update(id int, movie *models.Movie) error {
+	for _, mov := range movies {
+		if mov.Id == id {
+			movie.Version = mov.Version + 1
+			movie.Id = id
+			return nil
+		}
+	}
+	return repository.ErrRecordNotFound
 }
 
 func (m MovieController) Delete(movie models.Movie) error {
