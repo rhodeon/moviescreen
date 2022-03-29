@@ -14,7 +14,7 @@ func NewErrorHandler() common.ErrorHandler {
 }
 
 func (e errorHandler) NotFound(ctx *gin.Context) {
-	ctx.JSON(
+	ctx.AbortWithStatusJSON(
 		http.StatusNotFound,
 		response.ErrorResponse(
 			http.StatusNotFound,
@@ -24,7 +24,7 @@ func (e errorHandler) NotFound(ctx *gin.Context) {
 }
 
 func (e errorHandler) MethodNotAllowed(ctx *gin.Context) {
-	ctx.JSON(
+	ctx.AbortWithStatusJSON(
 		http.StatusMethodNotAllowed,
 		response.ErrorResponse(
 			http.StatusMethodNotAllowed,
@@ -34,7 +34,7 @@ func (e errorHandler) MethodNotAllowed(ctx *gin.Context) {
 }
 
 func (e errorHandler) InternalServer(ctx *gin.Context) {
-	ctx.JSON(
+	ctx.AbortWithStatusJSON(
 		http.StatusInternalServerError,
 		response.ErrorResponse(
 			http.StatusInternalServerError,

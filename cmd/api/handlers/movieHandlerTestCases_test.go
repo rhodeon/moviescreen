@@ -145,3 +145,39 @@ var createMovieTestCases = map[string]struct {
 		}),
 	},
 }
+
+var getMovieByIdTestCases = map[string]struct {
+	requestId int
+	wantCode  int
+	wantBody  response.BaseResponse
+}{
+	"valid request": {
+		requestId: 1,
+		wantCode:  200,
+		wantBody: response.SuccessResponse(
+			200,
+			response.MovieResponse{
+				Id:      1,
+				Title:   "Bullet Train",
+				Year:    2022,
+				Runtime: 108,
+				Genres:  []string{"Action", "Comedy"},
+				Version: 1,
+			},
+		),
+	},
+
+	"non-existing id": {
+		requestId: 99,
+		wantCode:  404,
+		wantBody: response.ErrorResponse(
+			404,
+			response.Error{
+				Type: "generic",
+				Data: map[string]string{
+					"message": response.ErrMessage404,
+				},
+			},
+		),
+	},
+}

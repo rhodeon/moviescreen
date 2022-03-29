@@ -2,6 +2,7 @@ package mock
 
 import (
 	"github.com/rhodeon/moviescreen/domain/models"
+	"github.com/rhodeon/moviescreen/domain/repository"
 	"time"
 )
 
@@ -27,8 +28,7 @@ var movies = []models.Movie{
 	},
 }
 
-type MovieController struct {
-}
+type MovieController struct{}
 
 func (m MovieController) Create(movie *models.Movie) error {
 	movie.Id = 3
@@ -37,9 +37,14 @@ func (m MovieController) Create(movie *models.Movie) error {
 	return nil
 }
 
-func (m MovieController) Get(movie models.Movie) error {
-	//TODO implement me
-	panic("implement me")
+func (m MovieController) Get(id int) (models.Movie, error) {
+	for _, movie := range movies {
+		if movie.Id == id {
+			return movie, nil
+		}
+	}
+
+	return models.Movie{}, repository.ErrRecordNotFound
 }
 
 func (m MovieController) Update(movie models.Movie) error {
