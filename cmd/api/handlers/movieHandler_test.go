@@ -1,13 +1,13 @@
 package handlers
 
 import (
-	"bytes"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/rhodeon/moviescreen/internal/testhelpers"
 	"net/http"
 	"net/http/httptest"
 	"path"
+	"strings"
 	"testing"
 )
 
@@ -18,9 +18,8 @@ func TestMovieHandler_Create(t *testing.T) {
 	testCases := createMovieTestCases
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			requestJson, _ := json.Marshal(tc.request)
 			rr := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodPost, "/v1/movies/", bytes.NewReader(requestJson))
+			req := httptest.NewRequest(http.MethodPost, "/v1/movies/", strings.NewReader(tc.requestBody))
 			app.Router(testRouteHandlers).ServeHTTP(rr, req)
 			code, body, headers := parseResponse(t, rr.Result())
 
@@ -68,9 +67,8 @@ func TestMovieHandler_Update(t *testing.T) {
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			jsonRequest, _ := json.Marshal(tc.requestBody)
 			rr := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodPut, path.Join("/v1/movies", tc.requestId), bytes.NewReader(jsonRequest))
+			req := httptest.NewRequest(http.MethodPatch, path.Join("/v1/movies", tc.requestId), strings.NewReader(tc.requestBody))
 			app.Router(testRouteHandlers).ServeHTTP(rr, req)
 			code, body, _ := parseResponse(t, rr.Result())
 

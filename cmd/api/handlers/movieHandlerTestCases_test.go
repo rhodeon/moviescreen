@@ -1,25 +1,23 @@
 package handlers
 
 import (
-	"github.com/rhodeon/moviescreen/cmd/api/models/request"
 	"github.com/rhodeon/moviescreen/cmd/api/models/response"
 	"net/http"
-	"time"
 )
 
 var createMovieTestCases = map[string]struct {
-	request     request.MovieRequest
+	requestBody string
 	wantCode    int
 	wantBody    response.BaseResponse
 	wantHeaders http.Header
 }{
 	"valid request": {
-		request: request.MovieRequest{
-			Title:   "The Shawshank Redemption",
-			Year:    1994,
-			Runtime: 142,
-			Genres:  []string{"Drama"},
-		},
+		requestBody: `{
+			"Title":   "The Shawshank Redemption",
+			"Year":    1994,
+			"Runtime": "142 mins",
+			"Genres":  ["Drama"]
+		}`,
 		wantCode: 201,
 		wantBody: response.SuccessResponse(201, response.MovieResponse{
 			Id:      3,
@@ -35,8 +33,8 @@ var createMovieTestCases = map[string]struct {
 	},
 
 	"missing required fields": {
-		request:  request.MovieRequest{},
-		wantCode: 422,
+		requestBody: `{}`,
+		wantCode:    422,
 		wantBody: response.ErrorResponse(422, response.Error{
 			Type: "movie",
 			Data: map[string]string{
@@ -49,12 +47,12 @@ var createMovieTestCases = map[string]struct {
 	},
 
 	"title with over 500 characters": {
-		request: request.MovieRequest{
-			Title:   "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
-			Year:    1994,
-			Runtime: 142,
-			Genres:  []string{"Drama"},
-		},
+		requestBody: `{
+			"Title":   "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+			"Year":    1994,
+			"Runtime": "142 mins",
+			"Genres":  ["Drama"]
+		}`,
 		wantCode: 422,
 		wantBody: response.ErrorResponse(422, response.Error{
 			Type: "movie",
@@ -65,12 +63,12 @@ var createMovieTestCases = map[string]struct {
 	},
 
 	"year before 1888": {
-		request: request.MovieRequest{
-			Title:   "The Shawshank Redemption",
-			Year:    1666,
-			Runtime: 142,
-			Genres:  []string{"Drama"},
-		},
+		requestBody: `{
+			"Title":   "The Shawshank Redemption",
+			"Year":    1666,
+			"Runtime": "142 mins",
+			"Genres":  ["Drama"]
+		}`,
 		wantCode: 422,
 		wantBody: response.ErrorResponse(422, response.Error{
 			Type: "movie",
@@ -81,12 +79,12 @@ var createMovieTestCases = map[string]struct {
 	},
 
 	"year in the future": {
-		request: request.MovieRequest{
-			Title:   "The Shawshank Redemption",
-			Year:    time.Now().Year() + 5,
-			Runtime: 142,
-			Genres:  []string{"Drama"},
-		},
+		requestBody: `{
+			"Title":   "The Shawshank Redemption",
+			"Year":    3000,
+			"Runtime": "142 mins",
+			"Genres":  ["Drama"]
+		}`,
 		wantCode: 422,
 		wantBody: response.ErrorResponse(422, response.Error{
 			Type: "movie",
@@ -97,12 +95,12 @@ var createMovieTestCases = map[string]struct {
 	},
 
 	"negative runtime": {
-		request: request.MovieRequest{
-			Title:   "The Shawshank Redemption",
-			Year:    1994,
-			Runtime: -142,
-			Genres:  []string{"Drama"},
-		},
+		requestBody: `{
+			"Title":   "The Shawshank Redemption",
+			"Year":    1994,
+			"Runtime": "-142 mins",
+			"Genres":  ["Drama"]
+		}`,
 		wantCode: 422,
 		wantBody: response.ErrorResponse(422, response.Error{
 			Type: "movie",
@@ -113,12 +111,12 @@ var createMovieTestCases = map[string]struct {
 	},
 
 	"empty genres": {
-		request: request.MovieRequest{
-			Title:   "The Shawshank Redemption",
-			Year:    1994,
-			Runtime: 142,
-			Genres:  []string{},
-		},
+		requestBody: `{
+			"Title":   "The Shawshank Redemption",
+			"Year":    1994,
+			"Runtime": "142 mins",
+			"Genres":  []
+		}`,
 		wantCode: 422,
 		wantBody: response.ErrorResponse(422, response.Error{
 			Type: "movie",
@@ -129,12 +127,12 @@ var createMovieTestCases = map[string]struct {
 	},
 
 	"blank genre": {
-		request: request.MovieRequest{
-			Title:   "The Shawshank Redemption",
-			Year:    1994,
-			Runtime: 142,
-			Genres:  []string{"Drama", ""},
-		},
+		requestBody: `{
+			"Title":   "The Shawshank Redemption",
+			"Year":    1994,
+			"Runtime": "142 mins",
+			"Genres":  ["Drama", ""]
+		}`,
 		wantCode: 422,
 		wantBody: response.ErrorResponse(422, response.Error{
 			Type: "movie",
@@ -145,12 +143,12 @@ var createMovieTestCases = map[string]struct {
 	},
 
 	"duplicate genres": {
-		request: request.MovieRequest{
-			Title:   "The Shawshank Redemption",
-			Year:    1994,
-			Runtime: 142,
-			Genres:  []string{"Drama", "Drama"},
-		},
+		requestBody: `{
+			"Title":   "The Shawshank Redemption",
+			"Year":    1994,
+			"Runtime": "142 mins",
+			"Genres":  ["Drama", "Drama"]
+		}`,
 		wantCode: 422,
 		wantBody: response.ErrorResponse(422, response.Error{
 			Type: "movie",
@@ -213,18 +211,18 @@ var getMovieByIdTestCases = map[string]struct {
 
 var updateMovieTestCases = map[string]struct {
 	requestId   string
-	requestBody request.MovieRequest
+	requestBody string
 	wantCode    int
 	wantBody    response.BaseResponse
 }{
 	"valid request": {
 		requestId: "1",
-		requestBody: request.MovieRequest{
-			Title:   "In The Heights",
-			Year:    2021,
-			Runtime: 110,
-			Genres:  []string{"musical", "comedy"},
-		},
+		requestBody: `{
+			"Title":   "In The Heights",
+			"Year":    2021,
+			"Runtime": "110 mins",
+			"Genres":  ["musical", "comedy"]
+		}`,
 		wantCode: 200,
 		wantBody: response.SuccessResponse(
 			200,
@@ -241,12 +239,12 @@ var updateMovieTestCases = map[string]struct {
 
 	"non-integer id": {
 		requestId: "one",
-		requestBody: request.MovieRequest{
-			Title:   "In The Heights",
-			Year:    2021,
-			Runtime: 110,
-			Genres:  []string{"musical", "comedy"},
-		},
+		requestBody: `{
+			"Title":   "In The Heights",
+			"Year":    2021,
+			"Runtime": "110 mins",
+			"Genres":  ["musical", "comedy"]
+		}`,
 		wantCode: 404,
 		wantBody: response.ErrorResponse(
 			404,
@@ -261,12 +259,12 @@ var updateMovieTestCases = map[string]struct {
 
 	"non-existent id": {
 		requestId: "99",
-		requestBody: request.MovieRequest{
-			Title:   "In The Heights",
-			Year:    2021,
-			Runtime: 110,
-			Genres:  []string{"musical", "comedy"},
-		},
+		requestBody: `{
+			"Title":   "In The Heights",
+			"Year":    2021,
+			"Runtime": "110 min",
+			"Genres":  ["musical", "comedy"]
+		}`,
 		wantCode: 404,
 		wantBody: response.ErrorResponse(
 			404,
