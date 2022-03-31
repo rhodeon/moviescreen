@@ -69,7 +69,7 @@ func TestMovieController_Update(t *testing.T) {
 			movieController := MovieController{Db: db}
 			defer teardown()
 
-			err := movieController.Update(tc.id, &tc.movie)
+			err := movieController.Update(&tc.movie)
 			testhelpers.AssertError(t, err, tc.wantErr)
 
 			tc.movie.Created = time.Time{}

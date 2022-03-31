@@ -47,11 +47,10 @@ func (m MovieController) Get(id int) (models.Movie, error) {
 	return models.Movie{}, repository.ErrRecordNotFound
 }
 
-func (m MovieController) Update(id int, movie *models.Movie) error {
+func (m MovieController) Update(movie *models.Movie) error {
 	for _, mov := range movies {
-		if mov.Id == id {
+		if mov.Id == movie.Id {
 			movie.Version = mov.Version + 1
-			movie.Id = id
 			return nil
 		}
 	}

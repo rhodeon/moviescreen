@@ -6,6 +6,7 @@ import (
 	"github.com/lib/pq"
 	"github.com/rhodeon/moviescreen/domain/models"
 	"github.com/rhodeon/moviescreen/domain/repository"
+	"github.com/rhodeon/prettylog"
 )
 
 type MovieController struct {
@@ -48,17 +49,22 @@ func (m MovieController) Get(id int) (models.Movie, error) {
 }
 
 // Update replaces the data of the movie in the database with those in the passed-in movie.
-func (m MovieController) Update(id int, movie *models.Movie) error {
+// An "edit conflict" error is returned if the version of the movie in the database does not
+// match that in the parameter. This is done to prevent data races.
+func (m MovieController) Update(movie *models.Movie) error {
 	stmt := `UPDATE movies 
 	SET title = $1, year = $2, runtime = $3, genres = $4, version = version + 1
-	WHERE id = $5
-	RETURNING id, version`
+	WHERE id = $5 AND version = $6
+	RETURNING version`
 
-	row := m.Db.QueryRow(stmt, movie.Title, movie.Year, movie.Runtime, pq.Array(movie.Genres), id)
-	err := row.Scan(&movie.Id, &movie.Version)
+	prettylog.Info(movie.Id)
+	prettylog.Info(movie.Version)
+
+	row := m.Db.QueryRow(stmt, movie.Title, movie.Year, movie.Runtime, pq.Array(movie.Genres), movie.Id, movie.Version)
+	err := row.Scan(&movie.Version)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return repository.ErrRecordNotFound
+			return repository.ErrEditConflict
 		} else {
 			return err
 		}

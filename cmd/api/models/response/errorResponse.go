@@ -11,9 +11,10 @@ import (
 )
 
 const (
-	ErrMessage404 = "resource not found"
-	ErrMessage405 = "method not allowed"
-	ErrMessage500 = "internal server error"
+	ErrMessage404          = "resource not found"
+	ErrMessage405          = "method not allowed"
+	ErrMessage500          = "internal server error"
+	ErrMessageEditConflict = "unable to update the record due to an edit conflict, please try again"
 )
 
 // Error represents the data of an error in a response.

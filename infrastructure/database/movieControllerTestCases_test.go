@@ -63,10 +63,12 @@ var updateTestCases = map[string]struct {
 	"valid data": {
 		id: 3,
 		movie: models.Movie{
+			Id:      3,
 			Title:   "Luca",
 			Year:    2021,
 			Runtime: 100,
 			Genres:  []string{"Adventure", "Family"},
+			Version: 1,
 		},
 		wantUpdatedMovie: models.Movie{
 			Id:      3,
@@ -79,13 +81,15 @@ var updateTestCases = map[string]struct {
 		wantErr: nil,
 	},
 
-	"non-existent id": {
+	"wrong version number (data race)": {
 		id: 99,
 		movie: models.Movie{
+			Id:      0,
 			Title:   "Luca",
 			Year:    2021,
 			Runtime: 100,
 			Genres:  []string{"Adventure", "Family"},
+			Version: 0,
 		},
 		wantUpdatedMovie: models.Movie{
 			Id:      0,
@@ -95,7 +99,7 @@ var updateTestCases = map[string]struct {
 			Genres:  []string{"Adventure", "Family"},
 			Version: 0,
 		},
-		wantErr: repository.ErrRecordNotFound,
+		wantErr: repository.ErrEditConflict,
 	},
 }
 

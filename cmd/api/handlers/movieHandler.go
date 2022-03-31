@@ -154,10 +154,10 @@ func (m movieHandler) Update(ctx *gin.Context) {
 	movieRequest.UpdateModel(&movie)
 
 	// reinsert updated movie into the repository
-	err = m.repositories.Movies.Update(id, &movie)
+	err = m.repositories.Movies.Update(&movie)
 	if err != nil {
-		if errors.Is(err, repository.ErrRecordNotFound) {
-			NewErrorHandler().NotFound(ctx)
+		if errors.Is(err, repository.ErrEditConflict) {
+			NewErrorHandler().EditConflict(ctx)
 		} else {
 			handleInternalServerError(ctx, err)
 		}

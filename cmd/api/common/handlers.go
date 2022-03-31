@@ -15,6 +15,7 @@ type ErrorHandler interface {
 	NotFound(ctx *gin.Context)
 	MethodNotAllowed(ctx *gin.Context)
 	InternalServer(ctx *gin.Context)
+	EditConflict(ctx *gin.Context)
 }
 
 type MiscHandler interface {

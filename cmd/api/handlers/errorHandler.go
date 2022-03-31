@@ -42,3 +42,13 @@ func (e errorHandler) InternalServer(ctx *gin.Context) {
 		),
 	)
 }
+
+func (e errorHandler) EditConflict(ctx *gin.Context) {
+	ctx.AbortWithStatusJSON(
+		http.StatusConflict,
+		response.ErrorResponse(
+			http.StatusConflict,
+			response.GenericError(response.ErrMessageEditConflict),
+		),
+	)
+}
