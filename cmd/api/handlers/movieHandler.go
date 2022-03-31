@@ -24,10 +24,21 @@ func NewMovieHandler(config common.Config, repositories repository.Repositories)
 	}
 }
 
-// Create adds a new movie to the database, and returns the newly created movie.
+// Create adds a new movie to the repository, and returns the newly created movie.
 func (m movieHandler) Create(ctx *gin.Context) {
 	movieRequest := &request.MovieRequest{}
-	err := handleJsonRequest(ctx, movieRequest)
+	err := parseJsonRequest(ctx, movieRequest)
+	if err != nil {
+		return
+	}
+
+	// validate the request with all fields being mandatory for creation
+	err = validateJsonRequest(ctx, movieRequest, []string{
+		request.MovieFieldTitle,
+		request.MovieFieldYear,
+		request.MovieFieldRuntime,
+		request.MovieFieldGenres,
+	})
 	if err != nil {
 		return
 	}
@@ -108,7 +119,7 @@ func (m movieHandler) List(ctx *gin.Context) {
 	)
 }
 
-// Update changes the data of the movie with the given ID query in the repository.
+// Update replaces the data of the movie with the given ID query in the repository.
 func (m movieHandler) Update(ctx *gin.Context) {
 	// validate id
 	id, err := parseParamId(ctx)
@@ -116,9 +127,19 @@ func (m movieHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	// valid request
+	// validate request
 	movieRequest := &request.MovieRequest{}
-	err = handleJsonRequest(ctx, movieRequest)
+	err = parseJsonRequest(ctx, movieRequest)
+	if err != nil {
+		return
+	}
+
+	err = validateJsonRequest(ctx, movieRequest, []string{
+		request.MovieFieldTitle,
+		request.MovieFieldYear,
+		request.MovieFieldRuntime,
+		request.MovieFieldGenres,
+	})
 	if err != nil {
 		return
 	}

@@ -10,8 +10,10 @@ import (
 	"strconv"
 )
 
-// handleJsonRequest ensures a JSON request is properly formed and validated.
-func handleJsonRequest(ctx *gin.Context, request request.ClientRequest) error {
+// parseJsonRequest ensures a JSON request body is properly formed, and populates
+// the request struct if so.
+// Otherwise, a 400 error is returned.
+func parseJsonRequest(ctx *gin.Context, request request.ClientRequest) error {
 	err := ctx.ShouldBindJSON(&request)
 	if err != nil {
 		// respond with a BadRequestError
@@ -21,17 +23,20 @@ func handleJsonRequest(ctx *gin.Context, request request.ClientRequest) error {
 		)
 		return err
 	}
+	return nil
+}
 
+// validateJsonRequest returns a 422 error if the request doesn't pass all validation rules.
+func validateJsonRequest(ctx *gin.Context, request request.ClientRequest, required []string) error {
 	// validate the response fields with custom checks
-	if v := request.Validate(); !v.Valid() {
+	if v := request.Validate(required); !v.Valid() {
 		ctx.AbortWithStatusJSON(
 			http.StatusUnprocessableEntity,
 			response.UnprocessableEntityError(v),
 		)
 		return validator.NewError()
 	}
-
-	return err
+	return nil
 }
 
 // handleInternalServerError logs the error and sends
