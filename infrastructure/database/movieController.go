@@ -1,12 +1,13 @@
 package database
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"github.com/lib/pq"
 	"github.com/rhodeon/moviescreen/domain/models"
 	"github.com/rhodeon/moviescreen/domain/repository"
-	"github.com/rhodeon/prettylog"
+	"time"
 )
 
 type MovieController struct {
@@ -21,7 +22,11 @@ func (m MovieController) Create(movie *models.Movie) error {
 	VALUES ($1, $2, $3, $4)
 	RETURNING id, created_at, version`
 
-	row := m.Db.QueryRow(stmt, movie.Title, movie.Year, movie.Runtime, pq.Array(movie.Genres))
+	// create context for database operation with a 3-second timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	row := m.Db.QueryRowContext(ctx, stmt, movie.Title, movie.Year, movie.Runtime, pq.Array(movie.Genres))
 	return row.Scan(&movie.Id, &movie.Created, &movie.Version)
 }
 
@@ -32,7 +37,11 @@ func (m MovieController) Get(id int) (models.Movie, error) {
 	FROM movies
 	WHERE id = $1`
 
-	row := m.Db.QueryRow(stmt, id)
+	// create context for database operation with a 3-second timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	row := m.Db.QueryRowContext(ctx, stmt, id)
 	movie := models.Movie{}
 	err := row.Scan(&movie.Id, &movie.Title, &movie.Year, &movie.Runtime,
 		pq.Array(&movie.Genres), &movie.Created, &movie.Version)
@@ -57,10 +66,11 @@ func (m MovieController) Update(movie *models.Movie) error {
 	WHERE id = $5 AND version = $6
 	RETURNING version`
 
-	prettylog.Info(movie.Id)
-	prettylog.Info(movie.Version)
+	// create context for database operation with a 3-second timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 
-	row := m.Db.QueryRow(stmt, movie.Title, movie.Year, movie.Runtime, pq.Array(movie.Genres), movie.Id, movie.Version)
+	row := m.Db.QueryRowContext(ctx, stmt, movie.Title, movie.Year, movie.Runtime, pq.Array(movie.Genres), movie.Id, movie.Version)
 	err := row.Scan(&movie.Version)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -78,7 +88,11 @@ func (m MovieController) Delete(id int) error {
 	stmt := `DELETE FROM movies 
 	WHERE id = $1`
 
-	result, err := m.Db.Exec(stmt, id)
+	// create context for database operation with a 3-second timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	result, err := m.Db.ExecContext(ctx, stmt, id)
 	if err != nil {
 		return err
 	}
