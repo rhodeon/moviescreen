@@ -237,6 +237,82 @@ var updateMovieTestCases = map[string]struct {
 		),
 	},
 
+	"partial update (only title)": {
+		requestId: "1",
+		requestBody: `{
+			"Title":   "In The Heights"
+		}`,
+		wantCode: 200,
+		wantBody: response.SuccessResponse(
+			200,
+			response.MovieResponse{
+				Id:      1,
+				Title:   "In The Heights",
+				Year:    2022,
+				Runtime: 108,
+				Genres:  []string{"Action", "Comedy"},
+				Version: 2,
+			},
+		),
+	},
+
+	"partial update (only year)": {
+		requestId: "1",
+		requestBody: `{
+			"Year":    1988
+		}`,
+		wantCode: 200,
+		wantBody: response.SuccessResponse(
+			200,
+			response.MovieResponse{
+				Id:      1,
+				Title:   "Bullet Train",
+				Year:    1988,
+				Runtime: 108,
+				Genres:  []string{"Action", "Comedy"},
+				Version: 2,
+			},
+		),
+	},
+
+	"partial update (only runtime)": {
+		requestId: "1",
+		requestBody: `{
+			"Runtime": "200 min"
+		}`,
+		wantCode: 200,
+		wantBody: response.SuccessResponse(
+			200,
+			response.MovieResponse{
+				Id:      1,
+				Title:   "Bullet Train",
+				Year:    2022,
+				Runtime: 200,
+				Genres:  []string{"Action", "Comedy"},
+				Version: 2,
+			},
+		),
+	},
+
+	"partial update (only genres)": {
+		requestId: "1",
+		requestBody: `{
+			"Genres":  ["musical", "comedy"]
+		}`,
+		wantCode: 200,
+		wantBody: response.SuccessResponse(
+			200,
+			response.MovieResponse{
+				Id:      1,
+				Title:   "Bullet Train",
+				Year:    2022,
+				Runtime: 108,
+				Genres:  []string{"musical", "comedy"},
+				Version: 2,
+			},
+		),
+	},
+
 	"non-integer id": {
 		requestId: "one",
 		requestBody: `{
