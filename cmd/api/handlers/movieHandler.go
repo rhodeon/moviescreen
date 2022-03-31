@@ -26,6 +26,7 @@ func NewMovieHandler(config common.Config, repositories repository.Repositories)
 
 // Create adds a new movie to the repository, and returns the newly created movie.
 func (m movieHandler) Create(ctx *gin.Context) {
+	// parse JSON request body
 	movieRequest := &request.MovieRequest{}
 	err := parseJsonRequest(ctx, movieRequest)
 	if err != nil {
@@ -127,26 +128,33 @@ func (m movieHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	// validate request
+	// parse JSON request body
 	movieRequest := &request.MovieRequest{}
 	err = parseJsonRequest(ctx, movieRequest)
 	if err != nil {
 		return
 	}
 
-	err = validateJsonRequest(ctx, movieRequest, []string{
-		request.MovieFieldTitle,
-		request.MovieFieldYear,
-		request.MovieFieldRuntime,
-		request.MovieFieldGenres,
-	})
+	// validate the request with all fields being optional for update
+	err = validateJsonRequest(ctx, movieRequest, []string{})
 	if err != nil {
 		return
 	}
 
-	// attempt to update movie in the repository
-	updatedMovie := movieRequest.ToModel()
-	err = m.repositories.Movies.Update(id, &updatedMovie)
+	// fetch and update movie from repository
+	movie, err := m.repositories.Movies.Get(id)
+	if err != nil {
+		if errors.Is(err, repository.ErrRecordNotFound) {
+			NewErrorHandler().NotFound(ctx)
+		} else {
+			handleInternalServerError(ctx, err)
+		}
+		return
+	}
+	movieRequest.UpdateModel(&movie)
+
+	// reinsert updated movie into the repository
+	err = m.repositories.Movies.Update(id, &movie)
 	if err != nil {
 		if errors.Is(err, repository.ErrRecordNotFound) {
 			NewErrorHandler().NotFound(ctx)
@@ -161,7 +169,7 @@ func (m movieHandler) Update(ctx *gin.Context) {
 		http.StatusOK,
 		response.SuccessResponse(
 			http.StatusOK,
-			updatedMovie.ToResponse(),
+			movie.ToResponse(),
 		),
 	)
 }

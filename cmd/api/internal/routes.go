@@ -30,7 +30,7 @@ func (app Application) Router(handlers common.RouteHandlers) *gin.Engine {
 		movies.GET("/", handlers.Movies.List)
 		movies.POST("/", handlers.Movies.Create)
 		movies.GET("/:id", handlers.Movies.GetById)
-		movies.PUT("/:id", handlers.Movies.Update)
+		movies.PATCH("/:id", handlers.Movies.Update)
 		movies.DELETE("/:id", handlers.Movies.Delete)
 	}
 
