@@ -57,6 +57,36 @@ func (m MovieController) Get(id int) (models.Movie, error) {
 	return movie, nil
 }
 
+func (m MovieController) List() ([]models.Movie, error) {
+	stmt := `SELECT id, title, year, runtime, genres, created_at, version
+	FROM movies
+	ORDER BY id`
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	rows, err := m.Db.QueryContext(ctx, stmt)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var movies []models.Movie
+
+	for rows.Next() {
+		movie := &models.Movie{}
+		_ = rows.Scan(&movie.Id, &movie.Title, &movie.Year, &movie.Runtime,
+			pq.Array(&movie.Genres), &movie.Created, &movie.Version)
+
+		movies = append(movies, *movie)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return movies, nil
+}
+
 // Update replaces the data of the movie in the database with those in the passed-in movie.
 // An "edit conflict" error is returned if the version of the movie in the database does not
 // match that in the parameter. This is done to prevent data races.

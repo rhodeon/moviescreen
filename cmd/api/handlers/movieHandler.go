@@ -96,26 +96,17 @@ func (m movieHandler) GetById(ctx *gin.Context) {
 
 // List returns a list of movies.
 func (m movieHandler) List(ctx *gin.Context) {
+	movies, err := m.repositories.Movies.List()
+	if err != nil {
+		handleInternalServerError(ctx, err)
+		return
+	}
+
 	ctx.JSON(
 		http.StatusOK,
 		response.SuccessResponse(
 			http.StatusOK,
-			[]response.MovieResponse{
-				{
-					Id:      19489443,
-					Title:   "Where they are",
-					Year:    2009,
-					Runtime: 150,
-					Genres:  []string{"action", "romance"},
-				},
-				{
-					Id:      19489343,
-					Title:   "Run of the mill",
-					Year:    2012,
-					Runtime: 1,
-					Genres:  []string{"comedy", "drama"},
-				},
-			},
+			movies,
 		),
 	)
 }
