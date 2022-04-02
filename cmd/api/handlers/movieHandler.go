@@ -105,6 +105,11 @@ func (m movieHandler) List(ctx *gin.Context) {
 		Page:  parseQueryInt(queries, "page", 1),
 		Limit: parseQueryInt(queries, "limit", 20),
 		Sort:  parseQueryString(queries, "sort", "id"),
+		ValidSorts: []string{
+			request.MovieFilterSortId,
+			request.MovieFilterSortTitle,
+			request.MovieFilterSortYear,
+			request.MovieFilterSortRuntime},
 	}
 
 	// attempt to retrieve movies

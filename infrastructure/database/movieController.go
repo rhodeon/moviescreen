@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"github.com/lib/pq"
 	"github.com/rhodeon/moviescreen/cmd/api/models/request"
 	"github.com/rhodeon/moviescreen/domain/models"
@@ -63,11 +64,14 @@ func (m MovieController) Get(id int) (models.Movie, error) {
 //
 // title supports partial searching.
 func (m MovieController) List(title string, genres []string, filters request.Filters) (models.Movies, error) {
-	stmt := `SELECT id, title, year, runtime, genres, created_at, version
+	// interpolate the sort column and direction into the SQL query
+	// as keywords cannot be parameterized
+	stmt := fmt.Sprintf(
+		`SELECT id, title, year, runtime, genres, created_at, version
 	FROM movies
 	WHERE (to_tsvector('simple', title) @@ plainto_tsquery('simple', $1) OR $1 = '')
 	AND (genres @> $2 OR $2 = '{}')
-	ORDER BY id`
+	ORDER BY %s %s, id ASC`, filters.SortColumn(request.MovieFilterSortId), filters.SortDirection())
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()

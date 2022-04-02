@@ -24,6 +24,13 @@ const (
 	MovieFieldGenres  = "genres"
 )
 
+const (
+	MovieFilterSortId      = "id"
+	MovieFilterSortTitle   = "title"
+	MovieFilterSortYear    = "year"
+	MovieFilterSortRuntime = "runtime"
+)
+
 // ToModel creates a movie model from a request with all fields being non-nil.
 // An error occurs if a nil field is encountered.
 // This should only be used when all fields are required in the validation.
