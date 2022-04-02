@@ -26,3 +26,13 @@ func (movie *Movie) ToResponse() response.MovieResponse {
 		Version: movie.Version,
 	}
 }
+
+type Movies []Movie
+
+func (movies Movies) ToResponse() []response.MovieResponse {
+	moviesResponse := []response.MovieResponse{}
+	for _, movie := range movies {
+		moviesResponse = append(moviesResponse, movie.ToResponse())
+	}
+	return moviesResponse
+}

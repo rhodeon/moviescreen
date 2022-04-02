@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/lib/pq"
+	"github.com/rhodeon/moviescreen/cmd/api/models/request"
 	"github.com/rhodeon/moviescreen/domain/models"
 	"github.com/rhodeon/moviescreen/domain/repository"
 	"time"
@@ -57,21 +58,27 @@ func (m MovieController) Get(id int) (models.Movie, error) {
 	return movie, nil
 }
 
-func (m MovieController) List() ([]models.Movie, error) {
+// List fetches a list of movies from the database.
+// The movies are fetched based on the query and filter parameters.
+//
+// title supports partial searching.
+func (m MovieController) List(title string, genres []string, filters request.Filters) (models.Movies, error) {
 	stmt := `SELECT id, title, year, runtime, genres, created_at, version
 	FROM movies
+	WHERE (to_tsvector('simple', title) @@ plainto_tsquery('simple', $1) OR $1 = '')
+	AND (genres @> $2 OR $2 = '{}')
 	ORDER BY id`
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	rows, err := m.Db.QueryContext(ctx, stmt)
+	rows, err := m.Db.QueryContext(ctx, stmt, title, pq.Array(genres))
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var movies []models.Movie
+	movies := models.Movies{}
 
 	for rows.Next() {
 		movie := &models.Movie{}

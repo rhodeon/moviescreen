@@ -67,7 +67,7 @@ func (m movieHandler) Create(ctx *gin.Context) {
 // GetById returns a movie with the specified id.
 func (m movieHandler) GetById(ctx *gin.Context) {
 	// validate id
-	id, err := parseParamId(ctx)
+	id, err := parseIdParam(ctx)
 	if err != nil {
 		return
 	}
@@ -96,7 +96,19 @@ func (m movieHandler) GetById(ctx *gin.Context) {
 
 // List returns a list of movies.
 func (m movieHandler) List(ctx *gin.Context) {
-	movies, err := m.repositories.Movies.List()
+	// set the queries and filters
+	queries := ctx.Request.URL.Query()
+	titleQuery := parseQueryString(queries, "title", "")
+	genreQuery := parseQueryCsv(queries, "genres", []string{})
+
+	filers := request.Filters{
+		Page:  parseQueryInt(queries, "page", 1),
+		Limit: parseQueryInt(queries, "limit", 20),
+		Sort:  parseQueryString(queries, "sort", "id"),
+	}
+
+	// attempt to retrieve movies
+	movies, err := m.repositories.Movies.List(titleQuery, genreQuery, filers)
 	if err != nil {
 		handleInternalServerError(ctx, err)
 		return
@@ -106,7 +118,7 @@ func (m movieHandler) List(ctx *gin.Context) {
 		http.StatusOK,
 		response.SuccessResponse(
 			http.StatusOK,
-			movies,
+			movies.ToResponse(),
 		),
 	)
 }
@@ -114,7 +126,7 @@ func (m movieHandler) List(ctx *gin.Context) {
 // Update replaces the data of the movie with the given ID query in the repository.
 func (m movieHandler) Update(ctx *gin.Context) {
 	// validate id
-	id, err := parseParamId(ctx)
+	id, err := parseIdParam(ctx)
 	if err != nil {
 		return
 	}
@@ -168,7 +180,7 @@ func (m movieHandler) Update(ctx *gin.Context) {
 // Delete deletes the movie with the given id parameter from the repository.
 func (m movieHandler) Delete(ctx *gin.Context) {
 	// validate id
-	id, err := parseParamId(ctx)
+	id, err := parseIdParam(ctx)
 	if err != nil {
 		return
 	}

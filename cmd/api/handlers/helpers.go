@@ -7,7 +7,9 @@ import (
 	"github.com/rhodeon/moviescreen/internal/validator"
 	"github.com/rhodeon/prettylog"
 	"net/http"
+	"net/url"
 	"strconv"
+	"strings"
 )
 
 // parseJsonRequest ensures a JSON request body is properly formed, and populates
@@ -52,10 +54,10 @@ func handleInternalServerError(ctx *gin.Context, err error) {
 	)
 }
 
-// parseParamId attempts to convert the "id" parameter of a request
+// parseIdParam attempts to convert the "id" parameter of a request
 // and find its integer value.
 // A 404 response is returned if a failure occurs.
-func parseParamId(ctx *gin.Context) (int, error) {
+func parseIdParam(ctx *gin.Context) (int, error) {
 	idString := ctx.Param("id")
 	id, err := strconv.Atoi(idString)
 	if err != nil {
@@ -63,4 +65,39 @@ func parseParamId(ctx *gin.Context) (int, error) {
 		return 0, err
 	}
 	return id, nil
+}
+
+// parseQueryString converts a url query parameter to a string.
+func parseQueryString(queries url.Values, key string, defaultValue string) string {
+	query := queries.Get(key)
+
+	if query == "" {
+		return defaultValue
+	}
+	return query
+}
+
+// parseQueryString converts a url query parameter to an integer.
+func parseQueryInt(queries url.Values, key string, defaultValue int) int {
+	query := queries.Get(key)
+
+	if query == "" {
+		return defaultValue
+	}
+
+	queryValue, err := strconv.Atoi(query)
+	if err != nil {
+		return defaultValue
+	}
+	return queryValue
+}
+
+// parseQueryString converts a url query parameter with multiple items to a list.
+func parseQueryCsv(query url.Values, key string, defaultValue []string) []string {
+	csv := query.Get(key)
+
+	if csv == "" {
+		return defaultValue
+	}
+	return strings.Split(csv, ",")
 }
