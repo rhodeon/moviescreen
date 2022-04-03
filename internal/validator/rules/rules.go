@@ -22,3 +22,13 @@ func NotBlank(data []string) bool {
 	}
 	return true
 }
+
+// In returns true if the data is found in the target list.
+func In[T comparable](data T, target []T) bool {
+	for _, element := range target {
+		if element == data {
+			return true
+		}
+	}
+	return false
+}

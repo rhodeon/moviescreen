@@ -96,11 +96,12 @@ func (m movieHandler) GetById(ctx *gin.Context) {
 
 // List returns a list of movies.
 func (m movieHandler) List(ctx *gin.Context) {
-	// set the queries and filters
+	// set the queries
 	queries := ctx.Request.URL.Query()
 	titleQuery := parseQueryString(queries, "title", "")
 	genreQuery := parseQueryCsv(queries, "genres", []string{})
 
+	// set and validate the filters
 	filers := request.Filters{
 		Page:  parseQueryInt(queries, "page", 1),
 		Limit: parseQueryInt(queries, "limit", 20),
@@ -110,6 +111,15 @@ func (m movieHandler) List(ctx *gin.Context) {
 			request.MovieFilterSortTitle,
 			request.MovieFilterSortYear,
 			request.MovieFilterSortRuntime},
+	}
+
+	validator := filers.Validate()
+	if !validator.Valid() {
+		ctx.AbortWithStatusJSON(
+			http.StatusUnprocessableEntity,
+			response.UnprocessableEntityError(validator),
+		)
+		return
 	}
 
 	// attempt to retrieve movies

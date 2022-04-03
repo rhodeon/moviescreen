@@ -1,6 +1,8 @@
 package request
 
 import (
+	"github.com/rhodeon/moviescreen/internal/validator"
+	"github.com/rhodeon/moviescreen/internal/validator/rules"
 	"strings"
 )
 
@@ -10,6 +12,27 @@ type Filters struct {
 	Limit      int
 	Sort       string
 	ValidSorts []string
+}
+
+const (
+	FilterFieldPage  = "page"
+	FilterFieldLimit = "limit"
+	FilterFieldSort  = "sort"
+)
+
+func (f Filters) Validate() *validator.Validator {
+	v := validator.New("filter")
+
+	// check that the page and page_size parameters contain sensible values
+	v.Check(f.Page > 0, FilterFieldPage, "must be greater than zero")
+	v.Check(f.Page <= 10_000_000, FilterFieldPage, "must be a maximum of 10 million")
+	v.Check(f.Limit > 0, FilterFieldLimit, "must be greater than zero")
+	v.Check(f.Limit <= 100, FilterFieldLimit, "must be a maximum of 100")
+
+	// check that the sort parameter matches a value in the valid list
+	v.Check(rules.In(f.Sort, f.ValidSorts), FilterFieldSort, "invalid sort value")
+
+	return v
 }
 
 // SortColumn checks that the base form of the sort filter exists in the list of valid sorts,
