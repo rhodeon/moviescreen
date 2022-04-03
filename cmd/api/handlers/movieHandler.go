@@ -113,18 +113,21 @@ func (m movieHandler) List(ctx *gin.Context) {
 	}
 
 	// attempt to retrieve movies
-	movies, err := m.repositories.Movies.List(titleQuery, genreQuery, filers)
+	movies, metadata, err := m.repositories.Movies.List(titleQuery, genreQuery, filers)
 	if err != nil {
 		handleInternalServerError(ctx, err)
 		return
 	}
 
+	// return movie list and metadata response
 	ctx.JSON(
 		http.StatusOK,
-		response.SuccessResponse(
-			http.StatusOK,
-			movies.ToResponse(),
-		),
+		response.BaseResponse{
+			Success:  true,
+			Status:   http.StatusOK,
+			Data:     movies.ToResponse(),
+			Metadata: &metadata,
+		},
 	)
 }
 

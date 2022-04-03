@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/lib/pq"
 	"github.com/rhodeon/moviescreen/cmd/api/models/request"
+	"github.com/rhodeon/moviescreen/cmd/api/models/response"
 	"github.com/rhodeon/moviescreen/domain/models"
 	"github.com/rhodeon/moviescreen/domain/repository"
 	"time"
@@ -63,39 +64,43 @@ func (m MovieController) Get(id int) (models.Movie, error) {
 // The movies are fetched based on the query and filter parameters.
 //
 // title supports partial searching.
-func (m MovieController) List(title string, genres []string, filters request.Filters) (models.Movies, error) {
+// The metadata for the query is also returned.
+func (m MovieController) List(title string, genres []string, filters request.Filters) (models.Movies, response.Metadata, error) {
 	// interpolate the sort column and direction into the SQL query
 	// as keywords cannot be parameterized
 	stmt := fmt.Sprintf(
-		`SELECT id, title, year, runtime, genres, created_at, version
+		`SELECT count(*) OVER(), id, title, year, runtime, genres, created_at, version
 	FROM movies
 	WHERE (to_tsvector('simple', title) @@ plainto_tsquery('simple', $1) OR $1 = '')
 	AND (genres @> $2 OR $2 = '{}')
-	ORDER BY %s %s, id ASC`, filters.SortColumn(request.MovieFilterSortId), filters.SortDirection())
+	ORDER BY %s %s, id ASC
+	LIMIT $3 OFFSET $4`, filters.SortColumn(request.MovieFilterSortId), filters.SortDirection())
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	rows, err := m.Db.QueryContext(ctx, stmt, title, pq.Array(genres))
+	rows, err := m.Db.QueryContext(ctx, stmt, title, pq.Array(genres), filters.Limit, filters.Offset())
 	if err != nil {
-		return nil, err
+		return nil, response.Metadata{}, err
 	}
 	defer rows.Close()
 
 	movies := models.Movies{}
+	var totalRecords int
 
 	for rows.Next() {
 		movie := &models.Movie{}
-		_ = rows.Scan(&movie.Id, &movie.Title, &movie.Year, &movie.Runtime,
+		_ = rows.Scan(&totalRecords, &movie.Id, &movie.Title, &movie.Year, &movie.Runtime,
 			pq.Array(&movie.Genres), &movie.Created, &movie.Version)
 
 		movies = append(movies, *movie)
 	}
 	if err = rows.Err(); err != nil {
-		return nil, err
+		return nil, response.Metadata{}, err
 	}
 
-	return movies, nil
+	metadata := response.CalculateMetadata(filters.Page, filters.Limit, totalRecords)
+	return movies, metadata, nil
 }
 
 // Update replaces the data of the movie in the database with those in the passed-in movie.

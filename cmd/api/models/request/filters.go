@@ -34,3 +34,9 @@ func (f Filters) SortDirection() string {
 	}
 	return "ASC"
 }
+
+// Offset calculates and returns the position of the data to start selecting from.
+// It depends on the page number and limit.
+func (f Filters) Offset() int {
+	return (f.Page - 1) * f.Limit
+}

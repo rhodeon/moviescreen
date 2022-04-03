@@ -9,6 +9,9 @@ type BaseResponse struct {
 	// Status is the status code of the response
 	Status int `json:"status,omitempty"`
 
+	// Metadata of response.
+	Metadata *Metadata `json:"metadata,omitempty"`
+
 	// Data is the data of a success response.
 	// It is mutually exclusive to the Error.
 	Data SuccessData `json:"data,omitempty"`
