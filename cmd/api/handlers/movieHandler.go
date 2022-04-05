@@ -110,7 +110,8 @@ func (m movieHandler) List(ctx *gin.Context) {
 			request.MovieFilterSortId,
 			request.MovieFilterSortTitle,
 			request.MovieFilterSortYear,
-			request.MovieFilterSortRuntime},
+			request.MovieFilterSortRuntime,
+		},
 	}
 
 	validator := filers.Validate()

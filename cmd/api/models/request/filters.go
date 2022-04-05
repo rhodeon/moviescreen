@@ -30,7 +30,7 @@ func (f Filters) Validate() *validator.Validator {
 	v.Check(f.Limit <= 100, FilterFieldLimit, "must be a maximum of 100")
 
 	// check that the sort parameter matches a value in the valid list
-	v.Check(rules.In(f.Sort, f.ValidSorts), FilterFieldSort, "invalid sort value")
+	v.Check(rules.In(strings.TrimPrefix(f.Sort, "-"), f.ValidSorts), FilterFieldSort, "invalid sort value")
 
 	return v
 }

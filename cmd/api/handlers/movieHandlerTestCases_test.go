@@ -209,6 +209,489 @@ var getMovieByIdTestCases = map[string]struct {
 	},
 }
 
+var listMoviesTestCases = map[string]struct {
+	titleQuery    string
+	genresQuery   []string
+	filterQueries map[string]string
+	wantCode      int
+	wantBody      response.BaseResponse
+}{
+	"valid request (without queries)": {
+		wantCode: 200,
+		wantBody: response.BaseResponse{
+			Success: true,
+			Status:  200,
+			Metadata: &response.Metadata{
+				CurrentPage:  1,
+				PageLimit:    20,
+				LastPage:     1,
+				TotalRecords: 2,
+			},
+			Data: []response.MovieResponse{
+				{
+					Id:      1,
+					Title:   "Bullet Train",
+					Year:    2022,
+					Runtime: 108,
+					Genres:  []string{"Action", "Comedy"},
+					Version: 1,
+				},
+				{
+					Id:      2,
+					Title:   "Hamilton",
+					Year:    2020,
+					Runtime: 140,
+					Genres:  []string{"Musical", "Drama"},
+					Version: 1,
+				},
+			},
+		},
+	},
+
+	"valid request (with only title query)": {
+		titleQuery: "Bullet",
+		wantCode:   200,
+		wantBody: response.BaseResponse{
+			Success: true,
+			Status:  200,
+			Metadata: &response.Metadata{
+				CurrentPage:  1,
+				PageLimit:    20,
+				LastPage:     1,
+				TotalRecords: 1,
+			},
+			Data: []response.MovieResponse{
+				{
+					Id:      1,
+					Title:   "Bullet Train",
+					Year:    2022,
+					Runtime: 108,
+					Genres:  []string{"Action", "Comedy"},
+					Version: 1,
+				},
+			},
+		},
+	},
+
+	"valid request (with only genres query)": {
+		genresQuery: []string{"action", "comedy"},
+		wantCode:    200,
+		wantBody: response.BaseResponse{
+			Success: true,
+			Status:  200,
+			Metadata: &response.Metadata{
+				CurrentPage:  1,
+				PageLimit:    20,
+				LastPage:     1,
+				TotalRecords: 1,
+			},
+			Data: []response.MovieResponse{
+				{
+					Id:      1,
+					Title:   "Bullet Train",
+					Year:    2022,
+					Runtime: 108,
+					Genres:  []string{"Action", "Comedy"},
+					Version: 1,
+				},
+			},
+		},
+	},
+
+	"valid request (with page and limit)": {
+		filterQueries: map[string]string{
+			"page":  "2",
+			"limit": "1",
+		},
+		wantCode: 200,
+		wantBody: response.BaseResponse{
+			Success: true,
+			Status:  200,
+			Metadata: &response.Metadata{
+				CurrentPage:  2,
+				PageLimit:    1,
+				LastPage:     2,
+				TotalRecords: 2,
+			},
+			Data: []response.MovieResponse{
+				{
+					Id:      2,
+					Title:   "Hamilton",
+					Year:    2020,
+					Runtime: 140,
+					Genres:  []string{"Musical", "Drama"},
+					Version: 1,
+				},
+			},
+		},
+	},
+
+	"valid request (with sort by id - ascending)": {
+		filterQueries: map[string]string{
+			"sort": "id",
+		},
+		wantCode: 200,
+		wantBody: response.BaseResponse{
+			Success: true,
+			Status:  200,
+			Metadata: &response.Metadata{
+				CurrentPage:  1,
+				PageLimit:    20,
+				LastPage:     1,
+				TotalRecords: 2,
+			},
+			Data: []response.MovieResponse{
+				{
+					Id:      1,
+					Title:   "Bullet Train",
+					Year:    2022,
+					Runtime: 108,
+					Genres:  []string{"Action", "Comedy"},
+					Version: 1,
+				},
+				{
+					Id:      2,
+					Title:   "Hamilton",
+					Year:    2020,
+					Runtime: 140,
+					Genres:  []string{"Musical", "Drama"},
+					Version: 1,
+				},
+			},
+		},
+	},
+
+	"valid request (with sort by id - descending)": {
+		filterQueries: map[string]string{
+			"sort": "-id",
+		},
+		wantCode: 200,
+		wantBody: response.BaseResponse{
+			Success: true,
+			Status:  200,
+			Metadata: &response.Metadata{
+				CurrentPage:  1,
+				PageLimit:    20,
+				LastPage:     1,
+				TotalRecords: 2,
+			},
+			Data: []response.MovieResponse{
+				{
+					Id:      2,
+					Title:   "Hamilton",
+					Year:    2020,
+					Runtime: 140,
+					Genres:  []string{"Musical", "Drama"},
+					Version: 1,
+				},
+				{
+					Id:      1,
+					Title:   "Bullet Train",
+					Year:    2022,
+					Runtime: 108,
+					Genres:  []string{"Action", "Comedy"},
+					Version: 1,
+				},
+			},
+		},
+	},
+
+	"valid request (with sort by title - ascending)": {
+		filterQueries: map[string]string{
+			"sort": "title",
+		},
+		wantCode: 200,
+		wantBody: response.BaseResponse{
+			Success: true,
+			Status:  200,
+			Metadata: &response.Metadata{
+				CurrentPage:  1,
+				PageLimit:    20,
+				LastPage:     1,
+				TotalRecords: 2,
+			},
+			Data: []response.MovieResponse{
+				{
+					Id:      1,
+					Title:   "Bullet Train",
+					Year:    2022,
+					Runtime: 108,
+					Genres:  []string{"Action", "Comedy"},
+					Version: 1,
+				},
+				{
+					Id:      2,
+					Title:   "Hamilton",
+					Year:    2020,
+					Runtime: 140,
+					Genres:  []string{"Musical", "Drama"},
+					Version: 1,
+				},
+			},
+		},
+	},
+
+	"valid request (with sort by title - descending)": {
+		filterQueries: map[string]string{
+			"sort": "-title",
+		},
+		wantCode: 200,
+		wantBody: response.BaseResponse{
+			Success: true,
+			Status:  200,
+			Metadata: &response.Metadata{
+				CurrentPage:  1,
+				PageLimit:    20,
+				LastPage:     1,
+				TotalRecords: 2,
+			},
+			Data: []response.MovieResponse{
+				{
+					Id:      2,
+					Title:   "Hamilton",
+					Year:    2020,
+					Runtime: 140,
+					Genres:  []string{"Musical", "Drama"},
+					Version: 1,
+				},
+				{
+					Id:      1,
+					Title:   "Bullet Train",
+					Year:    2022,
+					Runtime: 108,
+					Genres:  []string{"Action", "Comedy"},
+					Version: 1,
+				},
+			},
+		},
+	},
+
+	"valid request (with sort by year - ascending)": {
+		filterQueries: map[string]string{
+			"sort": "year",
+		},
+		wantCode: 200,
+		wantBody: response.BaseResponse{
+			Success: true,
+			Status:  200,
+			Metadata: &response.Metadata{
+				CurrentPage:  1,
+				PageLimit:    20,
+				LastPage:     1,
+				TotalRecords: 2,
+			},
+			Data: []response.MovieResponse{
+				{
+					Id:      2,
+					Title:   "Hamilton",
+					Year:    2020,
+					Runtime: 140,
+					Genres:  []string{"Musical", "Drama"},
+					Version: 1,
+				},
+				{
+					Id:      1,
+					Title:   "Bullet Train",
+					Year:    2022,
+					Runtime: 108,
+					Genres:  []string{"Action", "Comedy"},
+					Version: 1,
+				},
+			},
+		},
+	},
+
+	"valid request (with sort by year - descending)": {
+		filterQueries: map[string]string{
+			"sort": "-year",
+		},
+		wantCode: 200,
+		wantBody: response.BaseResponse{
+			Success: true,
+			Status:  200,
+			Metadata: &response.Metadata{
+				CurrentPage:  1,
+				PageLimit:    20,
+				LastPage:     1,
+				TotalRecords: 2,
+			},
+			Data: []response.MovieResponse{
+				{
+					Id:      1,
+					Title:   "Bullet Train",
+					Year:    2022,
+					Runtime: 108,
+					Genres:  []string{"Action", "Comedy"},
+					Version: 1,
+				},
+				{
+					Id:      2,
+					Title:   "Hamilton",
+					Year:    2020,
+					Runtime: 140,
+					Genres:  []string{"Musical", "Drama"},
+					Version: 1,
+				},
+			},
+		},
+	},
+
+	"valid request (with sort by runtime - ascending)": {
+		filterQueries: map[string]string{
+			"sort": "runtime",
+		},
+		wantCode: 200,
+		wantBody: response.BaseResponse{
+			Success: true,
+			Status:  200,
+			Metadata: &response.Metadata{
+				CurrentPage:  1,
+				PageLimit:    20,
+				LastPage:     1,
+				TotalRecords: 2,
+			},
+			Data: []response.MovieResponse{
+				{
+					Id:      1,
+					Title:   "Bullet Train",
+					Year:    2022,
+					Runtime: 108,
+					Genres:  []string{"Action", "Comedy"},
+					Version: 1,
+				},
+				{
+					Id:      2,
+					Title:   "Hamilton",
+					Year:    2020,
+					Runtime: 140,
+					Genres:  []string{"Musical", "Drama"},
+					Version: 1,
+				},
+			},
+		},
+	},
+
+	"valid request (with sort by runtime - descending)": {
+		filterQueries: map[string]string{
+			"sort": "-runtime",
+		},
+		wantCode: 200,
+		wantBody: response.BaseResponse{
+			Success: true,
+			Status:  200,
+			Metadata: &response.Metadata{
+				CurrentPage:  1,
+				PageLimit:    20,
+				LastPage:     1,
+				TotalRecords: 2,
+			},
+			Data: []response.MovieResponse{
+				{
+					Id:      2,
+					Title:   "Hamilton",
+					Year:    2020,
+					Runtime: 140,
+					Genres:  []string{"Musical", "Drama"},
+					Version: 1,
+				},
+				{
+					Id:      1,
+					Title:   "Bullet Train",
+					Year:    2022,
+					Runtime: 108,
+					Genres:  []string{"Action", "Comedy"},
+					Version: 1,
+				},
+			},
+		},
+	},
+
+	"zero page": {
+		filterQueries: map[string]string{
+			"page": "0",
+		},
+		wantCode: 422,
+		wantBody: response.BaseResponse{
+			Success: false,
+			Status:  422,
+			Error: &response.Error{
+				Type: "filter",
+				Data: map[string]string{
+					"page": "must be greater than zero",
+				},
+			},
+		},
+	},
+
+	"page exceeds 10 million": {
+		filterQueries: map[string]string{
+			"page": "20000000",
+		},
+		wantCode: 422,
+		wantBody: response.BaseResponse{
+			Success: false,
+			Status:  422,
+			Error: &response.Error{
+				Type: "filter",
+				Data: map[string]string{
+					"page": "must be a maximum of 10 million",
+				},
+			},
+		},
+	},
+
+	"zero limit": {
+		filterQueries: map[string]string{
+			"limit": "0",
+		},
+		wantCode: 422,
+		wantBody: response.BaseResponse{
+			Success: false,
+			Status:  422,
+			Error: &response.Error{
+				Type: "filter",
+				Data: map[string]string{
+					"limit": "must be greater than zero",
+				},
+			},
+		},
+	},
+
+	"invalid sort": {
+		filterQueries: map[string]string{
+			"sort": "actor",
+		},
+		wantCode: 422,
+		wantBody: response.BaseResponse{
+			Success: false,
+			Status:  422,
+			Error: &response.Error{
+				Type: "filter",
+				Data: map[string]string{
+					"sort": "invalid sort value",
+				},
+			},
+		},
+	},
+
+	"limit exceeds 100": {
+		filterQueries: map[string]string{
+			"limit": "200",
+		},
+		wantCode: 422,
+		wantBody: response.BaseResponse{
+			Success: false,
+			Status:  422,
+			Error: &response.Error{
+				Type: "filter",
+				Data: map[string]string{
+					"limit": "must be a maximum of 100",
+				},
+			},
+		},
+	},
+}
+
 var updateMovieTestCases = map[string]struct {
 	requestId   string
 	requestBody string
