@@ -15,6 +15,7 @@ const (
 	ErrMessage405          = "method not allowed"
 	ErrMessage500          = "internal server error"
 	ErrMessageEditConflict = "unable to update the record due to an edit conflict, please try again"
+	ErrRateLimitExceeded   = "rate limit exceeded"
 )
 
 // Error represents the data of an error in a response.
