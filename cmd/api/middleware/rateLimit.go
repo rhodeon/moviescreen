@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/rhodeon/moviescreen/cmd/api/common"
 	"github.com/rhodeon/moviescreen/cmd/api/handlers"
 	"github.com/rhodeon/moviescreen/cmd/api/models/response"
 	"golang.org/x/time/rate"
@@ -17,11 +18,11 @@ type client struct {
 	lastSeen time.Time
 }
 
-// RateLimit restricts clients to 2 requests per second on average,
-// with a maximum burst of 4 requests.
+// RateLimit restricts clients to the configured number of
+// requests-per-second and maximum burst.
 // It works per IP address.
 // A 429 error is returned if the limit is exceeded.
-func RateLimit() gin.HandlerFunc {
+func RateLimit(config common.Config) gin.HandlerFunc {
 	var (
 		mu      sync.Mutex
 		clients = map[string]*client{}
@@ -38,32 +39,40 @@ func RateLimit() gin.HandlerFunc {
 	}()
 
 	return func(ctx *gin.Context) {
-		// extract client's IP address
-		ip, _, err := net.SplitHostPort(ctx.Request.RemoteAddr)
-		if err != nil {
-			handlers.HandleInternalServerError(ctx, err)
-			return
-		}
+		// carry out check if rate limiting is enabled
+		if config.Limiter.Enabled {
+			// extract client's IP address
+			ip, _, err := net.SplitHostPort(ctx.Request.RemoteAddr)
+			if err != nil {
+				handlers.HandleInternalServerError(ctx, err)
+				return
+			}
 
-		// add client to map if it doesn't exist
-		// and update last seen
-		mu.Lock()
-		if _, exists := clients[ip]; !exists {
-			clients[ip] = &client{limiter: rate.NewLimiter(2, 4)}
-		}
-		clients[ip].lastSeen = time.Now()
-		mu.Unlock()
+			// add client to map if it doesn't exist
+			// and update last seen
+			mu.Lock()
+			if _, exists := clients[ip]; !exists {
+				clients[ip] = &client{
+					limiter: rate.NewLimiter(
+						rate.Limit(config.Limiter.Rps),
+						config.Limiter.Burst,
+					),
+				}
+			}
+			clients[ip].lastSeen = time.Now()
+			mu.Unlock()
 
-		// return a 429 error if the limit has been exceeded
-		if !clients[ip].limiter.Allow() {
-			ctx.AbortWithStatusJSON(
-				http.StatusTooManyRequests,
-				response.ErrorResponse(
+			// return a 429 error if the limit has been exceeded
+			if !clients[ip].limiter.Allow() {
+				ctx.AbortWithStatusJSON(
 					http.StatusTooManyRequests,
-					response.GenericError(response.ErrRateLimitExceeded),
-				),
-			)
-			return
+					response.ErrorResponse(
+						http.StatusTooManyRequests,
+						response.GenericError(response.ErrRateLimitExceeded),
+					),
+				)
+				return
+			}
 		}
 
 		ctx.Next()
