@@ -19,6 +19,12 @@ type Config struct {
 		MaxIdleConns int
 		MaxIdleTime  string
 	}
+
+	Limiter struct {
+		Enabled bool
+		Rps     float64
+		Burst   int
+	}
 }
 
 func (c *Config) Parse() {
@@ -31,6 +37,10 @@ func (c *Config) Parse() {
 	flag.IntVar(&c.Db.MaxOpenConns, "db-max-open-conns", c.defaultMaxOpenConns(), "PostgreSQL maximum number of open connections")
 	flag.IntVar(&c.Db.MaxIdleConns, "db-max-idle-conns", c.defaultMaxIdleConns(), "PostgreSQL maximum number of idle connections")
 	flag.StringVar(&c.Db.MaxIdleTime, "db-max-idle-time", c.defaultMaxIdleTime(), "PostgreSQL maximumn idle time")
+
+	flag.BoolVar(&c.Limiter.Enabled, "limiter-enabled", c.defaultLimiterEnabled(), "Enable rate limiter")
+	flag.Float64Var(&c.Limiter.Rps, "limiter-rps", c.defaultLimiterRps(), "Rate limiter maximum requests per second")
+	flag.IntVar(&c.Limiter.Burst, "limiter-burst", c.defaultLimiterBurst(), "Rate limiter maximum burst")
 
 	flag.Parse()
 }
@@ -94,10 +104,10 @@ func (c *Config) defaultSslMode() string {
 func (c *Config) defaultMaxOpenConns() int {
 	const defMaxOpenConns = 25
 
-	if maxOpenConns, exists := os.LookupEnv("DB_MAX_OPEN_CONNS"); exists {
-		port, err := strconv.Atoi(maxOpenConns)
+	if maxOpenConnsEnv, exists := os.LookupEnv("DB_MAX_OPEN_CONNS"); exists {
+		maxOpenConns, err := strconv.Atoi(maxOpenConnsEnv)
 		if err == nil {
-			return port
+			return maxOpenConns
 		}
 	}
 	return defMaxOpenConns
@@ -106,10 +116,10 @@ func (c *Config) defaultMaxOpenConns() int {
 func (c *Config) defaultMaxIdleConns() int {
 	const defMaxIdleConns = 25
 
-	if maxIdleConns, exists := os.LookupEnv("DB_MAX_IDLE_CONNS"); exists {
-		port, err := strconv.Atoi(maxIdleConns)
+	if maxIdleConnsEnv, exists := os.LookupEnv("DB_MAX_IDLE_CONNS"); exists {
+		maxIdleConns, err := strconv.Atoi(maxIdleConnsEnv)
 		if err == nil {
-			return port
+			return maxIdleConns
 		}
 	}
 	return defMaxIdleConns
@@ -122,4 +132,40 @@ func (c *Config) defaultMaxIdleTime() string {
 		return maxIdleTime
 	}
 	return defMaxIdleTime
+}
+
+func (c *Config) defaultLimiterEnabled() bool {
+	const defaultEnabled = true
+
+	if enabledEnv, exists := os.LookupEnv("LIMITER_ENABLED"); exists {
+		enabled, err := strconv.ParseBool(enabledEnv)
+		if err == nil {
+			return enabled
+		}
+	}
+	return defaultEnabled
+}
+
+func (c *Config) defaultLimiterRps() float64 {
+	const defaultRps = 2
+
+	if rpsEnv, exists := os.LookupEnv("LIMITER_RPS"); exists {
+		rps, err := strconv.ParseFloat(rpsEnv, 64)
+		if err == nil {
+			return rps
+		}
+	}
+	return defaultRps
+}
+
+func (c *Config) defaultLimiterBurst() int {
+	const defaultBurst = 4
+
+	if burstEnv, exists := os.LookupEnv("LIMITER_BURST"); exists {
+		burst, err := strconv.Atoi(burstEnv)
+		if err == nil {
+			return burst
+		}
+	}
+	return defaultBurst
 }

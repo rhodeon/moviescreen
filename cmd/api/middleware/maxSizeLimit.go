@@ -12,7 +12,6 @@ func MaxSizeLimit() gin.HandlerFunc {
 
 		// any future attempts to read a body greater than 1MB will return an error
 		ctx.Request.Body = http.MaxBytesReader(ctx.Writer, ctx.Request.Body, int64(maxBytes))
-
 		ctx.Next()
 	}
 }
