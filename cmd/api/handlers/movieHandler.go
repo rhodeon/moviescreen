@@ -48,7 +48,7 @@ func (m movieHandler) Create(ctx *gin.Context) {
 	newMovie := movieRequest.ToModel()
 	err = m.repositories.Movies.Create(&newMovie)
 	if err != nil {
-		handleInternalServerError(ctx, err)
+		HandleInternalServerError(ctx, err)
 		return
 	}
 
@@ -79,7 +79,7 @@ func (m movieHandler) GetById(ctx *gin.Context) {
 		if errors.Is(err, repository.ErrRecordNotFound) {
 			NewErrorHandler().NotFound(ctx)
 		} else {
-			handleInternalServerError(ctx, err)
+			HandleInternalServerError(ctx, err)
 		}
 		return
 	}
@@ -126,7 +126,7 @@ func (m movieHandler) List(ctx *gin.Context) {
 	// attempt to retrieve movies
 	movies, metadata, err := m.repositories.Movies.List(titleQuery, genreQuery, filers)
 	if err != nil {
-		handleInternalServerError(ctx, err)
+		HandleInternalServerError(ctx, err)
 		return
 	}
 
@@ -169,7 +169,7 @@ func (m movieHandler) Update(ctx *gin.Context) {
 		if errors.Is(err, repository.ErrRecordNotFound) {
 			NewErrorHandler().NotFound(ctx)
 		} else {
-			handleInternalServerError(ctx, err)
+			HandleInternalServerError(ctx, err)
 		}
 		return
 	}
@@ -181,7 +181,7 @@ func (m movieHandler) Update(ctx *gin.Context) {
 		if errors.Is(err, repository.ErrEditConflict) {
 			NewErrorHandler().EditConflict(ctx)
 		} else {
-			handleInternalServerError(ctx, err)
+			HandleInternalServerError(ctx, err)
 		}
 		return
 	}
@@ -210,7 +210,7 @@ func (m movieHandler) Delete(ctx *gin.Context) {
 		if errors.Is(err, repository.ErrRecordNotFound) {
 			NewErrorHandler().NotFound(ctx)
 		} else {
-			handleInternalServerError(ctx, err)
+			HandleInternalServerError(ctx, err)
 		}
 		return
 	}

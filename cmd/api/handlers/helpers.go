@@ -41,9 +41,9 @@ func validateJsonRequest(ctx *gin.Context, request request.ClientRequest, requir
 	return nil
 }
 
-// handleInternalServerError logs the error and sends
+// HandleInternalServerError logs the error and sends
 // a generic 500 error response to the client.
-func handleInternalServerError(ctx *gin.Context, err error) {
+func HandleInternalServerError(ctx *gin.Context, err error) {
 	prettylog.ErrorF("internal server error: %s", err.Error())
 	ctx.AbortWithStatusJSON(
 		http.StatusInternalServerError,
