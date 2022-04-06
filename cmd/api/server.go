@@ -1,16 +1,21 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"github.com/rhodeon/moviescreen/cmd/api/common"
 	"github.com/rhodeon/moviescreen/cmd/api/handlers"
 	"github.com/rhodeon/moviescreen/cmd/api/internal"
 	"github.com/rhodeon/prettylog"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
-// starts up the server with the app data
+// serveApp starts up a server with the app data.
 func serveApp(app internal.Application) error {
 	routeHandlers := common.RouteHandlers{
 		Error:  handlers.NewErrorHandler(),
@@ -26,7 +31,44 @@ func serveApp(app internal.Application) error {
 		WriteTimeout: 10 * time.Second,
 	}
 
-	// start server
-	prettylog.InfoF("Starting %s server on %s", app.Config.Env, srv.Addr)
-	return srv.ListenAndServe()
+	// start a background goroutine to intercept and handle shutdown events
+	shutdownError := make(chan error)
+	go handleShutdown(srv, shutdownError)
+
+	// start and listen on server until an error occurs
+	prettylog.InfoF("starting %s server on %s", app.Config.Env, srv.Addr)
+	err := srv.ListenAndServe()
+	if !errors.Is(err, http.ErrServerClosed) {
+		// return unsuccessful server shutdown errors
+		return err
+	}
+
+	// block flow until the shutdown error channel is updated
+	err = <-shutdownError
+	if err != nil {
+		return err
+	}
+
+	prettylog.Info("stopped server")
+	return nil
+}
+
+// handleShutdown gracefully handles interruption and termination signals,
+// giving ongoing request a 20-second leeway before shutting down the server.
+// It should be run as a background goroutine.
+func handleShutdown(server *http.Server, shutdownErrChan chan error) {
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+
+	// wait until the quit channel is updated with a signal
+	s := <-quit
+
+	// 20-second timeout context to delay shutdown
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	prettylog.InfoF("shutting down server: %s", s)
+	// shutdown the server and update the error channel
+	// to resume execution on the main goroutine
+	shutdownErrChan <- server.Shutdown(ctx)
 }

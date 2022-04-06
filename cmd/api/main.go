@@ -34,5 +34,7 @@ func main() {
 	}
 
 	err = serveApp(app)
-	prettylog.FatalError(err)
+	if err != nil {
+		prettylog.FatalError(err)
+	}
 }
