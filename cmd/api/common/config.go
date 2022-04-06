@@ -104,10 +104,10 @@ func (c *Config) defaultSslMode() string {
 func (c *Config) defaultMaxOpenConns() int {
 	const defMaxOpenConns = 25
 
-	if maxOpenConns, exists := os.LookupEnv("DB_MAX_OPEN_CONNS"); exists {
-		port, err := strconv.Atoi(maxOpenConns)
+	if maxOpenConnsEnv, exists := os.LookupEnv("DB_MAX_OPEN_CONNS"); exists {
+		maxOpenConns, err := strconv.Atoi(maxOpenConnsEnv)
 		if err == nil {
-			return port
+			return maxOpenConns
 		}
 	}
 	return defMaxOpenConns
@@ -116,10 +116,10 @@ func (c *Config) defaultMaxOpenConns() int {
 func (c *Config) defaultMaxIdleConns() int {
 	const defMaxIdleConns = 25
 
-	if maxIdleConns, exists := os.LookupEnv("DB_MAX_IDLE_CONNS"); exists {
-		port, err := strconv.Atoi(maxIdleConns)
+	if maxIdleConnsEnv, exists := os.LookupEnv("DB_MAX_IDLE_CONNS"); exists {
+		maxIdleConns, err := strconv.Atoi(maxIdleConnsEnv)
 		if err == nil {
-			return port
+			return maxIdleConns
 		}
 	}
 	return defMaxIdleConns
