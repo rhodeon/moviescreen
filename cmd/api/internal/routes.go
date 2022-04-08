@@ -33,6 +33,11 @@ func (app Application) Router(handlers common.RouteHandlers) *gin.Engine {
 		movies.DELETE("/:id", handlers.Movies.Delete)
 	}
 
+	users := router.Group(withVersion("users"))
+	{
+		users.POST("/", handlers.Users.Register)
+	}
+
 	return router
 }
 

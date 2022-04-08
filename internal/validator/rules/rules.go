@@ -1,6 +1,9 @@
 package rules
 
-import "strings"
+import (
+	"regexp"
+	"strings"
+)
 
 // Unique returns true if all elements in the string are unique.
 func Unique[T comparable](data []T) bool {
@@ -31,4 +34,9 @@ func In[T comparable](data T, target []T) bool {
 		}
 	}
 	return false
+}
+
+// MatchesPattern returns true if a string value matches a specific regexp pattern.
+func MatchesPattern(value string, rx *regexp.Regexp) bool {
+	return rx.MatchString(value)
 }

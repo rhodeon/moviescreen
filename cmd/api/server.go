@@ -21,6 +21,7 @@ func serveApp(app internal.Application) error {
 		Error:  handlers.NewErrorHandler(),
 		Misc:   handlers.NewMiscHandler(app.Config),
 		Movies: handlers.NewMovieHandler(app.Config, app.Repositories),
+		Users:  handlers.NewUserHandler(app.Config, app.Repositories),
 	}
 
 	srv := &http.Server{

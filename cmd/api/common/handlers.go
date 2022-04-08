@@ -9,6 +9,7 @@ type RouteHandlers struct {
 	Error  ErrorHandler
 	Misc   MiscHandler
 	Movies MovieHandler
+	Users  UserHandler
 }
 
 type ErrorHandler interface {
@@ -28,4 +29,10 @@ type MovieHandler interface {
 	Create(ctx *gin.Context)
 	Update(ctx *gin.Context)
 	Delete(ctx *gin.Context)
+}
+
+type UserHandler interface {
+	Register(ctx *gin.Context)
+	GetByEmail(ctx *gin.Context)
+	Update(ctx *gin.Context)
 }
