@@ -9,6 +9,7 @@ import (
 	"github.com/rhodeon/moviescreen/domain/repository"
 	"github.com/rhodeon/moviescreen/internal/mailer"
 	"github.com/rhodeon/moviescreen/internal/validator"
+	"github.com/rhodeon/prettylog"
 	"net/http"
 )
 
@@ -76,15 +77,17 @@ func (u userHandler) Register(ctx *gin.Context) {
 		return
 	}
 
-	// send welcome email to user
-	smtp := u.config.Smtp
-	mail := mailer.New(smtp.Host, smtp.Port, smtp.User, smtp.Password, smtp.Sender)
+	// send welcome email to user in the background
+	common.Background(func() {
+		smtp := u.config.Smtp
+		mail := mailer.New(smtp.Host, smtp.Port, smtp.User, smtp.Password, smtp.Sender)
 
-	err = mail.Send(user.Email, "user_welcome.gotmpl", user)
-	if err != nil {
-		HandleInternalServerError(ctx, err)
-		return
-	}
+		err = mail.Send(user.Email, "user_welcome.gotmpl", user)
+		if err != nil {
+			prettylog.ErrorF("Welcome mail: ", err)
+			return
+		}
+	})
 
 	// return new user details
 	ctx.JSON(

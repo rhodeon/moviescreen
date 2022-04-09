@@ -68,8 +68,8 @@ func (m *Mailer) Send(recipient string, templateFile string, data any) error {
 			return nil
 		}
 
-		// make next attempt on failure with a delay of 500 milliseconds
-		time.Sleep(500 * time.Millisecond)
+		// make next attempt on failure with a delay of 5 seconds
+		time.Sleep(5 * time.Second)
 	}
 
 	return err
