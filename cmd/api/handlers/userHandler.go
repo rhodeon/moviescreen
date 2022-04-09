@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/rhodeon/moviescreen/cmd/api/common"
 	"github.com/rhodeon/moviescreen/cmd/api/models/request"
 	"github.com/rhodeon/moviescreen/cmd/api/models/response"
 	"github.com/rhodeon/moviescreen/domain/repository"
+	"github.com/rhodeon/moviescreen/internal/validator"
 	"net/http"
 )
 
@@ -22,12 +24,14 @@ func NewUserHandler(config common.Config, repositories repository.Repositories) 
 }
 
 func (u userHandler) Register(ctx *gin.Context) {
+	// parse request body
 	userRequest := &request.UserRequest{}
 	err := parseJsonRequest(ctx, userRequest)
 	if err != nil {
 		return
 	}
 
+	// validate request body
 	err = validateJsonRequest(ctx, userRequest, []string{
 		request.UserFieldUsername,
 		request.UserFieldEmail,
@@ -37,11 +41,46 @@ func (u userHandler) Register(ctx *gin.Context) {
 		return
 	}
 
+	// map request body to user body for further operations
+	user, err := userRequest.ToModel()
+	if err != nil {
+		HandleInternalServerError(ctx, err)
+		return
+	}
+
+	// attempt to register user
+	err = u.repositories.Users.Register(&user)
+	if err != nil {
+		switch {
+		case errors.Is(err, repository.ErrDuplicateUsername):
+			v := validator.New("user")
+			v.AddError(request.UserFieldUsername, "this username is already taken")
+			ctx.AbortWithStatusJSON(
+				http.StatusUnprocessableEntity,
+				response.UnprocessableEntityError(v),
+			)
+
+		case errors.Is(err, repository.ErrDuplicateEmail):
+			v := validator.New("user")
+			v.AddError(request.UserFieldEmail, "a user with this email address already exists")
+			ctx.AbortWithStatusJSON(
+				http.StatusUnprocessableEntity,
+				response.UnprocessableEntityError(v),
+			)
+
+		default:
+			HandleInternalServerError(ctx, err)
+		}
+
+		return
+	}
+
+	// return new user details
 	ctx.JSON(
 		http.StatusCreated,
 		response.SuccessResponse(
 			http.StatusCreated,
-			*userRequest,
+			user.ToResponse(),
 		),
 	)
 }

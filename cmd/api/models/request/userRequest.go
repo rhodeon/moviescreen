@@ -2,6 +2,7 @@ package request
 
 import (
 	"github.com/rhodeon/moviescreen/domain/models"
+	"github.com/rhodeon/moviescreen/internal/types"
 	"github.com/rhodeon/moviescreen/internal/validator"
 	"github.com/rhodeon/moviescreen/internal/validator/rules"
 	"strings"
@@ -20,11 +21,19 @@ const (
 	UserFieldPassword = "password"
 )
 
-func (request *UserRequest) ToModel() models.User {
+func (request *UserRequest) ToModel() (models.User, error) {
+	// convert request password to Password struct type
+	password := &types.Password{}
+	err := password.Set(*request.Password)
+	if err != nil {
+		return models.User{}, err
+	}
+
 	return models.User{
 		Username: *request.Username,
 		Email:    *request.Email,
-	}
+		Password: *password,
+	}, nil
 }
 
 func (request UserRequest) Validate(required []string) *validator.Validator {

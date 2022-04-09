@@ -30,6 +30,7 @@ func main() {
 		Config: config,
 		Repositories: repository.Repositories{
 			Movies: database.MovieController{Db: db},
+			Users:  database.UserController{Db: db},
 		},
 	}
 
