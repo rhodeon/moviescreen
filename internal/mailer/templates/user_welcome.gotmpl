@@ -1,0 +1,27 @@
+{{- /*gotype: github.com/rhodeon/moviescreen/domain/models.User*/ -}}
+
+
+{{define "subject"}} Welcome to Moviescreen {{end}}
+
+{{define "plainBody"}}
+Hello {{.Username}},
+
+Thanks for signing up for a Moviescreen account. We're excited to have you on board!
+
+Team Moviescreen
+{{end}}
+
+{{define "htmlBody"}}
+    <!doctype html>
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    </head>
+    <body>
+        <p>Hello {{.Username}},</p>
+        <p>Thanks for signing up for a Moviescreen account. We're excited to have you on board!</p>
+        <p>Team Moviescreen</p>
+    </body>
+    </html>
+{{end}}

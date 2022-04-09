@@ -7,6 +7,7 @@ import (
 	"github.com/rhodeon/moviescreen/cmd/api/models/request"
 	"github.com/rhodeon/moviescreen/cmd/api/models/response"
 	"github.com/rhodeon/moviescreen/domain/repository"
+	"github.com/rhodeon/moviescreen/internal/mailer"
 	"github.com/rhodeon/moviescreen/internal/validator"
 	"net/http"
 )
@@ -72,6 +73,16 @@ func (u userHandler) Register(ctx *gin.Context) {
 			HandleInternalServerError(ctx, err)
 		}
 
+		return
+	}
+
+	// send welcome email to user
+	smtp := u.config.Smtp
+	mail := mailer.New(smtp.Host, smtp.Port, smtp.User, smtp.Password, smtp.Sender)
+
+	err = mail.Send(user.Email, "user_welcome.gotmpl", user)
+	if err != nil {
+		HandleInternalServerError(ctx, err)
 		return
 	}
 

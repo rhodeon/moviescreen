@@ -25,6 +25,14 @@ type Config struct {
 		Rps     float64
 		Burst   int
 	}
+
+	Smtp struct {
+		Host     string
+		Port     int
+		User     string
+		Password string
+		Sender   string
+	}
 }
 
 func (c *Config) Parse() {
@@ -42,12 +50,26 @@ func (c *Config) Parse() {
 	flag.Float64Var(&c.Limiter.Rps, "limiter-rps", c.defaultLimiterRps(), "Rate limiter maximum requests per second")
 	flag.IntVar(&c.Limiter.Burst, "limiter-burst", c.defaultLimiterBurst(), "Rate limiter maximum burst")
 
+	flag.StringVar(&c.Smtp.Host, "smtp-host", c.defaultSmtpHost(), "SMTP hostname")
+	flag.IntVar(&c.Smtp.Port, "smtp-port", c.defaultSmtpPort(), "SMTP port")
+	flag.StringVar(&c.Smtp.User, "smtp-user", c.defaultSmtpUser(), "SMTP username")
+	flag.StringVar(&c.Smtp.Password, "smtp-pass", c.defaultSmtpPassword(), "SMTP password")
+	flag.StringVar(&c.Smtp.Sender, "smtp-sender", c.defaultSmtpSender(), "SMTP sender")
+
 	flag.Parse()
 }
 
 func (c *Config) Validate() error {
 	if c.Db.Dsn == "" {
 		return errors.New("the 'dsn' flag is required")
+	}
+
+	if c.Smtp.Host == "" {
+		return errors.New("the 'smtp-host' flag is required")
+	}
+
+	if c.Smtp.User == "" {
+		return errors.New("the 'smtp-user' flag is required")
 	}
 
 	return nil
@@ -168,4 +190,44 @@ func (c *Config) defaultLimiterBurst() int {
 		}
 	}
 	return defaultBurst
+}
+
+func (c *Config) defaultSmtpHost() string {
+	if host, exists := os.LookupEnv("SMTP_HOST"); exists {
+		return host
+	}
+	return ""
+}
+func (c *Config) defaultSmtpPort() int {
+	const defaultPort = 587
+
+	if portEnv, exists := os.LookupEnv("SMTP_PORT"); exists {
+		port, err := strconv.Atoi(portEnv)
+		if err == nil {
+			return port
+		}
+	}
+	return defaultPort
+}
+
+func (c *Config) defaultSmtpUser() string {
+	if user, exists := os.LookupEnv("SMTP_USER"); exists {
+		return user
+	}
+	return ""
+}
+
+func (c *Config) defaultSmtpPassword() string {
+	if password, exists := os.LookupEnv("SMTP_PASS"); exists {
+		return password
+	}
+	return ""
+}
+
+func (c *Config) defaultSmtpSender() string {
+	const defaultSender = "Team Moviescreen <no-reply@moviescreen.net>"
+	if sender, exists := os.LookupEnv("SMTP_SENDER"); exists {
+		return sender
+	}
+	return defaultSender
 }
