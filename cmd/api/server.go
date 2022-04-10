@@ -11,17 +11,18 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 	"time"
 )
 
 // serveApp starts up a server with the app data.
-func serveApp(app internal.Application) error {
+func serveApp(app internal.Application, backgroundWaitGroup *sync.WaitGroup) error {
 	routeHandlers := common.RouteHandlers{
 		Error:  handlers.NewErrorHandler(),
 		Misc:   handlers.NewMiscHandler(app.Config),
 		Movies: handlers.NewMovieHandler(app.Config, app.Repositories),
-		Users:  handlers.NewUserHandler(app.Config, app.Repositories),
+		Users:  handlers.NewUserHandler(app.Config, app.Repositories, backgroundWaitGroup),
 	}
 
 	srv := &http.Server{
@@ -34,7 +35,7 @@ func serveApp(app internal.Application) error {
 
 	// start a background goroutine to intercept and handle shutdown events
 	shutdownError := make(chan error)
-	go handleShutdown(srv, shutdownError)
+	go handleShutdown(srv, shutdownError, backgroundWaitGroup)
 
 	// start and listen on server until an error occurs
 	prettylog.InfoF("starting %s server on %s", app.Config.Env, srv.Addr)
@@ -57,7 +58,7 @@ func serveApp(app internal.Application) error {
 // handleShutdown gracefully handles interruption and termination signals,
 // giving ongoing request a 20-second leeway before shutting down the server.
 // It should be run as a background goroutine.
-func handleShutdown(server *http.Server, shutdownErrChan chan error) {
+func handleShutdown(server *http.Server, shutdownErr chan error, backgroundWg *sync.WaitGroup) {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
@@ -71,5 +72,13 @@ func handleShutdown(server *http.Server, shutdownErrChan chan error) {
 	prettylog.InfoF("shutting down server: %s", s)
 	// shutdown the server and update the error channel
 	// to resume execution on the main goroutine
-	shutdownErrChan <- server.Shutdown(ctx)
+	err := server.Shutdown(ctx)
+	if err != nil {
+		shutdownErr <- err
+	}
+
+	// wait for background tasks to complete before shutting down the application
+	prettylog.Info("completing background tasks")
+	backgroundWg.Wait()
+	shutdownErr <- nil
 }

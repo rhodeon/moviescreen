@@ -7,6 +7,7 @@ import (
 	"github.com/rhodeon/moviescreen/domain/repository"
 	"github.com/rhodeon/moviescreen/infrastructure/database"
 	"github.com/rhodeon/prettylog"
+	"sync"
 )
 
 func main() {
@@ -34,7 +35,12 @@ func main() {
 		},
 	}
 
-	err = serveApp(app)
+	// establish waitgroup to ensure background tasks
+	// are completed before shutting down the application
+	backgroundWg := &sync.WaitGroup{}
+
+	// start server
+	err = serveApp(app, backgroundWg)
 	if err != nil {
 		prettylog.FatalError(err)
 	}

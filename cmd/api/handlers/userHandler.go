@@ -11,17 +11,20 @@ import (
 	"github.com/rhodeon/moviescreen/internal/validator"
 	"github.com/rhodeon/prettylog"
 	"net/http"
+	"sync"
 )
 
 type userHandler struct {
 	config       common.Config
 	repositories repository.Repositories
+	backgroundWg *sync.WaitGroup
 }
 
-func NewUserHandler(config common.Config, repositories repository.Repositories) common.UserHandler {
+func NewUserHandler(config common.Config, repositories repository.Repositories, waitGroup *sync.WaitGroup) common.UserHandler {
 	return &userHandler{
 		config:       config,
 		repositories: repositories,
+		backgroundWg: waitGroup,
 	}
 }
 
@@ -78,7 +81,7 @@ func (u userHandler) Register(ctx *gin.Context) {
 	}
 
 	// send welcome email to user in the background
-	common.Background(func() {
+	common.Background(u.backgroundWg, func() {
 		smtp := u.config.Smtp
 		mail := mailer.New(smtp.Host, smtp.Port, smtp.User, smtp.Password, smtp.Sender)
 
