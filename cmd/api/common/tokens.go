@@ -20,11 +20,11 @@ type Token struct {
 	Expires   time.Time
 }
 
-func GenerateToken(userId int, scope string, lifetime time.Time) (Token, error) {
+func GenerateToken(userId int, scope string, lifetime time.Duration) (Token, error) {
 	token := Token{
 		UserId:  userId,
 		Scope:   scope,
-		Expires: lifetime,
+		Expires: time.Now().Add(lifetime),
 	}
 
 	// generate random token and hash

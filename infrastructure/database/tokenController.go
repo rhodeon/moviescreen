@@ -12,7 +12,7 @@ type TokenController struct {
 }
 
 // New is a shortcut to insert a new token with the given user ID, token scope and lifetime.
-func (t TokenController) New(userId int, scope string, lifetime time.Time) (common.Token, error) {
+func (t TokenController) New(userId int, scope string, lifetime time.Duration) (common.Token, error) {
 	token, err := common.GenerateToken(userId, scope, lifetime)
 	if err != nil {
 		return common.Token{}, err

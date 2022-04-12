@@ -12,6 +12,7 @@ import (
 	"github.com/rhodeon/prettylog"
 	"net/http"
 	"sync"
+	"time"
 )
 
 type userHandler struct {
@@ -80,12 +81,25 @@ func (u userHandler) Register(ctx *gin.Context) {
 		return
 	}
 
+	// generate activation token with a lifetime of 2 days
+	token, err := u.repositories.Tokens.New(user.Id, common.ScopeActivation, 2*24*time.Hour)
+	if err != nil {
+		HandleInternalServerError(ctx, err)
+	}
+
 	// send welcome email to user in the background
 	common.Background(u.backgroundWg, func() {
 		smtp := u.config.Smtp
 		mail := mailer.New(smtp.Host, smtp.Port, smtp.User, smtp.Password, smtp.Sender)
 
-		err = mail.Send(user.Email, "user_welcome.gotmpl", user)
+		err = mail.Send(user.Email, "user_welcome.gotmpl", struct {
+			Username        string
+			ActivationToken string
+		}{
+			Username:        user.Username,
+			ActivationToken: token.PlainText,
+		})
+
 		if err != nil {
 			prettylog.ErrorF("Welcome mail: ", err)
 			return

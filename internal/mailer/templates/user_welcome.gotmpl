@@ -1,6 +1,3 @@
-{{- /*gotype: github.com/rhodeon/moviescreen/domain/models.User*/ -}}
-
-
 {{define "subject"}} Welcome to Moviescreen {{end}}
 
 {{define "plainBody"}}
@@ -8,6 +5,12 @@ Hello {{.Username}},
 
 Thanks for signing up for a Moviescreen account. We're excited to have you on board!
 
+Please send a request to the `PUT /v1/users/activate` endpoint with the following JSON body to activate your account:
+{"token": "{{.ActivationToken}}"}
+
+Please note that this is a one-time use token and it will expire in 3 days.
+
+Thanks,
 Team Moviescreen
 {{end}}
 
@@ -21,7 +24,12 @@ Team Moviescreen
     <body>
         <p>Hello {{.Username}},</p>
         <p>Thanks for signing up for a Moviescreen account. We're excited to have you on board!</p>
-        <p>Team Moviescreen</p>
+        <p>Please send a request to the <code>PUT /v1/users/activate</code> endpoint with the following JSON body to activate your account:</p>
+        <pre><code>{"token": "{{.ActivationToken}}"}</code></pre>
+        <p>Please note that this is a one-time use token and it will expire in 3 days.</p>
+        <p>Thanks <br>
+           Team Moviescreen
+        </p>
     </body>
     </html>
 {{end}}
