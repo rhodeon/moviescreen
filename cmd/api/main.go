@@ -30,6 +30,7 @@ func main() {
 	app := internal.Application{
 		Config: config,
 		Repositories: repository.Repositories{
+			Tokens: database.TokenController{Db: db},
 			Movies: database.MovieController{Db: db},
 			Users:  database.UserController{Db: db},
 		},
