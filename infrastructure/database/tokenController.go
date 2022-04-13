@@ -39,10 +39,10 @@ func (t TokenController) Insert(token common.Token) error {
 	return err
 }
 
-// DeleteAllForUser removes all tokens of a user with the given scope.
+// DeleteAllForUser removes all expired tokens, and those of a user with the given scope.
 func (t TokenController) DeleteAllForUser(userId int, scope string) error {
 	stmt := `DELETE FROM tokens
-    WHERE user_id = $1 AND scope = $2
+    WHERE (user_id = $1 AND scope = $2) OR expires < now()
 `
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)

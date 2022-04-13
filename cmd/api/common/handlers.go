@@ -33,6 +33,7 @@ type MovieHandler interface {
 
 type UserHandler interface {
 	Register(ctx *gin.Context)
+	Activate(ctx *gin.Context)
 	GetByEmail(ctx *gin.Context)
 	Update(ctx *gin.Context)
 }

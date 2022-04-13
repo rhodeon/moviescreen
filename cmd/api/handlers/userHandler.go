@@ -116,6 +116,89 @@ func (u userHandler) Register(ctx *gin.Context) {
 	)
 }
 
+func (u userHandler) Activate(ctx *gin.Context) {
+	// parse request body
+	req := &request.UserActivationRequest{}
+	err := parseJsonRequest(ctx, req)
+	if err != nil {
+		return
+	}
+
+	// validate request token
+	err = validateJsonRequest(ctx, req, []string{request.UserActivationFieldToken})
+	if err != nil {
+		return
+	}
+
+	// get user associated with token
+	user, err := u.repositories.Users.GetByToken(*req.Token, common.ScopeActivation)
+	if err != nil {
+		switch {
+		case errors.Is(err, repository.ErrRecordNotFound):
+			v := validator.New("token")
+			v.AddError(request.UserActivationFieldToken, "invalid or expired activation token")
+			ctx.AbortWithStatusJSON(
+				http.StatusUnprocessableEntity,
+				response.UnprocessableEntityError(v),
+			)
+
+		default:
+			HandleInternalServerError(ctx, err)
+		}
+
+		return
+	}
+
+	// activate user
+	user.Activated = true
+
+	// save user activated status
+	err = u.repositories.Users.Update(&user)
+	if err != nil {
+		switch {
+		case errors.Is(err, repository.ErrDuplicateUsername):
+			v := validator.New("user")
+			v.AddError(request.UserFieldUsername, "this username is already taken")
+			ctx.AbortWithStatusJSON(
+				http.StatusUnprocessableEntity,
+				response.UnprocessableEntityError(v),
+			)
+
+		case errors.Is(err, repository.ErrDuplicateEmail):
+			v := validator.New("user")
+			v.AddError(request.UserFieldEmail, "a user with this email address already exists")
+			ctx.AbortWithStatusJSON(
+				http.StatusUnprocessableEntity,
+				response.UnprocessableEntityError(v),
+			)
+
+		case errors.Is(err, repository.ErrEditConflict):
+			NewErrorHandler().EditConflict(ctx)
+
+		default:
+			HandleInternalServerError(ctx, err)
+		}
+
+		return
+	}
+
+	// delete used token
+	err = u.repositories.Tokens.DeleteAllForUser(user.Id, common.ScopeActivation)
+	if err != nil {
+		HandleInternalServerError(ctx, err)
+		return
+	}
+
+	// return updated user response
+	ctx.JSON(
+		http.StatusOK,
+		response.SuccessResponse(
+			http.StatusOK,
+			user.ToResponse(),
+		),
+	)
+}
+
 func (u userHandler) GetByEmail(ctx *gin.Context) {
 	//TODO implement me
 	panic("implement me")

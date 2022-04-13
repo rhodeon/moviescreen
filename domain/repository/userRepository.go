@@ -6,4 +6,5 @@ type UserRepository interface {
 	Register(user *models.User) error
 	GetByEmail(email string) (models.User, error)
 	Update(user *models.User) error
+	GetByToken(plainTextToken string, scope string) (models.User, error)
 }

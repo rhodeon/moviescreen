@@ -18,10 +18,11 @@ type User struct {
 
 func (user User) ToResponse() response.UserResponse {
 	return response.UserResponse{
-		Id:       user.Id,
-		Username: user.Username,
-		Email:    user.Email,
-		Version:  user.Version,
-		Created:  user.Created,
+		Id:        user.Id,
+		Username:  user.Username,
+		Email:     user.Email,
+		Version:   user.Version,
+		Activated: user.Activated,
+		Created:   user.Created,
 	}
 }

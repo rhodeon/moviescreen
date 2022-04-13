@@ -36,6 +36,7 @@ func (app Application) Router(handlers common.RouteHandlers) *gin.Engine {
 	users := router.Group(withVersion("users"))
 	{
 		users.POST("/", handlers.Users.Register)
+		users.PUT("/activate", handlers.Users.Activate)
 	}
 
 	return router
