@@ -3,8 +3,8 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/rhodeon/moviescreen/cmd/api/common"
-	"github.com/rhodeon/moviescreen/cmd/api/handlers"
 	"github.com/rhodeon/moviescreen/cmd/api/models/response"
+	"github.com/rhodeon/prettylog"
 	"golang.org/x/time/rate"
 	"net"
 	"net/http"
@@ -44,7 +44,14 @@ func RateLimit(config common.Config) gin.HandlerFunc {
 			// extract client's IP address
 			ip, _, err := net.SplitHostPort(ctx.Request.RemoteAddr)
 			if err != nil {
-				handlers.HandleInternalServerError(ctx, err)
+				prettylog.ErrorF("internal server error: %s", err.Error())
+				ctx.AbortWithStatusJSON(
+					http.StatusInternalServerError,
+					response.ErrorResponse(
+						http.StatusInternalServerError,
+						response.GenericError(response.ErrMessage500),
+					),
+				)
 				return
 			}
 
