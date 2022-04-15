@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 	"reflect"
+	"sync"
 	"testing"
 )
 
@@ -27,13 +28,18 @@ var testConfig = common.Config{
 }
 
 var testRepos = repository.Repositories{
+	Tokens: mock.TokenController{},
 	Movies: mock.MovieController{},
+	Users:  mock.UserController{},
 }
+
+var testWaitGroup = sync.WaitGroup{}
 
 var testRouteHandlers = common.RouteHandlers{
 	Error:  NewErrorHandler(),
 	Misc:   NewMiscHandler(testConfig),
 	Movies: NewMovieHandler(testConfig, testRepos),
+	Users:  NewUserHandler(testConfig, testRepos, &testWaitGroup),
 }
 
 // parseResponse parses a http response and returns the code, body and header.

@@ -101,7 +101,7 @@ func (u userHandler) Register(ctx *gin.Context) {
 		})
 
 		if err != nil {
-			prettylog.ErrorF("Welcome mail: ", err)
+			prettylog.ErrorF("Welcome mail: %v", err)
 			return
 		}
 	})

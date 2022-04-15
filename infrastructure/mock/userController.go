@@ -1,0 +1,92 @@
+package mock
+
+import (
+	"github.com/rhodeon/moviescreen/domain/models"
+	"github.com/rhodeon/moviescreen/domain/repository"
+	"github.com/rhodeon/moviescreen/internal/types"
+	"strings"
+	"time"
+)
+
+var (
+	rhodeonPlainPass  = "rhodeonpass"
+	rhodeonHashedPass = "rhodeonhashedpass"
+	ruonaPlainPass    = "ruonapass"
+	ruonaHashedPass   = "ruonahashedpass"
+	johnDoePlainPass  = "johndoepass"
+	johnDoeHashedPass = "johndoehashedpass"
+)
+
+var MockDate = time.Date(2022, 4, 10, 10, 00, 00, 00, time.UTC)
+
+var users = []models.User{
+	{
+		Id:       1,
+		Username: "rhodeon",
+		Email:    "rhodeon@dev.mail",
+		Password: types.Password{
+			Plaintext: &rhodeonPlainPass,
+			Hash:      []byte(rhodeonHashedPass),
+		},
+		Activated: false,
+		Version:   1,
+		Created:   MockDate,
+	},
+	{
+		Id:       2,
+		Username: "ruona",
+		Email:    "ruona@mail.com",
+		Password: types.Password{
+			Plaintext: &ruonaPlainPass,
+			Hash:      []byte(ruonaHashedPass),
+		},
+		Activated: false,
+		Version:   0,
+		Created:   MockDate,
+	},
+	{
+		Id:       3,
+		Username: "johndoe",
+		Email:    "johndoe@mail.com",
+		Password: types.Password{
+			Plaintext: &johnDoePlainPass,
+			Hash:      []byte(johnDoeHashedPass),
+		},
+		Activated: false,
+		Version:   0,
+		Created:   MockDate,
+	},
+}
+
+type UserController struct{}
+
+func (u UserController) Register(user *models.User) error {
+	for _, u := range users {
+		if strings.ToLower(u.Username) == strings.ToLower(user.Username) {
+			return repository.ErrDuplicateUsername
+		}
+		if strings.ToLower(u.Email) == strings.ToLower(user.Email) {
+			return repository.ErrDuplicateEmail
+		}
+	}
+
+	user.Id = len(users) + 1
+	user.Version = 1
+	user.Created = MockDate
+	return nil
+}
+
+func (u UserController) GetByEmail(email string) (models.User, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (u UserController) Update(user *models.User) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (u UserController) GetByToken(plainTextToken string, scope string) (models.User, error) {
+	//TODO implement me
+	panic("implement me")
+}
