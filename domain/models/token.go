@@ -1,14 +1,16 @@
-package common
+package models
 
 import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base32"
+	"github.com/rhodeon/moviescreen/cmd/api/models/response"
 	"time"
 )
 
 const (
-	ScopeActivation = "activation"
+	ScopeActivation     = "activation"
+	ScopeAuthentication = "authentication"
 )
 
 // Token represents authentication tokens used to verify users.
@@ -18,6 +20,13 @@ type Token struct {
 	UserId    int
 	Scope     string
 	Expires   time.Time
+}
+
+func (t Token) ToResponse() response.TokenResponse {
+	return response.TokenResponse{
+		PlainText: t.PlainText,
+		Expires:   t.Expires,
+	}
 }
 
 func GenerateToken(userId int, scope string, lifetime time.Duration) (Token, error) {

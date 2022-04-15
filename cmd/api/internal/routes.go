@@ -37,6 +37,7 @@ func (app Application) Router(handlers common.RouteHandlers) *gin.Engine {
 	{
 		users.POST("/", handlers.Users.Register)
 		users.PUT("/activate", handlers.Users.Activate)
+		users.POST("/authenticate", handlers.Users.Authenticate)
 	}
 
 	return router

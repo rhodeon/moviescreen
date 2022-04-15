@@ -41,8 +41,34 @@ func (u UserController) Register(user *models.User) error {
 }
 
 func (u UserController) GetByEmail(email string) (models.User, error) {
-	//TODO implement me
-	panic("implement me")
+	stmt := `SELECT id, username, email, password_hash, activated, version, created_at FROM users
+	WHERE email = $1`
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	user := models.User{}
+
+	err := u.Db.QueryRowContext(ctx, stmt, email).Scan(
+		&user.Id,
+		&user.Username,
+		&user.Email,
+		&user.Password.Hash,
+		&user.Activated,
+		&user.Version,
+		&user.Created,
+	)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return models.User{}, repository.ErrRecordNotFound
+
+		default:
+			return models.User{}, err
+		}
+	}
+
+	return user, nil
 }
 
 // Update replaces the data of the user in the database with those in the passed-in user.

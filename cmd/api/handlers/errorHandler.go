@@ -52,3 +52,13 @@ func (e errorHandler) EditConflict(ctx *gin.Context) {
 		),
 	)
 }
+
+func (e errorHandler) InvalidCredentials(ctx *gin.Context) {
+	ctx.AbortWithStatusJSON(
+		http.StatusUnauthorized,
+		response.ErrorResponse(
+			http.StatusUnauthorized,
+			response.GenericError(response.ErrInvalidCredentials),
+		),
+	)
+}

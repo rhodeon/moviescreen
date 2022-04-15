@@ -17,6 +17,7 @@ type ErrorHandler interface {
 	MethodNotAllowed(ctx *gin.Context)
 	InternalServer(ctx *gin.Context)
 	EditConflict(ctx *gin.Context)
+	InvalidCredentials(ctx *gin.Context)
 }
 
 type MiscHandler interface {
@@ -34,6 +35,7 @@ type MovieHandler interface {
 type UserHandler interface {
 	Register(ctx *gin.Context)
 	Activate(ctx *gin.Context)
+	Authenticate(ctx *gin.Context)
 	GetByEmail(ctx *gin.Context)
 	Update(ctx *gin.Context)
 }

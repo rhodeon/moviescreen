@@ -3,7 +3,7 @@ package database
 import (
 	"context"
 	"database/sql"
-	"github.com/rhodeon/moviescreen/cmd/api/common"
+	"github.com/rhodeon/moviescreen/domain/models"
 	"time"
 )
 
@@ -12,22 +12,22 @@ type TokenController struct {
 }
 
 // New is a shortcut to insert a new token with the given user ID, token scope and lifetime.
-func (t TokenController) New(userId int, scope string, lifetime time.Duration) (common.Token, error) {
-	token, err := common.GenerateToken(userId, scope, lifetime)
+func (t TokenController) New(userId int, scope string, lifetime time.Duration) (models.Token, error) {
+	token, err := models.GenerateToken(userId, scope, lifetime)
 	if err != nil {
-		return common.Token{}, err
+		return models.Token{}, err
 	}
 
 	err = t.Insert(token)
 	if err != nil {
-		return common.Token{}, err
+		return models.Token{}, err
 	}
 
 	return token, nil
 }
 
 // Insert adds a new token to the database
-func (t TokenController) Insert(token common.Token) error {
+func (t TokenController) Insert(token models.Token) error {
 	stmt := `INSERT INTO tokens (hash, user_id, scope, expires)
 	VALUES ($1, $2, $3, $4)
 `
