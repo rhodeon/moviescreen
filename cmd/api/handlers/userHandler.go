@@ -156,22 +156,6 @@ func (u userHandler) Activate(ctx *gin.Context) {
 	err = u.repositories.Users.Update(&user)
 	if err != nil {
 		switch {
-		case errors.Is(err, repository.ErrDuplicateUsername):
-			v := validator.New("user")
-			v.AddError(request.UserFieldUsername, "this username is already taken")
-			ctx.AbortWithStatusJSON(
-				http.StatusUnprocessableEntity,
-				response.UnprocessableEntityError(v),
-			)
-
-		case errors.Is(err, repository.ErrDuplicateEmail):
-			v := validator.New("user")
-			v.AddError(request.UserFieldEmail, "a user with this email address already exists")
-			ctx.AbortWithStatusJSON(
-				http.StatusUnprocessableEntity,
-				response.UnprocessableEntityError(v),
-			)
-
 		case errors.Is(err, repository.ErrEditConflict):
 			NewErrorHandler().EditConflict(ctx)
 
