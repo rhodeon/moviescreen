@@ -135,7 +135,7 @@ func (u userHandler) Activate(ctx *gin.Context) {
 	if err != nil {
 		switch {
 		case errors.Is(err, repository.ErrRecordNotFound):
-			v := validator.New("token")
+			v := validator.New("activate")
 			v.AddError(request.UserActivationFieldToken, "invalid or expired activation token")
 			ctx.AbortWithStatusJSON(
 				http.StatusUnprocessableEntity,

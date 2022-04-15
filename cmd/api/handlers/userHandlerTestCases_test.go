@@ -5,7 +5,7 @@ import (
 	"github.com/rhodeon/moviescreen/infrastructure/mock"
 )
 
-var RegisterMovieTestCases = map[string]struct {
+var RegisterUserTestCases = map[string]struct {
 	RequestBody string
 	WantCode    int
 	WantBody    response.BaseResponse
@@ -109,6 +109,75 @@ var RegisterMovieTestCases = map[string]struct {
 				Type: "user",
 				Data: map[string]string{
 					"email": "a user with this email address already exists",
+				},
+			},
+		),
+	},
+}
+
+var ActivateUserTestCases = map[string]struct {
+	RequestBody string
+	WantCode    int
+	WantBody    response.BaseResponse
+}{
+	"valid token": {
+		RequestBody: `{
+ 		   "token": "2QRJK3S54HAIUNIHNXEF4WSZSI"
+		}`,
+		WantCode: 200,
+		WantBody: response.SuccessResponse(200, response.UserResponse{
+			Id:        1,
+			Username:  "rhodeon",
+			Email:     "rhodeon@dev.mail",
+			Activated: true,
+			Version:   1,
+			Created:   mock.MockDate,
+		}),
+	},
+
+	"token too short": {
+		RequestBody: `{
+ 		   "token": "2QRJK3S54HAIUWSZS"
+		}`,
+		WantCode: 422,
+		WantBody: response.ErrorResponse(
+			422,
+			response.Error{
+				Type: "activate",
+				Data: map[string]string{
+					"token": "must have exactly 26 characters",
+				},
+			},
+		),
+	},
+
+	"token too long": {
+		RequestBody: `{
+ 		   "token": "2QRJK3S54HAIUNIHNXEF4WSZSIUjkefjk"
+		}`,
+		WantCode: 422,
+		WantBody: response.ErrorResponse(
+			422,
+			response.Error{
+				Type: "activate",
+				Data: map[string]string{
+					"token": "must have exactly 26 characters",
+				},
+			},
+		),
+	},
+
+	"invalid token": {
+		RequestBody: `{
+ 		   "token": "2QRJK3S54HAKFDSHNXEF4WSZSI"
+		}`,
+		WantCode: 422,
+		WantBody: response.ErrorResponse(
+			422,
+			response.Error{
+				Type: "activate",
+				Data: map[string]string{
+					"token": "invalid or expired activation token",
 				},
 			},
 		),

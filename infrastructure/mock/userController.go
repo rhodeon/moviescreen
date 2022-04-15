@@ -82,11 +82,25 @@ func (u UserController) GetByEmail(email string) (models.User, error) {
 }
 
 func (u UserController) Update(user *models.User) error {
-	//TODO implement me
-	panic("implement me")
+	for i, u := range users {
+		if u.Id == user.Id {
+			users[i] = *user
+			return nil
+		}
+	}
+	return repository.ErrRecordNotFound
 }
 
 func (u UserController) GetByToken(plainTextToken string, scope string) (models.User, error) {
-	//TODO implement me
-	panic("implement me")
+	for _, token := range tokens {
+		if token.PlainText == plainTextToken && token.Scope == scope {
+			for _, user := range users {
+				if user.Id == token.UserId {
+					return user, nil
+				}
+			}
+		}
+	}
+
+	return models.User{}, repository.ErrRecordNotFound
 }

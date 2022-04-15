@@ -11,13 +11,32 @@ import (
 )
 
 func Test_userHandler_Activate(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	app := newTestApp(t)
+	testCases := ActivateUserTestCases
 
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			rr := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodPut, "/v1/users/activate", strings.NewReader(tc.RequestBody))
+			app.Router(testRouteHandlers).ServeHTTP(rr, req)
+
+			code, body, _ := parseResponse(t, rr.Result())
+
+			// assert status code
+			testhelpers.AssertEqual(t, code, tc.WantCode)
+
+			// assert response body
+			wantBody, _ := json.Marshal(tc.WantBody)
+			testhelpers.AssertEqual(t, body, string(wantBody))
+		})
+	}
 }
 
 func Test_userHandler_Register(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	app := newTestApp(t)
-	testCases := RegisterMovieTestCases
+	testCases := RegisterUserTestCases
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
@@ -36,5 +55,3 @@ func Test_userHandler_Register(t *testing.T) {
 		})
 	}
 }
-
-func Test_userHandler_Update(t *testing.T) {}
