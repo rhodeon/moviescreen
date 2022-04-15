@@ -24,3 +24,8 @@ func Background(wg *sync.WaitGroup, fn func()) {
 		fn()
 	}()
 }
+
+// StringLiteralPointer returns a pointer generated for a string literal.
+func StringLiteralPointer(literal string) *string {
+	return &literal
+}

@@ -1,20 +1,12 @@
 package mock
 
 import (
+	"github.com/rhodeon/moviescreen/cmd/api/common"
 	"github.com/rhodeon/moviescreen/domain/models"
 	"github.com/rhodeon/moviescreen/domain/repository"
 	"github.com/rhodeon/moviescreen/internal/types"
 	"strings"
 	"time"
-)
-
-var (
-	rhodeonPlainPass  = "rhodeonpass"
-	rhodeonHashedPass = "rhodeonhashedpass"
-	ruonaPlainPass    = "ruonapass"
-	ruonaHashedPass   = "ruonahashedpass"
-	johnDoePlainPass  = "johndoepass"
-	johnDoeHashedPass = "johndoehashedpass"
 )
 
 var MockDate = time.Date(2022, 4, 10, 10, 00, 00, 00, time.UTC)
@@ -25,8 +17,8 @@ var users = []models.User{
 		Username: "rhodeon",
 		Email:    "rhodeon@dev.mail",
 		Password: types.Password{
-			Plaintext: &rhodeonPlainPass,
-			Hash:      []byte(rhodeonHashedPass),
+			Plaintext: common.StringLiteralPointer("rhodeonpass"),
+			Hash:      []byte("rhodeonhashedpass"),
 		},
 		Activated: false,
 		Version:   1,
@@ -37,8 +29,8 @@ var users = []models.User{
 		Username: "ruona",
 		Email:    "ruona@mail.com",
 		Password: types.Password{
-			Plaintext: &ruonaPlainPass,
-			Hash:      []byte(ruonaHashedPass),
+			Plaintext: common.StringLiteralPointer("ruonapass"),
+			Hash:      []byte("ruonahashedpass"),
 		},
 		Activated: false,
 		Version:   0,
@@ -49,8 +41,8 @@ var users = []models.User{
 		Username: "johndoe",
 		Email:    "johndoe@mail.com",
 		Password: types.Password{
-			Plaintext: &johnDoePlainPass,
-			Hash:      []byte(johnDoeHashedPass),
+			Plaintext: common.StringLiteralPointer("johndoepass"),
+			Hash:      []byte("johndoehashedpass"),
 		},
 		Activated: false,
 		Version:   0,
