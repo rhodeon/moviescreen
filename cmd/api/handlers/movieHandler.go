@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/rhodeon/moviescreen/cmd/api/common"
+	errors2 "github.com/rhodeon/moviescreen/cmd/api/errors"
 	"github.com/rhodeon/moviescreen/cmd/api/models/request"
 	"github.com/rhodeon/moviescreen/cmd/api/models/response"
 	"github.com/rhodeon/moviescreen/domain/repository"
@@ -48,7 +49,7 @@ func (m movieHandler) Create(ctx *gin.Context) {
 	newMovie := movieRequest.ToModel()
 	err = m.repositories.Movies.Create(&newMovie)
 	if err != nil {
-		HandleInternalServerError(ctx, err)
+		errors2.HandleInternalServerError(ctx, err)
 		return
 	}
 
@@ -77,9 +78,9 @@ func (m movieHandler) GetById(ctx *gin.Context) {
 	if err != nil {
 		// return a 404 error if the movie id doesn't exist in the repository
 		if errors.Is(err, repository.ErrRecordNotFound) {
-			NewErrorHandler().NotFound(ctx)
+			errors2.NewErrorHandler().NotFound(ctx)
 		} else {
-			HandleInternalServerError(ctx, err)
+			errors2.HandleInternalServerError(ctx, err)
 		}
 		return
 	}
@@ -126,7 +127,7 @@ func (m movieHandler) List(ctx *gin.Context) {
 	// attempt to retrieve movies
 	movies, metadata, err := m.repositories.Movies.List(titleQuery, genreQuery, filers)
 	if err != nil {
-		HandleInternalServerError(ctx, err)
+		errors2.HandleInternalServerError(ctx, err)
 		return
 	}
 
@@ -167,9 +168,9 @@ func (m movieHandler) Update(ctx *gin.Context) {
 	movie, err := m.repositories.Movies.Get(id)
 	if err != nil {
 		if errors.Is(err, repository.ErrRecordNotFound) {
-			NewErrorHandler().NotFound(ctx)
+			errors2.NewErrorHandler().NotFound(ctx)
 		} else {
-			HandleInternalServerError(ctx, err)
+			errors2.HandleInternalServerError(ctx, err)
 		}
 		return
 	}
@@ -179,9 +180,9 @@ func (m movieHandler) Update(ctx *gin.Context) {
 	err = m.repositories.Movies.Update(&movie)
 	if err != nil {
 		if errors.Is(err, repository.ErrEditConflict) {
-			NewErrorHandler().EditConflict(ctx)
+			errors2.NewErrorHandler().EditConflict(ctx)
 		} else {
-			HandleInternalServerError(ctx, err)
+			errors2.HandleInternalServerError(ctx, err)
 		}
 		return
 	}
@@ -208,9 +209,9 @@ func (m movieHandler) Delete(ctx *gin.Context) {
 	err = m.repositories.Movies.Delete(id)
 	if err != nil {
 		if errors.Is(err, repository.ErrRecordNotFound) {
-			NewErrorHandler().NotFound(ctx)
+			errors2.NewErrorHandler().NotFound(ctx)
 		} else {
-			HandleInternalServerError(ctx, err)
+			errors2.HandleInternalServerError(ctx, err)
 		}
 		return
 	}
