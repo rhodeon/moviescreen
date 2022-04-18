@@ -20,7 +20,7 @@ func (app Application) Router(handlers common.RouteHandlers) *gin.Engine {
 	router.HandleMethodNotAllowed = true
 	router.NoRoute(handlers.Error.NotFound)
 	router.NoMethod(handlers.Error.MethodNotAllowed)
-	router.Use(middleware.RateLimit(app.Config), middleware.MaxSizeLimit())
+	router.Use(middleware.RateLimit(app.Config), middleware.Authenticate(app.Repositories), middleware.MaxSizeLimit())
 
 	router.GET(withVersion("healthcheck"), handlers.Misc.HealthCheck)
 

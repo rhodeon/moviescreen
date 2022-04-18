@@ -17,6 +17,7 @@ const (
 	ErrMessageEditConflict = "unable to update the record due to an edit conflict, please try again"
 	ErrRateLimitExceeded   = "rate limit exceeded"
 	ErrInvalidCredentials  = "invalid user credentials"
+	ErrInvalidAuthToken    = "invalid or missing authentication token"
 )
 
 // Error represents the data of an error in a response.

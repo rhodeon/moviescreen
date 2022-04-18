@@ -62,3 +62,14 @@ func (e errorHandler) InvalidCredentials(ctx *gin.Context) {
 		),
 	)
 }
+
+func (e errorHandler) InvalidAuthenticationToken(ctx *gin.Context) {
+	ctx.Header("WWW-Authenticate", "Bearer")
+	ctx.AbortWithStatusJSON(
+		http.StatusUnauthorized,
+		response.ErrorResponse(
+			http.StatusUnauthorized,
+			response.GenericError(response.ErrInvalidAuthToken),
+		),
+	)
+}

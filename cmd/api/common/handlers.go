@@ -18,6 +18,7 @@ type ErrorHandler interface {
 	InternalServer(ctx *gin.Context)
 	EditConflict(ctx *gin.Context)
 	InvalidCredentials(ctx *gin.Context)
+	InvalidAuthenticationToken(ctx *gin.Context)
 }
 
 type MiscHandler interface {
