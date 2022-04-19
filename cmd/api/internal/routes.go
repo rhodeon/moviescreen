@@ -23,6 +23,7 @@ func (app Application) Router(handlers common.RouteHandlers) *gin.Engine {
 	router.NoMethod(handlers.Error.MethodNotAllowed)
 	router.Use(middleware.RateLimit(app.Config), middleware.Authenticate(app.Repositories), middleware.MaxSizeLimit())
 
+	router.GET("/debug/vars", handlers.Misc.Metrics)
 	router.GET(withVersion("healthcheck"), handlers.Misc.HealthCheck)
 
 	movies := router.Group(withVersion("movies"))

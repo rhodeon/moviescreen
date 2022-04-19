@@ -27,6 +27,8 @@ func main() {
 	defer db.Close()
 	prettylog.InfoF("Database connection pool established")
 
+	setMetrics(config, db)
+
 	app := internal.Application{
 		Config: config,
 		Repositories: repository.Repositories{

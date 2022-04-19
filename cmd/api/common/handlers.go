@@ -26,6 +26,7 @@ type ErrorHandler interface {
 
 type MiscHandler interface {
 	HealthCheck(ctx *gin.Context)
+	Metrics(ctx *gin.Context)
 }
 
 type MovieHandler interface {

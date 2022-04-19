@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"expvar"
 	"github.com/gin-gonic/gin"
 	"github.com/rhodeon/moviescreen/cmd/api/common"
 	"github.com/rhodeon/moviescreen/cmd/api/models/response"
@@ -28,4 +29,9 @@ func (h *miscHandler) HealthCheck(ctx *gin.Context) {
 			},
 		),
 	)
+}
+
+// Metrics returns a response with the server current metrics.
+func (h *miscHandler) Metrics(ctx *gin.Context) {
+	expvar.Handler().ServeHTTP(ctx.Writer, ctx.Request)
 }
