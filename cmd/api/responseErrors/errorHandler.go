@@ -77,3 +77,11 @@ func (e errorHandler) UnactivatedUser(ctx *gin.Context) {
 		response.GenericError(ErrMessageUnactivatedAccess),
 	)
 }
+
+func (e errorHandler) NotPermitted(ctx *gin.Context) {
+	SetStatusAndBody(
+		ctx,
+		http.StatusForbidden,
+		response.GenericError(ErrMessageNotPermitted),
+	)
+}

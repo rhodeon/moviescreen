@@ -21,6 +21,7 @@ type ErrorHandler interface {
 	InvalidAuthenticationToken(ctx *gin.Context)
 	UnauthenticatedUser(ctx *gin.Context)
 	UnactivatedUser(ctx *gin.Context)
+	NotPermitted(ctx *gin.Context)
 }
 
 type MiscHandler interface {

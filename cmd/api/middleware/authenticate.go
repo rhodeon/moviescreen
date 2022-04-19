@@ -19,7 +19,7 @@ import (
 // If an invalid or malformed token is found, a 401 error is returned to the client.
 //
 // If no token is found, an anonymous user is stored in the request context.
-func Authenticate(repositories repository.Repositories) func(ctx *gin.Context) {
+func Authenticate(repositories repository.Repositories) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		ctx.Header("Vary", "Authorization")
 		authorizationHeader := ctx.GetHeader("Authorization")

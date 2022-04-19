@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rhodeon/moviescreen/cmd/api/common"
 	"github.com/rhodeon/moviescreen/cmd/api/middleware"
+	"github.com/rhodeon/moviescreen/domain/models"
 	"path"
 )
 
@@ -26,12 +27,16 @@ func (app Application) Router(handlers common.RouteHandlers) *gin.Engine {
 
 	movies := router.Group(withVersion("movies"))
 	{
+		// set middleware for activation and permission requirements
 		movies.Use(middleware.RequireActivatedUser())
-		movies.GET("/", handlers.Movies.List)
-		movies.POST("/", handlers.Movies.Create)
-		movies.GET("/:id", handlers.Movies.GetById)
-		movies.PATCH("/:id", handlers.Movies.Update)
-		movies.DELETE("/:id", handlers.Movies.Delete)
+		requireRead := middleware.RequirePermission(models.PermissionMoviesRead, app.Repositories)
+		requireWrite := middleware.RequirePermission(models.PermissionMoviesWrite, app.Repositories)
+
+		movies.GET("/", requireRead, handlers.Movies.List)
+		movies.POST("/", requireWrite, handlers.Movies.Create)
+		movies.GET("/:id", requireRead, handlers.Movies.GetById)
+		movies.PATCH("/:id", requireWrite, handlers.Movies.Update)
+		movies.DELETE("/:id", requireWrite, handlers.Movies.Delete)
 	}
 
 	users := router.Group(withVersion("users"))

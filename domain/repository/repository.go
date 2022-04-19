@@ -4,7 +4,8 @@ package repository
 
 // Repositories encapsulates all available repositories for easy reuse.
 type Repositories struct {
-	Tokens TokenRepository
-	Movies MovieRepository
-	Users  UserRepository
+	Tokens      TokenRepository
+	Movies      MovieRepository
+	Users       UserRepository
+	Permissions PermissionRepository
 }
