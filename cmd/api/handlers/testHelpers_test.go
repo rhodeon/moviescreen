@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/rhodeon/moviescreen/cmd/api/common"
 	"github.com/rhodeon/moviescreen/cmd/api/internal"
 	"github.com/rhodeon/moviescreen/cmd/api/responseErrors"
@@ -14,11 +15,14 @@ import (
 	"testing"
 )
 
+const mockRequestToken = "2QRJK3S54HAIUNIHNXEF4WSZSI"
+
 func newTestApp(t *testing.T) internal.Application {
 	t.Helper()
 
 	return internal.Application{
-		Config: testConfig,
+		Config:       testConfig,
+		Repositories: testRepos,
 	}
 }
 
@@ -29,9 +33,10 @@ var testConfig = common.Config{
 }
 
 var testRepos = repository.Repositories{
-	Tokens: mock.TokenController{},
-	Movies: mock.MovieController{},
-	Users:  mock.UserController{},
+	Tokens:      mock.TokenController{},
+	Movies:      mock.MovieController{},
+	Users:       mock.UserController{},
+	Permissions: mock.PermissionController{},
 }
 
 var testWaitGroup = sync.WaitGroup{}
@@ -65,4 +70,8 @@ func assertHeaders(t *testing.T, gotHeaders http.Header, wantHeaders http.Header
 			t.Errorf("header with key %q not found", key)
 		}
 	}
+}
+
+func setBearerToken(req *http.Request) {
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", mockRequestToken))
 }

@@ -20,7 +20,7 @@ var users = []models.User{
 			Plaintext: common.StringLiteralPointer("rhodeonpass"),
 			Hash:      []byte("rhodeonhashedpass"),
 		},
-		Activated: false,
+		Activated: true,
 		Version:   1,
 		Created:   MockDate,
 	},

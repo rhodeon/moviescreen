@@ -16,12 +16,14 @@ import (
 func TestMovieHandler_Create(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	app := newTestApp(t)
-
 	testCases := createMovieTestCases
+
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			rr := httptest.NewRecorder()
 			req := httptest.NewRequest(http.MethodPost, "/v1/movies/", strings.NewReader(tc.requestBody))
+			setBearerToken(req)
+
 			app.Router(testRouteHandlers).ServeHTTP(rr, req)
 			code, body, headers := parseResponse(t, rr.Result())
 
@@ -41,13 +43,14 @@ func TestMovieHandler_Create(t *testing.T) {
 func TestMovieHandler_GetById(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	app := newTestApp(t)
-
 	testCases := getMovieByIdTestCases
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			rr := httptest.NewRecorder()
 			req := httptest.NewRequest(http.MethodGet, path.Join("/v1/movies", tc.requestId), nil)
+			setBearerToken(req)
+
 			app.Router(testRouteHandlers).ServeHTTP(rr, req)
 			code, body, _ := parseResponse(t, rr.Result())
 
@@ -64,13 +67,13 @@ func TestMovieHandler_GetById(t *testing.T) {
 func TestMovieHandler_List(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	app := newTestApp(t)
-
 	testCases := listMoviesTestCases
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			rr := httptest.NewRecorder()
 			req := httptest.NewRequest(http.MethodGet, "/v1/movies/", nil)
+			setBearerToken(req)
 
 			q := req.URL.Query()
 			if tc.titleQuery != "" {
@@ -104,13 +107,14 @@ func TestMovieHandler_List(t *testing.T) {
 func TestMovieHandler_Update(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	app := newTestApp(t)
-
 	testCases := updateMovieTestCases
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			rr := httptest.NewRecorder()
 			req := httptest.NewRequest(http.MethodPatch, path.Join("/v1/movies", tc.requestId), strings.NewReader(tc.requestBody))
+			setBearerToken(req)
+
 			app.Router(testRouteHandlers).ServeHTTP(rr, req)
 			code, body, _ := parseResponse(t, rr.Result())
 
@@ -133,6 +137,8 @@ func TestMovieHandler_Delete(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			rr := httptest.NewRecorder()
 			req := httptest.NewRequest(http.MethodDelete, path.Join("/v1/movies", tc.requestId), nil)
+			setBearerToken(req)
+
 			app.Router(testRouteHandlers).ServeHTTP(rr, req)
 			code, body, _ := parseResponse(t, rr.Result())
 
