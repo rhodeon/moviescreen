@@ -28,6 +28,12 @@ func (t TokenController) New(userId int, scope string, lifetime time.Duration) (
 
 // Insert adds a new token to the database
 func (t TokenController) Insert(token models.Token) error {
+	// delete expired and pre-existing tokens with the same scope for a user
+	err := t.DeleteAllForUser(token.UserId, token.Scope)
+	if err != nil {
+		return err
+	}
+
 	stmt := `INSERT INTO tokens (hash, user_id, scope, expires)
 	VALUES ($1, $2, $3, $4)
 `
@@ -35,7 +41,7 @@ func (t TokenController) Insert(token models.Token) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	_, err := t.Db.ExecContext(ctx, stmt, token.Hash, token.UserId, token.Scope, token.Expires)
+	_, err = t.Db.ExecContext(ctx, stmt, token.Hash, token.UserId, token.Scope, token.Expires)
 	return err
 }
 
