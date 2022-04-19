@@ -20,11 +20,9 @@ func SetStatusAndBody(ctx *gin.Context, statusCode int, body response.Error) {
 // a generic 500 error response to the client.
 func HandleInternalServerError(ctx *gin.Context, err error) {
 	prettylog.ErrorF("internal server error: %s", err.Error())
-	ctx.AbortWithStatusJSON(
+	SetStatusAndBody(
+		ctx,
 		http.StatusInternalServerError,
-		response.ErrorResponse(
-			http.StatusInternalServerError,
-			response.GenericError(ErrMessageInternalServer),
-		),
+		response.GenericError(ErrMessageInternalServer),
 	)
 }

@@ -14,63 +14,51 @@ func NewErrorHandler() common.ErrorHandler {
 }
 
 func (e errorHandler) NotFound(ctx *gin.Context) {
-	ctx.AbortWithStatusJSON(
+	SetStatusAndBody(
+		ctx,
 		http.StatusNotFound,
-		response.ErrorResponse(
-			http.StatusNotFound,
-			response.GenericError(ErrMessageNotFound),
-		),
+		response.GenericError(ErrMessageNotFound),
 	)
 }
 
 func (e errorHandler) MethodNotAllowed(ctx *gin.Context) {
-	ctx.AbortWithStatusJSON(
+	SetStatusAndBody(
+		ctx,
 		http.StatusMethodNotAllowed,
-		response.ErrorResponse(
-			http.StatusMethodNotAllowed,
-			response.GenericError(ErrMessageNotAllowed),
-		),
+		response.GenericError(ErrMessageNotAllowed),
 	)
 }
 
 func (e errorHandler) InternalServer(ctx *gin.Context) {
-	ctx.AbortWithStatusJSON(
+	SetStatusAndBody(
+		ctx,
 		http.StatusInternalServerError,
-		response.ErrorResponse(
-			http.StatusInternalServerError,
-			response.GenericError(ErrMessageInternalServer),
-		),
+		response.GenericError(ErrMessageInternalServer),
 	)
 }
 
 func (e errorHandler) EditConflict(ctx *gin.Context) {
-	ctx.AbortWithStatusJSON(
+	SetStatusAndBody(
+		ctx,
 		http.StatusConflict,
-		response.ErrorResponse(
-			http.StatusConflict,
-			response.GenericError(ErrMessageEditConflict),
-		),
+		response.GenericError(ErrMessageEditConflict),
 	)
 }
 
 func (e errorHandler) InvalidCredentials(ctx *gin.Context) {
-	ctx.AbortWithStatusJSON(
+	SetStatusAndBody(
+		ctx,
 		http.StatusUnauthorized,
-		response.ErrorResponse(
-			http.StatusUnauthorized,
-			response.GenericError(ErrMessageInvalidCredentials),
-		),
+		response.GenericError(ErrMessageInvalidCredentials),
 	)
 }
 
 func (e errorHandler) InvalidAuthenticationToken(ctx *gin.Context) {
 	ctx.Header("WWW-Authenticate", "Bearer")
-	ctx.AbortWithStatusJSON(
+	SetStatusAndBody(
+		ctx,
 		http.StatusUnauthorized,
-		response.ErrorResponse(
-			http.StatusUnauthorized,
-			response.GenericError(ErrMessageInvalidAuthToken),
-		),
+		response.GenericError(ErrMessageInvalidAuthToken),
 	)
 }
 

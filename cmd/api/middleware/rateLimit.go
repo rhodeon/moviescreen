@@ -46,13 +46,7 @@ func RateLimit(config common.Config) gin.HandlerFunc {
 			ip, _, err := net.SplitHostPort(ctx.Request.RemoteAddr)
 			if err != nil {
 				prettylog.ErrorF("internal server error: %s", err.Error())
-				ctx.AbortWithStatusJSON(
-					http.StatusInternalServerError,
-					response.ErrorResponse(
-						http.StatusInternalServerError,
-						response.GenericError(responseErrors.ErrMessageInternalServer),
-					),
-				)
+				responseErrors.HandleInternalServerError(ctx, err)
 				return
 			}
 
@@ -72,12 +66,10 @@ func RateLimit(config common.Config) gin.HandlerFunc {
 
 			// return a 429 error if the limit has been exceeded
 			if !clients[ip].limiter.Allow() {
-				ctx.AbortWithStatusJSON(
+				responseErrors.SetStatusAndBody(
+					ctx,
 					http.StatusTooManyRequests,
-					response.ErrorResponse(
-						http.StatusTooManyRequests,
-						response.GenericError(responseErrors.ErrMessageRateLimitExceeded),
-					),
+					response.GenericError(responseErrors.ErrMessageRateLimitExceeded),
 				)
 				return
 			}
