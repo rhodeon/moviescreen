@@ -83,6 +83,13 @@ func (u userHandler) Register(ctx *gin.Context) {
 		return
 	}
 
+	// add "movies:read" permission for the new user
+	err = u.repositories.Permissions.AddForUser(user, models.PermissionMoviesRead)
+	if err != nil {
+		responseErrors.HandleInternalServerError(ctx, err)
+		return
+	}
+
 	// generate activation token with a lifetime of 2 days
 	token, err := u.repositories.Tokens.New(user.Id, models.ScopeActivation, 2*24*time.Hour)
 	if err != nil {

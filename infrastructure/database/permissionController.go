@@ -3,12 +3,24 @@ package database
 import (
 	"context"
 	"database/sql"
+	"github.com/lib/pq"
 	"github.com/rhodeon/moviescreen/domain/models"
 	"time"
 )
 
 type PermissionController struct {
 	Db *sql.DB
+}
+
+func (p PermissionController) AddForUser(user models.User, codes ...string) error {
+	stmt := `INSERT INTO users_permissions
+	SELECT $1, permissions.id from permissions WHERE permissions.code = ANY($2)`
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	_, err := p.Db.ExecContext(ctx, stmt, user.Id, pq.Array(codes))
+	return err
 }
 
 func (p PermissionController) GetAllForUser(user models.User) (models.Permissions, error) {
