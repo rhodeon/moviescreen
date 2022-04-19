@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"github.com/rhodeon/moviescreen/cmd/api/common"
-	"github.com/rhodeon/moviescreen/cmd/api/errors"
 	"github.com/rhodeon/moviescreen/cmd/api/internal"
+	"github.com/rhodeon/moviescreen/cmd/api/responseErrors"
 	"github.com/rhodeon/moviescreen/domain/repository"
 	"github.com/rhodeon/moviescreen/infrastructure/mock"
 	"github.com/rhodeon/moviescreen/internal/testhelpers"
@@ -37,7 +37,7 @@ var testRepos = repository.Repositories{
 var testWaitGroup = sync.WaitGroup{}
 
 var testRouteHandlers = common.RouteHandlers{
-	Error:  errors.NewErrorHandler(),
+	Error:  responseErrors.NewErrorHandler(),
 	Misc:   NewMiscHandler(testConfig),
 	Movies: NewMovieHandler(testConfig, testRepos),
 	Users:  NewUserHandler(testConfig, testRepos, &testWaitGroup),

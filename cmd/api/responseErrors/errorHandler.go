@@ -1,4 +1,4 @@
-package errors
+package responseErrors
 
 import (
 	"github.com/gin-gonic/gin"

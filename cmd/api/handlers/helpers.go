@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/rhodeon/moviescreen/cmd/api/errors"
 	"github.com/rhodeon/moviescreen/cmd/api/models/request"
 	"github.com/rhodeon/moviescreen/cmd/api/models/response"
+	"github.com/rhodeon/moviescreen/cmd/api/responseErrors"
 	"github.com/rhodeon/moviescreen/internal/validator"
 	"net/http"
 	"net/url"
@@ -48,7 +48,7 @@ func parseIdParam(ctx *gin.Context) (int, error) {
 	idString := ctx.Param("id")
 	id, err := strconv.Atoi(idString)
 	if err != nil {
-		errors.NewErrorHandler().NotFound(ctx)
+		responseErrors.NewErrorHandler().NotFound(ctx)
 		return 0, err
 	}
 	return id, nil

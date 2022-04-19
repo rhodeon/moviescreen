@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/rhodeon/moviescreen/cmd/api/common"
-	errors2 "github.com/rhodeon/moviescreen/cmd/api/errors"
 	"github.com/rhodeon/moviescreen/cmd/api/handlers"
 	"github.com/rhodeon/moviescreen/cmd/api/internal"
+	"github.com/rhodeon/moviescreen/cmd/api/responseErrors"
 	"github.com/rhodeon/prettylog"
 	"net/http"
 	"os"
@@ -20,7 +20,7 @@ import (
 // serveApp starts up a server with the app data.
 func serveApp(app internal.Application, backgroundWaitGroup *sync.WaitGroup) error {
 	routeHandlers := common.RouteHandlers{
-		Error:  errors2.NewErrorHandler(),
+		Error:  responseErrors.NewErrorHandler(),
 		Misc:   handlers.NewMiscHandler(app.Config),
 		Movies: handlers.NewMovieHandler(app.Config, app.Repositories),
 		Users:  handlers.NewUserHandler(app.Config, app.Repositories, backgroundWaitGroup),

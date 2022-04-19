@@ -4,9 +4,9 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/rhodeon/moviescreen/cmd/api/common"
-	errors2 "github.com/rhodeon/moviescreen/cmd/api/errors"
 	"github.com/rhodeon/moviescreen/cmd/api/models/request"
 	"github.com/rhodeon/moviescreen/cmd/api/models/response"
+	"github.com/rhodeon/moviescreen/cmd/api/responseErrors"
 	"github.com/rhodeon/moviescreen/domain/models"
 	"github.com/rhodeon/moviescreen/domain/repository"
 	"github.com/rhodeon/moviescreen/internal/mailer"
@@ -52,7 +52,7 @@ func (u userHandler) Register(ctx *gin.Context) {
 	// map request body to user body for further operations
 	user, err := userRequest.ToModel()
 	if err != nil {
-		errors2.HandleInternalServerError(ctx, err)
+		responseErrors.HandleInternalServerError(ctx, err)
 		return
 	}
 
@@ -77,7 +77,7 @@ func (u userHandler) Register(ctx *gin.Context) {
 			)
 
 		default:
-			errors2.HandleInternalServerError(ctx, err)
+			responseErrors.HandleInternalServerError(ctx, err)
 		}
 
 		return
@@ -86,7 +86,7 @@ func (u userHandler) Register(ctx *gin.Context) {
 	// generate activation token with a lifetime of 2 days
 	token, err := u.repositories.Tokens.New(user.Id, models.ScopeActivation, 2*24*time.Hour)
 	if err != nil {
-		errors2.HandleInternalServerError(ctx, err)
+		responseErrors.HandleInternalServerError(ctx, err)
 	}
 
 	// send welcome email to user in the background
@@ -145,7 +145,7 @@ func (u userHandler) Activate(ctx *gin.Context) {
 			)
 
 		default:
-			errors2.HandleInternalServerError(ctx, err)
+			responseErrors.HandleInternalServerError(ctx, err)
 		}
 
 		return
@@ -159,10 +159,10 @@ func (u userHandler) Activate(ctx *gin.Context) {
 	if err != nil {
 		switch {
 		case errors.Is(err, repository.ErrEditConflict):
-			errors2.NewErrorHandler().EditConflict(ctx)
+			responseErrors.NewErrorHandler().EditConflict(ctx)
 
 		default:
-			errors2.HandleInternalServerError(ctx, err)
+			responseErrors.HandleInternalServerError(ctx, err)
 		}
 
 		return
@@ -171,7 +171,7 @@ func (u userHandler) Activate(ctx *gin.Context) {
 	// delete used token
 	err = u.repositories.Tokens.DeleteAllForUser(user.Id, models.ScopeActivation)
 	if err != nil {
-		errors2.HandleInternalServerError(ctx, err)
+		responseErrors.HandleInternalServerError(ctx, err)
 		return
 	}
 
@@ -202,10 +202,10 @@ func (u userHandler) Authenticate(ctx *gin.Context) {
 	if err != nil {
 		switch {
 		case errors.Is(err, repository.ErrRecordNotFound):
-			errors2.NewErrorHandler().InvalidCredentials(ctx)
+			responseErrors.NewErrorHandler().InvalidCredentials(ctx)
 
 		default:
-			errors2.HandleInternalServerError(ctx, err)
+			responseErrors.HandleInternalServerError(ctx, err)
 		}
 
 		return
@@ -214,24 +214,24 @@ func (u userHandler) Authenticate(ctx *gin.Context) {
 	// confirm password
 	valid, err := user.Password.Matches(*req.Password)
 	if err != nil {
-		errors2.HandleInternalServerError(ctx, err)
+		responseErrors.HandleInternalServerError(ctx, err)
 		return
 	}
 	if !valid {
-		errors2.NewErrorHandler().InvalidCredentials(ctx)
+		responseErrors.NewErrorHandler().InvalidCredentials(ctx)
 		return
 	}
 
 	// return forbidden error if the user is not activated
 	if !user.Activated {
-		errors2.NewErrorHandler().UnactivatedUser(ctx)
+		responseErrors.NewErrorHandler().UnactivatedUser(ctx)
 		return
 	}
 
 	// generate new authentication token with a lifetime of 1 day
 	token, err := u.repositories.Tokens.New(user.Id, models.ScopeAuthentication, 1*24*time.Hour)
 	if err != nil {
-		errors2.HandleInternalServerError(ctx, err)
+		responseErrors.HandleInternalServerError(ctx, err)
 		return
 	}
 

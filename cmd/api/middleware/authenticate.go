@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/rhodeon/moviescreen/cmd/api/common"
-	respErrors "github.com/rhodeon/moviescreen/cmd/api/errors"
+	respErrors "github.com/rhodeon/moviescreen/cmd/api/responseErrors"
 	"github.com/rhodeon/moviescreen/domain/models"
 	"github.com/rhodeon/moviescreen/domain/repository"
 	"strings"
