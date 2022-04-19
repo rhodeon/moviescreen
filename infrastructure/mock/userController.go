@@ -17,8 +17,8 @@ var users = []models.User{
 		Username: "rhodeon",
 		Email:    "rhodeon@dev.mail",
 		Password: types.Password{
-			Plaintext: common.StringLiteralPointer("rhodeonpass"),
-			Hash:      []byte("rhodeonhashedpass"),
+			Plaintext: common.StringLiteralPointer("password"),
+			Hash:      []byte("$2a$10$T.olpluq6ZZAisvfJVuLuOIXnqh/bN.9RCDiEu/tnnCgBqjesMkse.sP49rm"),
 		},
 		Activated: true,
 		Version:   1,
@@ -29,8 +29,8 @@ var users = []models.User{
 		Username: "ruona",
 		Email:    "ruona@mail.com",
 		Password: types.Password{
-			Plaintext: common.StringLiteralPointer("ruonapass"),
-			Hash:      []byte("ruonahashedpass"),
+			Plaintext: common.StringLiteralPointer("password"),
+			Hash:      []byte("$2a$10$T.olpluq6ZZAisvfJVuLuOIXnqh/bN.9RCDiEu/tnnCgBqjesMkse.sP49rm"),
 		},
 		Activated: false,
 		Version:   0,
@@ -41,8 +41,8 @@ var users = []models.User{
 		Username: "johndoe",
 		Email:    "johndoe@mail.com",
 		Password: types.Password{
-			Plaintext: common.StringLiteralPointer("johndoepass"),
-			Hash:      []byte("johndoehashedpass"),
+			Plaintext: common.StringLiteralPointer("password"),
+			Hash:      []byte("$2a$10$T.olpluq6ZZAisvfJVuLuOIXnqh/bN.9RCDiEu/tnnCgBqjesMkse.sP49rm"),
 		},
 		Activated: false,
 		Version:   0,
@@ -69,8 +69,13 @@ func (u UserController) Register(user *models.User) error {
 }
 
 func (u UserController) GetByEmail(email string) (models.User, error) {
-	//TODO implement me
-	panic("implement me")
+	for _, user := range users {
+		if user.Email == email {
+			return user, nil
+		}
+	}
+
+	return models.User{}, repository.ErrRecordNotFound
 }
 
 func (u UserController) Update(user *models.User) error {

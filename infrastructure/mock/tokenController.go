@@ -7,6 +7,7 @@ import (
 )
 
 var ActivationExpiry = time.Now().Add(2 * 24 * time.Hour)
+var AuthenticationBaseDate = time.Date(2023, 4, 10, 10, 00, 00, 00, time.UTC)
 
 var tokens = []models.Token{
 	{
@@ -33,7 +34,7 @@ func (t TokenController) New(userId int, scope string, lifetime time.Duration) (
 		Hash:      []byte("hashedToken"),
 		UserId:    userId,
 		Scope:     scope,
-		Expires:   time.Now().Add(lifetime),
+		Expires:   AuthenticationBaseDate.Add(lifetime),
 	}, nil
 }
 
