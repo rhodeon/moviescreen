@@ -11,13 +11,15 @@ import (
 )
 
 const (
-	ErrMessage404          = "resource not found"
-	ErrMessage405          = "method not allowed"
-	ErrMessage500          = "internal server error"
-	ErrMessageEditConflict = "unable to update the record due to an edit conflict, please try again"
-	ErrRateLimitExceeded   = "rate limit exceeded"
-	ErrInvalidCredentials  = "invalid user credentials"
-	ErrInvalidAuthToken    = "invalid or missing authentication token"
+	ErrMessage404            = "resource not found"
+	ErrMessage405            = "method not allowed"
+	ErrMessage500            = "internal server error"
+	ErrMessageEditConflict   = "unable to update the record due to an edit conflict, please try again"
+	ErrRateLimitExceeded     = "rate limit exceeded"
+	ErrInvalidCredentials    = "invalid user credentials"
+	ErrInvalidAuthToken      = "invalid or missing authentication token"
+	ErrUnauthenticatedAccess = "you must be authenticated to access this resource"
+	ErrUnactivatedAccess     = "your account must be activated to access this resource"
 )
 
 // Error represents the data of an error in a response.

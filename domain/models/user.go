@@ -32,6 +32,6 @@ func (user User) ToResponse() response.UserResponse {
 	}
 }
 
-func (user User) isAnonymous() bool {
+func (user User) IsAnonymous() bool {
 	return reflect.DeepEqual(user, AnonymousUser)
 }

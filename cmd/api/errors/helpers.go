@@ -7,6 +7,15 @@ import (
 	"net/http"
 )
 
+// SetStatusAndBody sets the status code and the body of the context response
+// to the given values.
+func SetStatusAndBody(ctx *gin.Context, statusCode int, body response.Error) {
+	ctx.AbortWithStatusJSON(
+		statusCode,
+		response.ErrorResponse(statusCode, body),
+	)
+}
+
 // HandleInternalServerError logs the error and sends
 // a generic 500 error response to the client.
 func HandleInternalServerError(ctx *gin.Context, err error) {

@@ -73,3 +73,19 @@ func (e errorHandler) InvalidAuthenticationToken(ctx *gin.Context) {
 		),
 	)
 }
+
+func (e errorHandler) UnauthenticatedUser(ctx *gin.Context) {
+	SetStatusAndBody(
+		ctx,
+		http.StatusUnauthorized,
+		response.GenericError(response.ErrUnauthenticatedAccess),
+	)
+}
+
+func (e errorHandler) UnactivatedUser(ctx *gin.Context) {
+	SetStatusAndBody(
+		ctx,
+		http.StatusForbidden,
+		response.GenericError(response.ErrUnactivatedAccess),
+	)
+}

@@ -19,6 +19,8 @@ type ErrorHandler interface {
 	EditConflict(ctx *gin.Context)
 	InvalidCredentials(ctx *gin.Context)
 	InvalidAuthenticationToken(ctx *gin.Context)
+	UnauthenticatedUser(ctx *gin.Context)
+	UnactivatedUser(ctx *gin.Context)
 }
 
 type MiscHandler interface {

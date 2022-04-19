@@ -211,18 +211,6 @@ func (u userHandler) Authenticate(ctx *gin.Context) {
 		return
 	}
 
-	// return unauthorized error if the user is not activated
-	if !user.Activated {
-		ctx.AbortWithStatusJSON(
-			http.StatusUnauthorized,
-			response.ErrorResponse(
-				http.StatusUnauthorized,
-				response.GenericError("user not activated"),
-			),
-		)
-		return
-	}
-
 	// confirm password
 	valid, err := user.Password.Matches(*req.Password)
 	if err != nil {
@@ -231,6 +219,12 @@ func (u userHandler) Authenticate(ctx *gin.Context) {
 	}
 	if !valid {
 		errors2.NewErrorHandler().InvalidCredentials(ctx)
+		return
+	}
+
+	// return forbidden error if the user is not activated
+	if !user.Activated {
+		errors2.NewErrorHandler().UnactivatedUser(ctx)
 		return
 	}
 

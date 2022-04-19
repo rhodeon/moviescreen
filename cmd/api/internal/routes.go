@@ -26,6 +26,7 @@ func (app Application) Router(handlers common.RouteHandlers) *gin.Engine {
 
 	movies := router.Group(withVersion("movies"))
 	{
+		movies.Use(middleware.RequireActivatedUser())
 		movies.GET("/", handlers.Movies.List)
 		movies.POST("/", handlers.Movies.Create)
 		movies.GET("/:id", handlers.Movies.GetById)
