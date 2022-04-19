@@ -24,7 +24,7 @@ func HandleInternalServerError(ctx *gin.Context, err error) {
 		http.StatusInternalServerError,
 		response.ErrorResponse(
 			http.StatusInternalServerError,
-			response.GenericError(response.ErrMessage500),
+			response.GenericError(ErrMessageInternalServer),
 		),
 	)
 }

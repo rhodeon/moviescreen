@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rhodeon/moviescreen/cmd/api/common"
 	"github.com/rhodeon/moviescreen/cmd/api/models/response"
+	"github.com/rhodeon/moviescreen/cmd/api/responseErrors"
 	"github.com/rhodeon/prettylog"
 	"golang.org/x/time/rate"
 	"net"
@@ -49,7 +50,7 @@ func RateLimit(config common.Config) gin.HandlerFunc {
 					http.StatusInternalServerError,
 					response.ErrorResponse(
 						http.StatusInternalServerError,
-						response.GenericError(response.ErrMessage500),
+						response.GenericError(responseErrors.ErrMessageInternalServer),
 					),
 				)
 				return
@@ -75,7 +76,7 @@ func RateLimit(config common.Config) gin.HandlerFunc {
 					http.StatusTooManyRequests,
 					response.ErrorResponse(
 						http.StatusTooManyRequests,
-						response.GenericError(response.ErrRateLimitExceeded),
+						response.GenericError(responseErrors.ErrMessageRateLimitExceeded),
 					),
 				)
 				return

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/rhodeon/moviescreen/cmd/api/models/response"
+	"github.com/rhodeon/moviescreen/cmd/api/responseErrors"
 	"net/http"
 )
 
@@ -188,7 +189,7 @@ var getMovieByIdTestCases = map[string]struct {
 			response.Error{
 				Type: "generic",
 				Data: map[string]string{
-					"message": response.ErrMessage404,
+					"message": responseErrors.ErrMessageNotFound,
 				},
 			},
 		),
@@ -202,7 +203,7 @@ var getMovieByIdTestCases = map[string]struct {
 			response.Error{
 				Type: "generic",
 				Data: map[string]string{
-					"message": response.ErrMessage404,
+					"message": responseErrors.ErrMessageNotFound,
 				},
 			},
 		),
@@ -810,7 +811,7 @@ var updateMovieTestCases = map[string]struct {
 			response.Error{
 				Type: "generic",
 				Data: map[string]string{
-					"message": response.ErrMessage404,
+					"message": responseErrors.ErrMessageNotFound,
 				},
 			},
 		),
@@ -830,7 +831,7 @@ var updateMovieTestCases = map[string]struct {
 			response.Error{
 				Type: "generic",
 				Data: map[string]string{
-					"message": response.ErrMessage404,
+					"message": responseErrors.ErrMessageNotFound,
 				},
 			},
 		),
@@ -859,7 +860,7 @@ var deleteMovieTestCases = map[string]struct {
 			response.Error{
 				Type: "generic",
 				Data: map[string]string{
-					"message": response.ErrMessage404,
+					"message": responseErrors.ErrMessageNotFound,
 				},
 			},
 		),
@@ -873,7 +874,7 @@ var deleteMovieTestCases = map[string]struct {
 			response.Error{
 				Type: "generic",
 				Data: map[string]string{
-					"message": response.ErrMessage404,
+					"message": responseErrors.ErrMessageNotFound,
 				},
 			},
 		),

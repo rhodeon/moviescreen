@@ -18,7 +18,7 @@ func (e errorHandler) NotFound(ctx *gin.Context) {
 		http.StatusNotFound,
 		response.ErrorResponse(
 			http.StatusNotFound,
-			response.GenericError(response.ErrMessage404),
+			response.GenericError(ErrMessageNotFound),
 		),
 	)
 }
@@ -28,7 +28,7 @@ func (e errorHandler) MethodNotAllowed(ctx *gin.Context) {
 		http.StatusMethodNotAllowed,
 		response.ErrorResponse(
 			http.StatusMethodNotAllowed,
-			response.GenericError(response.ErrMessage405),
+			response.GenericError(ErrMessageNotAllowed),
 		),
 	)
 }
@@ -38,7 +38,7 @@ func (e errorHandler) InternalServer(ctx *gin.Context) {
 		http.StatusInternalServerError,
 		response.ErrorResponse(
 			http.StatusInternalServerError,
-			response.GenericError(response.ErrMessage500),
+			response.GenericError(ErrMessageInternalServer),
 		),
 	)
 }
@@ -48,7 +48,7 @@ func (e errorHandler) EditConflict(ctx *gin.Context) {
 		http.StatusConflict,
 		response.ErrorResponse(
 			http.StatusConflict,
-			response.GenericError(response.ErrMessageEditConflict),
+			response.GenericError(ErrMessageEditConflict),
 		),
 	)
 }
@@ -58,7 +58,7 @@ func (e errorHandler) InvalidCredentials(ctx *gin.Context) {
 		http.StatusUnauthorized,
 		response.ErrorResponse(
 			http.StatusUnauthorized,
-			response.GenericError(response.ErrInvalidCredentials),
+			response.GenericError(ErrMessageInvalidCredentials),
 		),
 	)
 }
@@ -69,7 +69,7 @@ func (e errorHandler) InvalidAuthenticationToken(ctx *gin.Context) {
 		http.StatusUnauthorized,
 		response.ErrorResponse(
 			http.StatusUnauthorized,
-			response.GenericError(response.ErrInvalidAuthToken),
+			response.GenericError(ErrMessageInvalidAuthToken),
 		),
 	)
 }
@@ -78,7 +78,7 @@ func (e errorHandler) UnauthenticatedUser(ctx *gin.Context) {
 	SetStatusAndBody(
 		ctx,
 		http.StatusUnauthorized,
-		response.GenericError(response.ErrUnauthenticatedAccess),
+		response.GenericError(ErrMessageUnauthenticatedAccess),
 	)
 }
 
@@ -86,6 +86,6 @@ func (e errorHandler) UnactivatedUser(ctx *gin.Context) {
 	SetStatusAndBody(
 		ctx,
 		http.StatusForbidden,
-		response.GenericError(response.ErrUnactivatedAccess),
+		response.GenericError(ErrMessageUnactivatedAccess),
 	)
 }
