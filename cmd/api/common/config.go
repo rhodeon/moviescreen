@@ -14,7 +14,6 @@ type Config struct {
 
 	Db struct {
 		Dsn          string
-		SslMode      string
 		MaxOpenConns int
 		MaxIdleConns int
 		MaxIdleTime  string
@@ -40,11 +39,10 @@ func (c *Config) Parse() {
 	flag.StringVar(&c.Version, "version", c.defaultVersion(), "API version")
 	flag.IntVar(&c.Port, "port", c.defaultPort(), "API server port")
 
-	flag.StringVar(&c.Db.Dsn, "db-dsn", c.defaultDsn(), "PostgreSQL DSN")
-	flag.StringVar(&c.Db.SslMode, "db-ssl-mode", c.defaultSslMode(), "PostgreSQL SSL requirement")
-	flag.IntVar(&c.Db.MaxOpenConns, "db-max-open-conns", c.defaultMaxOpenConns(), "PostgreSQL maximum number of open connections")
-	flag.IntVar(&c.Db.MaxIdleConns, "db-max-idle-conns", c.defaultMaxIdleConns(), "PostgreSQL maximum number of idle connections")
-	flag.StringVar(&c.Db.MaxIdleTime, "db-max-idle-time", c.defaultMaxIdleTime(), "PostgreSQL maximumn idle time")
+	flag.StringVar(&c.Db.Dsn, "db-dsn", c.defaultDbDsn(), "PostgreSQL DSN")
+	flag.IntVar(&c.Db.MaxOpenConns, "db-max-open-conns", c.defaultDbMaxOpenConns(), "PostgreSQL maximum number of open connections")
+	flag.IntVar(&c.Db.MaxIdleConns, "db-max-idle-conns", c.defaultDbMaxIdleConns(), "PostgreSQL maximum number of idle connections")
+	flag.StringVar(&c.Db.MaxIdleTime, "db-max-idle-time", c.defaultDbMaxIdleTime(), "PostgreSQL maximumn idle time")
 
 	flag.BoolVar(&c.Limiter.Enabled, "limiter-enabled", c.defaultLimiterEnabled(), "Enable rate limiter")
 	flag.Float64Var(&c.Limiter.Rps, "limiter-rps", c.defaultLimiterRps(), "Rate limiter maximum requests per second")
@@ -61,7 +59,7 @@ func (c *Config) Parse() {
 
 func (c *Config) Validate() error {
 	if c.Db.Dsn == "" {
-		return errors.New("the 'dsn' flag is required")
+		return errors.New("the 'db-dsn' flag is required")
 	}
 
 	if c.Smtp.Host == "" {
@@ -105,25 +103,16 @@ func (c *Config) defaultPort() int {
 	return defaultPort
 }
 
-func (c *Config) defaultDsn() string {
+func (c *Config) defaultDbDsn() string {
 	const defaultDsn = ""
 
-	if dsn, exists := os.LookupEnv("DSN"); exists {
+	if dsn, exists := os.LookupEnv("DB_DSN"); exists {
 		return dsn
 	}
 	return defaultDsn
 }
 
-func (c *Config) defaultSslMode() string {
-	const defaultSslMode = "disable"
-
-	if sslMode, exists := os.LookupEnv("SSL_MODE"); exists {
-		return sslMode
-	}
-	return defaultSslMode
-}
-
-func (c *Config) defaultMaxOpenConns() int {
+func (c *Config) defaultDbMaxOpenConns() int {
 	const defMaxOpenConns = 25
 
 	if maxOpenConnsEnv, exists := os.LookupEnv("DB_MAX_OPEN_CONNS"); exists {
@@ -135,7 +124,7 @@ func (c *Config) defaultMaxOpenConns() int {
 	return defMaxOpenConns
 }
 
-func (c *Config) defaultMaxIdleConns() int {
+func (c *Config) defaultDbMaxIdleConns() int {
 	const defMaxIdleConns = 25
 
 	if maxIdleConnsEnv, exists := os.LookupEnv("DB_MAX_IDLE_CONNS"); exists {
@@ -147,7 +136,7 @@ func (c *Config) defaultMaxIdleConns() int {
 	return defMaxIdleConns
 }
 
-func (c *Config) defaultMaxIdleTime() string {
+func (c *Config) defaultDbMaxIdleTime() string {
 	const defMaxIdleTime = "15m"
 
 	if maxIdleTime, exists := os.LookupEnv("DB_MAX_IDLE_TIME"); exists {

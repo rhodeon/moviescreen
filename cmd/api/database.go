@@ -9,7 +9,7 @@ import (
 
 func openDb(config common.Config) (*sql.DB, error) {
 	dbCfg := config.Db
-	db, err := sql.Open("postgres", dbCfg.Dsn+"?sslmode="+dbCfg.SslMode)
+	db, err := sql.Open("postgres", dbCfg.Dsn)
 	if err != nil {
 		return nil, err
 	}
