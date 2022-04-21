@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/rhodeon/moviescreen/cmd/api/common"
 	"github.com/rhodeon/moviescreen/cmd/api/internal"
@@ -11,10 +12,16 @@ import (
 )
 
 func main() {
+	// load environment variable
+	err := godotenv.Load()
+	if err != nil {
+		prettylog.FatalError(err)
+	}
+
 	// setup server configuration
 	config := common.Config{}
 	config.Parse()
-	err := config.Validate()
+	err = config.Validate()
 	if err != nil {
 		prettylog.FatalError(err)
 	}

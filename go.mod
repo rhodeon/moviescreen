@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-mail/mail/v2 v2.3.0
+	github.com/joho/godotenv v1.4.0
 	github.com/lib/pq v1.10.4
 	github.com/rhodeon/prettylog v1.0.3
 	golang.org/x/crypto v0.0.0-20220408190544-5352b0902921
