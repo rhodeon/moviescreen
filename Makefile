@@ -2,9 +2,7 @@ SHELL := /bin/bash
 
 include .env
 
-
 # --- HELPERS ---
-
 ## help: print this help message
 .PHONY: help
 help:
@@ -17,7 +15,6 @@ confirm:
 	@echo -n "Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ]
 
 # --- DEVELOPMENT ---
-
 ## run/api: run the cmd/api application
 .PHONY: run/api
 run/api:
@@ -54,12 +51,9 @@ db/migrations/goto: confirm
 	@migrate -path ./migrations -database ${DB_DSN} goto ${version}
 
 # --- QUALITY CONTROL ---
+## audit: tidy and vendor dependencies and format, vet and test codebase
 .PHONY: audit
-audit:
-	@echo "tidying and verifying module dependencies..."
-	go mod tidy
-	go mod verify
-
+audit: vendor
 	@echo "formatting codebase..."
 	go fmt ./...
 
@@ -69,3 +63,13 @@ audit:
 
 	@echo "running tests..."
 	go test -race -vet=off ./...
+
+## vendor: tidy and vendor dependencies
+.PHONY: vendor
+vendor:
+	@echo "tidying and verifying module dependencies..."
+	go mod tidy
+	go mod verify
+
+	@echo "vendoring dependencies..."
+	go mod vendor
