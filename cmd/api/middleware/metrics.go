@@ -38,7 +38,7 @@ func Metrics() gin.HandlerFunc {
 		totalResponsesSent.Add(1)
 
 		// determine time taken for request handling
-		duration := time.Now().Sub(start).Milliseconds()
+		duration := time.Since(start).Milliseconds()
 		totalProcessingTimeInMicroseconds.Add(duration)
 
 		// increment the count of the returned status code

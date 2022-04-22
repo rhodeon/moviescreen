@@ -54,10 +54,10 @@ type UserController struct{}
 
 func (u UserController) Register(user *models.User) error {
 	for _, u := range users {
-		if strings.ToLower(u.Username) == strings.ToLower(user.Username) {
+		if strings.EqualFold(u.Username, user.Username) {
 			return repository.ErrDuplicateUsername
 		}
-		if strings.ToLower(u.Email) == strings.ToLower(user.Email) {
+		if strings.EqualFold(u.Email, user.Email) {
 			return repository.ErrDuplicateEmail
 		}
 	}

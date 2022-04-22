@@ -2,7 +2,6 @@ package mock
 
 import (
 	"github.com/rhodeon/moviescreen/domain/models"
-	"github.com/rhodeon/moviescreen/domain/repository"
 	"time"
 )
 
@@ -47,7 +46,6 @@ func (t TokenController) DeleteAllForUser(userId int, scope string) error {
 		if token.UserId == userId && token.Scope == scope {
 			tokens[i] = models.Token{}
 		}
-		return nil
 	}
-	return repository.ErrRecordNotFound
+	return nil
 }

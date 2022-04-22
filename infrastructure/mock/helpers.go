@@ -23,7 +23,7 @@ func caseInsensitiveSubslice(data []string, target []string) bool {
 // Both values are converted to lowercase for comparison.
 func caseInsensitiveIn(data string, target []string) bool {
 	for _, element := range target {
-		if strings.ToLower(element) == strings.ToLower(data) {
+		if strings.EqualFold(element, data) {
 			return true
 		}
 	}

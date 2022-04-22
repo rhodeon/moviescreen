@@ -69,8 +69,9 @@ func BadRequestError(err error) BaseResponse {
 		// due to incompatible JSON-to-Go mapping
 		if unmarshalTypeError.Field != "" {
 			errorMessage = fmt.Sprintf("body contains incorrect JSON type for field %q", unmarshalTypeError.Field)
+		} else {
+			errorMessage = fmt.Sprintf("body contains incorrect JSON type (at character %d)", unmarshalTypeError.Offset)
 		}
-		errorMessage = fmt.Sprintf("body contains incorrect JSON type (at character %d)", unmarshalTypeError.Offset)
 
 	case errors.As(err, &invalidUnmarshalError):
 		// due to invalid target.
@@ -87,7 +88,7 @@ func BadRequestError(err error) BaseResponse {
 		errorMessage = fmt.Sprintf("unknown field: %s", field)
 
 	default:
-		errorMessage = fmt.Sprintf(err.Error())
+		errorMessage = fmt.Sprint(err.Error())
 	}
 
 	return ErrorResponse(http.StatusBadRequest, GenericError(errorMessage))
