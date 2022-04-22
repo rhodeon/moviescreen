@@ -20,6 +20,12 @@ confirm:
 run/api:
 	go run ./cmd/api
 
+## build/api: build the cmd/api application
+.PHONY: build/api
+build/api:
+	@echo 'building cmd/api...'
+	go build -o=./bin/api ./cmd/api
+
 ## db/migrations/create name=$1: create a new database migration
 .PHONY: db/migrations/create
 db/migrations/create: confirm
