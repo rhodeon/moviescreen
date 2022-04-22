@@ -9,17 +9,17 @@ import (
 )
 
 func setMetrics(config common.Config, db *sql.DB) {
-	expvar.NewString("version").Set(config.Version)
+	expvar.NewString(common.MetricVersion).Set(config.Version)
 
-	expvar.Publish("timestamp", expvar.Func(func() any {
+	expvar.Publish(common.MetricTimestamp, expvar.Func(func() any {
 		return time.Now().Unix()
 	}))
 
-	expvar.Publish("goroutines", expvar.Func(func() any {
+	expvar.Publish(common.MetricGoroutines, expvar.Func(func() any {
 		return runtime.NumGoroutine()
 	}))
 
-	expvar.Publish("database", expvar.Func(func() any {
+	expvar.Publish(common.MetricDatabase, expvar.Func(func() any {
 		return db.Stats()
 	}))
 }

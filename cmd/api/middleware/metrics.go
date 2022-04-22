@@ -3,16 +3,28 @@ package middleware
 import (
 	"expvar"
 	"github.com/gin-gonic/gin"
+	"github.com/rhodeon/moviescreen/cmd/api/common"
 	"strconv"
 	"time"
 )
 
-func Metrics() gin.HandlerFunc {
-	totalRequestsReceived := expvar.NewInt("total_requests_received")
-	totalResponsesSent := expvar.NewInt("total_responses_sent")
-	totalProcessingTimeInMicroseconds := expvar.NewInt("total_processing_time_microseconds")
-	ResponseStatusCodeCount := expvar.NewMap("response_status_code_count")
+var (
+	totalRequestsReceived             *expvar.Int
+	totalResponsesSent                *expvar.Int
+	totalProcessingTimeInMicroseconds *expvar.Int
+	responseStatusCodeCount           *expvar.Map
+)
 
+func init() {
+	// register expvar instances only once on package initialization
+	totalRequestsReceived = expvar.NewInt(common.MetricTotalRequestsReceived)
+	totalResponsesSent = expvar.NewInt(common.MetricTotalResponsesSent)
+	totalProcessingTimeInMicroseconds = expvar.NewInt(common.MetricTotalProcessingTimeInMicroseconds)
+	responseStatusCodeCount = expvar.NewMap(common.MetricResponseStatusCodeCount)
+}
+
+// Metrics returns useful data for analytics and debugging.
+func Metrics() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		start := time.Now()
 
@@ -30,6 +42,6 @@ func Metrics() gin.HandlerFunc {
 		totalProcessingTimeInMicroseconds.Add(duration)
 
 		// increment the count of the returned status code
-		ResponseStatusCodeCount.Add(strconv.Itoa(ctx.Writer.Status()), 1)
+		responseStatusCodeCount.Add(strconv.Itoa(ctx.Writer.Status()), 1)
 	}
 }
