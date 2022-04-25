@@ -53,7 +53,7 @@ VALUES (now(), 'rhodeon', 'rhodeon@dev.mail', '$2a$10$T.olpluq6ZZAisvfJVuLuOIXnq
        (now(), 'ruona', 'ruona@mail.com', '$2a$10$T.olpluq6ZZAisvfJVuLuOIXnqh/bN.9RCDiEu/tnnCgBqjesMkse.sP49rm',
         false, 1),
        (now(), 'johndoe', 'johndoe@mail.com', '$2a$10$T.olpluq6ZZAisvfJVuLuOIXnqh/bN.9RCDiEu/tnnCgBqjesMkse.sP49rm',
-        false, 1);
+        true, 3);
 
 
 -- tokens table

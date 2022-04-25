@@ -58,3 +58,28 @@ func TestUserController_GetByEmail(t *testing.T) {
 		})
 	}
 }
+
+func TestUserController_Update(t *testing.T) {
+	if testing.Short() {
+		t.Skip("postgres: skipping integration test")
+	}
+	testcases := updateUserTestCases
+
+	for name, tc := range testcases {
+		t.Run(name, func(t *testing.T) {
+			db, teardown := newTestDb(t)
+			userController := UserController{Db: db}
+			defer teardown()
+
+			err := userController.Update(&tc.user)
+			testhelpers.AssertError(t, err, tc.wantErr)
+
+			if err == nil {
+				tc.user.Created = time.Time{}
+				if !reflect.DeepEqual(tc.user, tc.updatedUser) {
+					t.Errorf("\nGot:\t%+v\nWant:\t%+v", tc.user, tc.updatedUser)
+				}
+			}
+		})
+	}
+}
