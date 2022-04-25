@@ -21,6 +21,7 @@ const (
 	UserFieldUsername = "username"
 	UserFieldEmail    = "email"
 	UserFieldPassword = "password"
+	UserFieldToken    = "token"
 )
 
 func (request *UserRequest) ToModel() (models.User, error) {
@@ -51,6 +52,9 @@ func (request UserRequest) Validate(required []string) *validator.Validator {
 
 		case UserFieldPassword:
 			v.Check(request.Password != nil, field, "must be provided")
+
+		case UserFieldToken:
+			v.Check(request.Token != nil, field, "must be provided")
 		}
 	}
 
@@ -68,6 +72,12 @@ func (request UserRequest) Validate(required []string) *validator.Validator {
 		v.Check(strings.TrimSpace(*request.Password) != "", UserFieldPassword, "must not be blank")
 		v.Check(utf8.RuneCountInString(*request.Password) >= 8, UserFieldPassword, "must have at least 8 characters")
 		v.Check(utf8.RuneCountInString(*request.Password) <= 72, UserFieldPassword, "must not have more than 72 characters")
+	}
+
+	if request.Token != nil {
+		if utf8.RuneCountInString(*request.Token) != 26 {
+			v.AddError(UserFieldToken, "must have exactly 26 characters")
+		}
 	}
 
 	return v

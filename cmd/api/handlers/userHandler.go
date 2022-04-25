@@ -127,14 +127,14 @@ func (u userHandler) Register(ctx *gin.Context) {
 
 func (u userHandler) Activate(ctx *gin.Context) {
 	// parse request body
-	req := &request.UserActivationRequest{}
+	req := &request.UserRequest{}
 	err := parseJsonRequest(ctx, req)
 	if err != nil {
 		return
 	}
 
 	// validate request token
-	err = validateJsonRequest(ctx, req, []string{request.UserActivationFieldToken})
+	err = validateJsonRequest(ctx, req, []string{request.UserFieldToken})
 	if err != nil {
 		return
 	}
@@ -144,8 +144,8 @@ func (u userHandler) Activate(ctx *gin.Context) {
 	if err != nil {
 		switch {
 		case errors.Is(err, repository.ErrRecordNotFound):
-			v := validator.New("activate")
-			v.AddError(request.UserActivationFieldToken, "invalid or expired activation token")
+			v := validator.New(request.UserField)
+			v.AddError(request.UserFieldToken, "invalid or expired activation token")
 			ctx.AbortWithStatusJSON(
 				http.StatusUnprocessableEntity,
 				response.UnprocessableEntityError(v),
@@ -334,7 +334,7 @@ func (u userHandler) UpdatePassword(ctx *gin.Context) {
 		return
 	}
 
-	err = validateJsonRequest(ctx, req, []string{request.UserFieldPassword, request.UserActivationFieldToken})
+	err = validateJsonRequest(ctx, req, []string{request.UserFieldPassword, request.UserFieldToken})
 	if err != nil {
 		return
 	}
@@ -345,7 +345,7 @@ func (u userHandler) UpdatePassword(ctx *gin.Context) {
 		switch {
 		case errors.Is(err, repository.ErrRecordNotFound):
 			v := validator.New(request.UserField)
-			v.AddError("token", "invalid or expired reset token")
+			v.AddError(request.UserFieldToken, "invalid or expired reset token")
 			ctx.AbortWithStatusJSON(
 				http.StatusUnprocessableEntity,
 				response.UnprocessableEntityError(v),

@@ -144,7 +144,7 @@ var activateUserTestCases = map[string]struct {
 		WantBody: response.ErrorResponse(
 			422,
 			response.Error{
-				Type: "activate",
+				Type: "user",
 				Data: map[string]string{
 					"token": "must have exactly 26 characters",
 				},
@@ -160,7 +160,7 @@ var activateUserTestCases = map[string]struct {
 		WantBody: response.ErrorResponse(
 			422,
 			response.Error{
-				Type: "activate",
+				Type: "user",
 				Data: map[string]string{
 					"token": "must have exactly 26 characters",
 				},
@@ -176,7 +176,7 @@ var activateUserTestCases = map[string]struct {
 		WantBody: response.ErrorResponse(
 			422,
 			response.Error{
-				Type: "activate",
+				Type: "user",
 				Data: map[string]string{
 					"token": "invalid or expired activation token",
 				},
