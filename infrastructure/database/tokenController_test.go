@@ -5,7 +5,6 @@ import (
 	"github.com/rhodeon/moviescreen/domain/models"
 	"github.com/rhodeon/moviescreen/infrastructure/mock"
 	"github.com/rhodeon/moviescreen/internal/testhelpers"
-	"reflect"
 	"testing"
 	"time"
 )
@@ -47,9 +46,7 @@ func TestTokenController_Insert(t *testing.T) {
 	fetchedToken.Expires = fetchedToken.Expires.In(time.UTC)
 
 	// compare the original and fetched tokens
-	if !reflect.DeepEqual(fetchedToken, token) {
-		t.Errorf("\nGot:\t%+v\nWant:\t%+v", fetchedToken, token)
-	}
+	testhelpers.AssertStruct(t, fetchedToken, token)
 }
 
 func TestTokenController_DeleteAllForUser(t *testing.T) {

@@ -3,7 +3,6 @@ package database
 import (
 	"github.com/rhodeon/moviescreen/domain/repository"
 	"github.com/rhodeon/moviescreen/internal/testhelpers"
-	"reflect"
 	"testing"
 	"time"
 )
@@ -26,9 +25,7 @@ func TestMovieController_Create(t *testing.T) {
 
 			// reset new movie creation time as it can't be tested with the current implementation
 			tc.movie.Created = time.Time{}
-			if !reflect.DeepEqual(tc.movie, tc.wantNewMovie) {
-				t.Errorf("\nGot:\t%+v\nWant:\t%+v", tc.movie, tc.wantNewMovie)
-			}
+			testhelpers.AssertStruct(t, tc.movie, tc.wantNewMovie)
 		})
 	}
 }
@@ -50,9 +47,7 @@ func TestMovieController_Get(t *testing.T) {
 			testhelpers.AssertError(t, err, tc.wantErr)
 
 			movie.Created = time.Time{}
-			if !reflect.DeepEqual(movie, tc.wantMovie) {
-				t.Errorf("\nGot:\t%+v\nWant:\t%+v", movie, tc.wantMovie)
-			}
+			testhelpers.AssertStruct(t, movie, tc.wantMovie)
 		})
 	}
 }
@@ -73,9 +68,7 @@ func TestMovieController_Update(t *testing.T) {
 			testhelpers.AssertError(t, err, tc.wantErr)
 
 			tc.movie.Created = time.Time{}
-			if !reflect.DeepEqual(tc.movie, tc.wantUpdatedMovie) {
-				t.Errorf("\nGot:\t%+v\nWant:\t%+v", tc.movie, tc.wantUpdatedMovie)
-			}
+			testhelpers.AssertStruct(t, tc.movie, tc.wantUpdatedMovie)
 		})
 	}
 }

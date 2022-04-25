@@ -41,4 +41,4 @@ func SuccessResponse(code int, data SuccessData) BaseResponse {
 	}
 }
 
-type SuccessData interface{}
+type SuccessData any

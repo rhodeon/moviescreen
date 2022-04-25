@@ -15,14 +15,6 @@ func AssertEqual[T comparable](t *testing.T, got T, want T) {
 
 }
 
-func AssertNotEqual[T comparable](t *testing.T, got T, want T) {
-	t.Helper()
-
-	if got == want {
-		t.Errorf("\nGot:\t%v\nWant:\t%v", got, want)
-	}
-}
-
 func AssertError(t *testing.T, got error, want error) {
 	t.Helper()
 
@@ -39,7 +31,7 @@ func AssertFatalError(t *testing.T, err error) {
 	}
 }
 
-func AssertStruct(t *testing.T, got interface{}, want interface{}) {
+func AssertStruct(t *testing.T, got any, want any) {
 	t.Helper()
 
 	if !reflect.DeepEqual(got, want) {

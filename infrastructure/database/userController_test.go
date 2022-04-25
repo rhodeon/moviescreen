@@ -2,7 +2,6 @@ package database
 
 import (
 	"github.com/rhodeon/moviescreen/internal/testhelpers"
-	"reflect"
 	"testing"
 	"time"
 )
@@ -27,9 +26,7 @@ func TestUserController_Register(t *testing.T) {
 			// check user content on success
 			if err == nil {
 				tc.user.Created = time.Time{}
-				if !reflect.DeepEqual(tc.user, tc.registeredUser) {
-					t.Errorf("\nGot:\t%+v\nWant:\t%+v", tc.user, tc.registeredUser)
-				}
+				testhelpers.AssertStruct(t, tc.user, tc.registeredUser)
 			}
 		})
 	}
@@ -52,9 +49,7 @@ func TestUserController_GetByEmail(t *testing.T) {
 			testhelpers.AssertError(t, err, tc.wantErr)
 
 			user.Created = time.Time{}
-			if !reflect.DeepEqual(user, tc.wantUser) {
-				t.Errorf("\nGot:\t%+v\nWant:\t%+v", user, tc.wantUser)
-			}
+			testhelpers.AssertStruct(t, user, tc.wantUser)
 		})
 	}
 }
@@ -76,9 +71,7 @@ func TestUserController_Update(t *testing.T) {
 
 			if err == nil {
 				tc.user.Created = time.Time{}
-				if !reflect.DeepEqual(tc.user, tc.updatedUser) {
-					t.Errorf("\nGot:\t%+v\nWant:\t%+v", tc.user, tc.updatedUser)
-				}
+				testhelpers.AssertStruct(t, tc.user, tc.updatedUser)
 			}
 		})
 	}
@@ -100,9 +93,7 @@ func TestUserController_GetByToken(t *testing.T) {
 			testhelpers.AssertError(t, err, tc.wantErr)
 
 			user.Created = time.Time{}
-			if !reflect.DeepEqual(user, tc.wantUser) {
-				t.Errorf("\nGot:\t%+v\nWant:\t%+v", user, tc.wantUser)
-			}
+			testhelpers.AssertStruct(t, user, tc.wantUser)
 		})
 	}
 }
