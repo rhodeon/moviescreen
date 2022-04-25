@@ -58,3 +58,31 @@ var registerUserTestCases = map[string]struct {
 		wantErr:        repository.ErrDuplicateEmail,
 	},
 }
+
+var getUserByEmailTestCases = map[string]struct {
+	email    string
+	wantUser models.User
+	wantErr  error
+}{
+	"valid email": {
+		email: "rhodeon@dev.mail",
+		wantUser: models.User{
+			Id:       1,
+			Username: "rhodeon",
+			Email:    "rhodeon@dev.mail",
+			Password: types.Password{
+				Hash: []byte("$2a$10$T.olpluq6ZZAisvfJVuLuOIXnqh/bN.9RCDiEu/tnnCgBqjesMkse.sP49rm"),
+			},
+			Activated: true,
+			Version:   1,
+			Created:   time.Time{},
+		},
+		wantErr: nil,
+	},
+
+	"invalid email": {
+		email:    "wrong@email.com",
+		wantUser: models.User{},
+		wantErr:  repository.ErrRecordNotFound,
+	},
+}
