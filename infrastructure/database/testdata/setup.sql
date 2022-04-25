@@ -89,3 +89,7 @@ CREATE TABLE IF NOT EXISTS users_permissions
     permission_id BIGINT NOT NULL REFERENCES permissions ON DELETE CASCADE,
     PRIMARY KEY (user_id, permission_id)
 );
+
+INSERT INTO users_permissions(user_id, permission_id)
+VALUES (1, 1),
+       (1, 2);
