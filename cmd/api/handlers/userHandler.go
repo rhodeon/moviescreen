@@ -61,7 +61,7 @@ func (u userHandler) Register(ctx *gin.Context) {
 	if err != nil {
 		switch {
 		case errors.Is(err, repository.ErrDuplicateUsername):
-			v := validator.New("user")
+			v := validator.New(request.UserField)
 			v.AddError(request.UserFieldUsername, "this username is already taken")
 			ctx.AbortWithStatusJSON(
 				http.StatusUnprocessableEntity,
@@ -69,7 +69,7 @@ func (u userHandler) Register(ctx *gin.Context) {
 			)
 
 		case errors.Is(err, repository.ErrDuplicateEmail):
-			v := validator.New("user")
+			v := validator.New(request.UserField)
 			v.AddError(request.UserFieldEmail, "a user with this email address already exists")
 			ctx.AbortWithStatusJSON(
 				http.StatusUnprocessableEntity,
@@ -110,7 +110,7 @@ func (u userHandler) Register(ctx *gin.Context) {
 		})
 
 		if err != nil {
-			prettylog.ErrorF("Welcome mail: %v", err)
+			prettylog.ErrorF("welcome mail: %v", err)
 			return
 		}
 	})
@@ -252,12 +252,149 @@ func (u userHandler) Authenticate(ctx *gin.Context) {
 	)
 }
 
-func (u userHandler) GetByEmail(ctx *gin.Context) {
-	//TODO implement me
-	panic("implement me")
+func (u userHandler) CreatePasswordResetToken(ctx *gin.Context) {
+	req := &request.UserRequest{}
+	err := parseJsonRequest(ctx, req)
+	if err != nil {
+		return
+	}
+
+	err = validateJsonRequest(ctx, req, []string{request.UserFieldEmail})
+	if err != nil {
+		return
+	}
+
+	// check if user with email exists
+	user, err := u.repositories.Users.GetByEmail(*req.Email)
+	v := validator.New(request.UserField)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, repository.ErrRecordNotFound):
+			v.AddError(request.UserFieldEmail, "no matching email address found")
+			ctx.AbortWithStatusJSON(
+				http.StatusUnprocessableEntity,
+				response.UnprocessableEntityError(v),
+			)
+
+		default:
+			responseErrors.HandleInternalServerError(ctx, err)
+		}
+
+		return
+	}
+
+	if !user.Activated {
+		v.AddError(request.UserFieldEmail, "user account must be activated")
+		ctx.AbortWithStatusJSON(
+			http.StatusUnprocessableEntity,
+			response.UnprocessableEntityError(v),
+		)
+		return
+	}
+
+	token, err := u.repositories.Tokens.New(user.Id, models.ScopePasswordReset, 15*time.Minute)
+	if err != nil {
+		responseErrors.HandleInternalServerError(ctx, err)
+		return
+	}
+
+	// send email with password reset token
+	common.Background(u.backgroundWg, func() {
+		smtp := u.config.Smtp
+		mail := mailer.New(smtp.Host, smtp.Port, smtp.User, smtp.Password, smtp.Sender)
+
+		err = mail.Send(user.Email, "reset_password.gotmpl", struct {
+			Username           string
+			PasswordResetToken string
+		}{
+			Username:           user.Username,
+			PasswordResetToken: token.PlainText,
+		})
+
+		if err != nil {
+			prettylog.ErrorF("password reset mail mail: %v", err)
+			return
+		}
+	})
+
+	ctx.JSON(
+		http.StatusAccepted,
+		response.SuccessResponse(
+			http.StatusAccepted,
+			map[string]string{"message": "an email will be sent to you containing password reset instructions"},
+		),
+	)
 }
 
-func (u userHandler) Update(ctx *gin.Context) {
-	//TODO implement me
-	panic("implement me")
+func (u userHandler) UpdatePassword(ctx *gin.Context) {
+	req := &request.UserRequest{}
+	err := parseJsonRequest(ctx, req)
+	if err != nil {
+		return
+	}
+
+	err = validateJsonRequest(ctx, req, []string{request.UserFieldPassword, request.UserActivationFieldToken})
+	if err != nil {
+		return
+	}
+
+	// get user associated with token
+	user, err := u.repositories.Users.GetByToken(*req.Token, models.ScopePasswordReset)
+	if err != nil {
+		switch {
+		case errors.Is(err, repository.ErrRecordNotFound):
+			v := validator.New(request.UserField)
+			v.AddError("token", "invalid or expired reset token")
+			ctx.AbortWithStatusJSON(
+				http.StatusUnprocessableEntity,
+				response.UnprocessableEntityError(v),
+			)
+
+		default:
+			responseErrors.HandleInternalServerError(ctx, err)
+		}
+
+		return
+	}
+
+	// update user password
+	err = user.Password.Set(*req.Password)
+	if err != nil {
+		responseErrors.HandleInternalServerError(ctx, err)
+		return
+	}
+
+	// save user with updated password
+	err = u.repositories.Users.Update(&user)
+	if err != nil {
+		switch {
+		case errors.Is(err, repository.ErrEditConflict):
+			responseErrors.NewErrorHandler().EditConflict(ctx)
+
+		default:
+			responseErrors.HandleInternalServerError(ctx, err)
+		}
+
+		return
+	}
+
+	// delete used reset token
+	err = u.repositories.Tokens.DeleteAllForUser(user.Id, models.ScopePasswordReset)
+	if err != nil {
+		responseErrors.HandleInternalServerError(ctx, err)
+		return
+	}
+
+	ctx.JSON(
+		http.StatusOK,
+		response.SuccessResponse(
+			http.StatusOK,
+			map[string]string{"message": "your password was successfully reset"},
+		),
+	)
 }
+
+func (u userHandler) GetByEmail(ctx *gin.Context) {}
+
+func (u userHandler) Update(ctx *gin.Context) {}

@@ -11,6 +11,7 @@ import (
 const (
 	ScopeActivation     = "activation"
 	ScopeAuthentication = "authentication"
+	ScopePasswordReset  = "password-reset"
 )
 
 // Token represents authentication tokens used to verify users.

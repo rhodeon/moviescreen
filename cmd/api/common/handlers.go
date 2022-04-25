@@ -43,4 +43,6 @@ type UserHandler interface {
 	Authenticate(ctx *gin.Context)
 	GetByEmail(ctx *gin.Context)
 	Update(ctx *gin.Context)
+	CreatePasswordResetToken(ctx *gin.Context)
+	UpdatePassword(ctx *gin.Context)
 }
