@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-var RegisterUserTestCases = map[string]struct {
+var registerUserTestCases = map[string]struct {
 	RequestBody string
 	WantCode    int
 	WantBody    response.BaseResponse
@@ -116,7 +116,7 @@ var RegisterUserTestCases = map[string]struct {
 	},
 }
 
-var ActivateUserTestCases = map[string]struct {
+var activateUserTestCases = map[string]struct {
 	RequestBody string
 	WantCode    int
 	WantBody    response.BaseResponse
@@ -185,7 +185,7 @@ var ActivateUserTestCases = map[string]struct {
 	},
 }
 
-var AuthenticateUserTestCases = map[string]struct {
+var authenticateUserTestCases = map[string]struct {
 	RequestBody string
 	WantCode    int
 	WantBody    response.BaseResponse

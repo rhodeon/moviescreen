@@ -12,7 +12,7 @@ func TestMovieController_Create(t *testing.T) {
 	if testing.Short() {
 		t.Skip("postgres: skipping integration test")
 	}
-	testCases := createTestCases
+	testCases := createMovieTestCases
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
@@ -37,7 +37,7 @@ func TestMovieController_Get(t *testing.T) {
 	if testing.Short() {
 		t.Skip("postgres: skipping integration test")
 	}
-	testCases := getTestCases
+	testCases := getMovieTestCases
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
@@ -61,7 +61,7 @@ func TestMovieController_Update(t *testing.T) {
 	if testing.Short() {
 		t.Skip("postgres: skipping integration test")
 	}
-	testCases := updateTestCases
+	testCases := updateMovieTestCases
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
@@ -84,7 +84,7 @@ func TestMovieController_Delete(t *testing.T) {
 	if testing.Short() {
 		t.Skip("postgres: skipping integration test")
 	}
-	testCases := deleteTestCases
+	testCases := deleteMovieTestCases
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {

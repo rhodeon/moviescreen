@@ -5,7 +5,7 @@ import (
 	"github.com/rhodeon/moviescreen/domain/repository"
 )
 
-var createTestCases = map[string]struct {
+var createMovieTestCases = map[string]struct {
 	movie        models.Movie
 	wantNewMovie models.Movie
 	wantErr      error
@@ -29,7 +29,7 @@ var createTestCases = map[string]struct {
 	},
 }
 
-var getTestCases = map[string]struct {
+var getMovieTestCases = map[string]struct {
 	id        int
 	wantMovie models.Movie
 	wantErr   error
@@ -54,7 +54,7 @@ var getTestCases = map[string]struct {
 	},
 }
 
-var updateTestCases = map[string]struct {
+var updateMovieTestCases = map[string]struct {
 	id               int
 	movie            models.Movie
 	wantUpdatedMovie models.Movie
@@ -103,7 +103,7 @@ var updateTestCases = map[string]struct {
 	},
 }
 
-var deleteTestCases = map[string]struct {
+var deleteMovieTestCases = map[string]struct {
 	id      int
 	wantErr error
 }{

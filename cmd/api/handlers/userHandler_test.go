@@ -13,7 +13,7 @@ import (
 func Test_userHandler_Register(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	app := newTestApp(t)
-	testCases := RegisterUserTestCases
+	testCases := registerUserTestCases
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
@@ -36,7 +36,7 @@ func Test_userHandler_Register(t *testing.T) {
 func Test_userHandler_Activate(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	app := newTestApp(t)
-	testCases := ActivateUserTestCases
+	testCases := activateUserTestCases
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
@@ -59,7 +59,7 @@ func Test_userHandler_Activate(t *testing.T) {
 func Test_userHandler_Authenticate(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	app := newTestApp(t)
-	testCases := AuthenticateUserTestCases
+	testCases := authenticateUserTestCases
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
