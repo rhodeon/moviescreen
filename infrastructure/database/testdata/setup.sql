@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS tokens
 
 INSERT INTO tokens
 VALUES ('\x33a70a01f980448b333d89fecae178754529ef424eca7794298d658f257a5959', 1, 'activation', now() + interval '2h'),
-       ('\x1937df93f58c4aa1baad9517ccea28fd391bf7a5e85c35ef70c211cbaa124bb7', 1, 'activation',
+       ('\x1937df93f58c4aa1baad9517ccea28fd391bf7a5e85c35ef70c211cbaa124bb7', 1, 'authentication',
         '1970-02-01 00:00:00-00');
 
 -- permissions table

@@ -192,7 +192,7 @@ var getUserByTokenTestCases = map[string]struct {
 
 	"expired token": {
 		plaintTextToken: "YGVW5RESJ3E64KQL725KX34X6A",
-		scope:           models.ScopeActivation,
+		scope:           models.ScopeAuthentication,
 		wantUser:        models.User{},
 		wantErr:         repository.ErrRecordNotFound,
 	},
