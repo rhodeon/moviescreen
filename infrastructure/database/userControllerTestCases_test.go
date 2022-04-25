@@ -166,3 +166,48 @@ var updateUserTestCases = map[string]struct {
 		wantErr:     repository.ErrEditConflict,
 	},
 }
+
+var getUserByTokenTestCases = map[string]struct {
+	plaintTextToken string
+	scope           string
+	wantUser        models.User
+	wantErr         error
+}{
+	"valid token": {
+		plaintTextToken: "XV4YOTXIVY2GBOO35GZQIGQCZE",
+		scope:           models.ScopeActivation,
+		wantUser: models.User{
+			Id:       1,
+			Username: "rhodeon",
+			Email:    "rhodeon@dev.mail",
+			Password: types.Password{
+				Hash: []byte("$2a$10$T.olpluq6ZZAisvfJVuLuOIXnqh/bN.9RCDiEu/tnnCgBqjesMkse.sP49rm"),
+			},
+			Activated: true,
+			Version:   1,
+			Created:   time.Time{},
+		},
+		wantErr: nil,
+	},
+
+	"expired token": {
+		plaintTextToken: "YGVW5RESJ3E64KQL725KX34X6A",
+		scope:           models.ScopeActivation,
+		wantUser:        models.User{},
+		wantErr:         repository.ErrRecordNotFound,
+	},
+
+	"non-existent token": {
+		plaintTextToken: "PHQU5RESJB4N3EQL725KXM5HH2",
+		scope:           models.ScopeActivation,
+		wantUser:        models.User{},
+		wantErr:         repository.ErrRecordNotFound,
+	},
+
+	"wrong scope": {
+		plaintTextToken: "XV4YOTXIVY2GBOO35GZQIGQCZE",
+		scope:           "authentication",
+		wantUser:        models.User{},
+		wantErr:         repository.ErrRecordNotFound,
+	},
+}

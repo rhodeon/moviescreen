@@ -83,3 +83,26 @@ func TestUserController_Update(t *testing.T) {
 		})
 	}
 }
+
+func TestUserController_GetByToken(t *testing.T) {
+	if testing.Short() {
+		t.Skip("postgres: skipping integration test")
+	}
+	testcases := getUserByTokenTestCases
+
+	for name, tc := range testcases {
+		t.Run(name, func(t *testing.T) {
+			db, teardown := newTestDb(t)
+			userController := UserController{Db: db}
+			defer teardown()
+
+			user, err := userController.GetByToken(tc.plaintTextToken, tc.scope)
+			testhelpers.AssertError(t, err, tc.wantErr)
+
+			user.Created = time.Time{}
+			if !reflect.DeepEqual(user, tc.wantUser) {
+				t.Errorf("\nGot:\t%+v\nWant:\t%+v", user, tc.wantUser)
+			}
+		})
+	}
+}
