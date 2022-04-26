@@ -1,0 +1,32 @@
+{{define "subject"}}Activate your account{{end}}
+
+{{define "plainBody"}}
+Hello {{.Username}},
+
+Please send a `PUT /v1/users/activate` request with the following JSON body to set a new password:
+{"token": "{{.ActivationToken}}"}
+
+Please note that this is a one-time use token, and it will expire in 2 days. If you need another token, make a `POST /v1/tokens/password-reset` request.
+
+Thanks,
+Team Moviescreen
+{{end}}
+
+{{define "htmlBody"}}
+    <!doctype html>
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    </head>
+    <body>
+        <p>Hello {{.Username}},</p>
+        <p>Please send a <code>PUT /v1/users/activate</code> request with the following JSON body to set a new password:</p>
+        <pre><code>{"password": "your new password", "token": "{{.ActivationToken}}"}</code></pre>
+        <p>Please note that this is a one-time use token, and it will expire in 2 days.</p>
+        <p>Thanks <br>
+           Team Moviescreen
+        </p>
+    </body>
+    </html>
+{{end}}

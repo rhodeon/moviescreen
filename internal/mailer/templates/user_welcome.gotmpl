@@ -1,4 +1,4 @@
-{{define "subject"}} Welcome to Moviescreen {{end}}
+{{define "subject"}}Welcome to Moviescreen{{end}}
 
 {{define "plainBody"}}
 Hello {{.Username}},
@@ -8,7 +8,7 @@ Thanks for signing up for a Moviescreen account. We're excited to have you on bo
 Please send a request to the `PUT /v1/users/activate` endpoint with the following JSON body to activate your account:
 {"token": "{{.ActivationToken}}"}
 
-Please note that this is a one-time use token and it will expire in 3 days.
+Please note that this is a one-time use token and it will expire in 2 days.
 
 Thanks,
 Team Moviescreen

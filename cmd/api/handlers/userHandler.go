@@ -313,7 +313,7 @@ func (u userHandler) CreatePasswordResetToken(ctx *gin.Context) {
 		})
 
 		if err != nil {
-			prettylog.ErrorF("password reset mail mail: %v", err)
+			prettylog.ErrorF("password reset mail: %v", err)
 			return
 		}
 	})
@@ -391,6 +391,88 @@ func (u userHandler) UpdatePassword(ctx *gin.Context) {
 		response.SuccessResponse(
 			http.StatusOK,
 			map[string]string{"message": "your password was successfully reset"},
+		),
+	)
+}
+
+func (u userHandler) CreateActivationToken(ctx *gin.Context) {
+	req := &request.UserRequest{}
+	err := parseJsonRequest(ctx, req)
+	if err != nil {
+		return
+	}
+
+	err = validateJsonRequest(ctx, req, []string{request.UserFieldEmail, request.UserFieldPassword})
+	if err != nil {
+		return
+	}
+
+	// retrieve user data via email
+	user, err := u.repositories.Users.GetByEmail(*req.Email)
+	if err != nil {
+		switch {
+		case errors.Is(err, repository.ErrRecordNotFound):
+			responseErrors.NewErrorHandler().InvalidCredentials(ctx)
+
+		default:
+			responseErrors.HandleInternalServerError(ctx, err)
+		}
+
+		return
+	}
+
+	// confirm password
+	valid, err := user.Password.Matches(*req.Password)
+	if err != nil {
+		responseErrors.HandleInternalServerError(ctx, err)
+		return
+	}
+	if !valid {
+		responseErrors.NewErrorHandler().InvalidCredentials(ctx)
+		return
+	}
+
+	// return forbidden error if the user is not activated
+	if user.Activated {
+		responseErrors.SetStatusAndBody(
+			ctx,
+			http.StatusCreated,
+			response.GenericError("user has already been activated"),
+		)
+		return
+	}
+
+	// generate new authentication token with a lifetime of 15 minutes
+	token, err := u.repositories.Tokens.New(user.Id, models.ScopeActivation, 15*time.Minute)
+	if err != nil {
+		responseErrors.HandleInternalServerError(ctx, err)
+		return
+	}
+
+	// send email with password reset token
+	common.Background(u.backgroundWg, func() {
+		smtp := u.config.Smtp
+		mail := mailer.New(smtp.Host, smtp.Port, smtp.User, smtp.Password, smtp.Sender)
+
+		err = mail.Send(user.Email, "activation_token.gotmpl", struct {
+			Username        string
+			ActivationToken string
+		}{
+			Username:        user.Username,
+			ActivationToken: token.PlainText,
+		})
+
+		if err != nil {
+			prettylog.ErrorF("activation token mail: %v", err)
+			return
+		}
+	})
+
+	ctx.JSON(
+		http.StatusAccepted,
+		response.SuccessResponse(
+			http.StatusOK,
+			map[string]string{"message": "an email will be sent to you containing activation instructions"},
 		),
 	)
 }
