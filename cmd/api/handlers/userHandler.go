@@ -476,7 +476,3 @@ func (u userHandler) CreateActivationToken(ctx *gin.Context) {
 		),
 	)
 }
-
-func (u userHandler) GetByEmail(ctx *gin.Context) {}
-
-func (u userHandler) Update(ctx *gin.Context) {}
