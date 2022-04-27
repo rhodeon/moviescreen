@@ -30,7 +30,7 @@ func Test_miscHandler_HealthCheck(t *testing.T) {
 			response.HealthCheckResponse{
 				Status:      "available",
 				Environment: "testing",
-				Version:     "1.0.0",
+				Version:     "v1.0.0",
 			},
 		),
 	)

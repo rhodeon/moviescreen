@@ -28,7 +28,7 @@ func newTestApp(t *testing.T) internal.Application {
 
 var testConfig = common.Config{
 	Env:     "testing",
-	Version: "1.0.0",
+	Version: "v1.0.0",
 	Port:    4000,
 }
 

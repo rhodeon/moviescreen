@@ -8,9 +8,10 @@ import (
 )
 
 type Config struct {
-	Env     string
-	Version string
-	Port    int
+	Env            string
+	Version        string
+	Port           int
+	DisplayVersion bool
 
 	Db struct {
 		Dsn          string
@@ -36,8 +37,8 @@ type Config struct {
 
 func (c *Config) Parse() {
 	flag.StringVar(&c.Env, "env", c.defaultEnv(), "Environment (development|staging|production)")
-	flag.StringVar(&c.Version, "version", c.defaultVersion(), "API version")
 	flag.IntVar(&c.Port, "port", c.defaultPort(), "API server port")
+	flag.BoolVar(&c.DisplayVersion, "version", false, "Display version and build time")
 
 	flag.StringVar(&c.Db.Dsn, "db-dsn", c.defaultDbDsn(), "PostgreSQL DSN")
 	flag.IntVar(&c.Db.MaxOpenConns, "db-max-open-conns", c.defaultDbMaxOpenConns(), "PostgreSQL maximum number of open connections")
@@ -80,15 +81,6 @@ func (c *Config) defaultEnv() string {
 		return env
 	}
 	return defaultEnv
-}
-
-func (c *Config) defaultVersion() string {
-	const defaultVer = "1.0.0"
-
-	if version, exists := os.LookupEnv("VERSION"); exists {
-		return version
-	}
-	return defaultVer
 }
 
 func (c *Config) defaultPort() int {

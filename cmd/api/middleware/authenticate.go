@@ -7,6 +7,7 @@ import (
 	respErrors "github.com/rhodeon/moviescreen/cmd/api/responseErrors"
 	"github.com/rhodeon/moviescreen/domain/models"
 	"github.com/rhodeon/moviescreen/domain/repository"
+	"github.com/rhodeon/prettylog"
 	"strings"
 	"unicode/utf8"
 )
@@ -35,6 +36,7 @@ func Authenticate(repositories repository.Repositories) gin.HandlerFunc {
 		errorHandler := respErrors.NewErrorHandler()
 		headerParts := strings.Split(authorizationHeader, " ")
 		if len(headerParts) != 2 || headerParts[0] != "Bearer" {
+			prettylog.ErrorLn("malformed")
 			errorHandler.InvalidAuthenticationToken(ctx)
 			return
 		}
@@ -42,6 +44,8 @@ func Authenticate(repositories repository.Repositories) gin.HandlerFunc {
 		// validate token
 		token := headerParts[1]
 		if utf8.RuneCountInString(token) != 26 {
+			prettylog.ErrorLn(token)
+
 			errorHandler.InvalidAuthenticationToken(ctx)
 			return
 		}
@@ -51,6 +55,7 @@ func Authenticate(repositories repository.Repositories) gin.HandlerFunc {
 		if err != nil {
 			switch {
 			case errors.Is(err, repository.ErrRecordNotFound):
+				prettylog.ErrorLn("not found")
 				errorHandler.InvalidAuthenticationToken(ctx)
 
 			default:

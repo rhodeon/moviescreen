@@ -8,6 +8,7 @@ import (
 	"github.com/rhodeon/moviescreen/domain/repository"
 	"github.com/rhodeon/moviescreen/infrastructure/database"
 	"github.com/rhodeon/prettylog"
+	"os"
 	"sync"
 )
 
@@ -21,9 +22,16 @@ func main() {
 	// setup server configuration
 	config := common.Config{}
 	config.Parse()
+	config.Version = version
 	err = config.Validate()
 	if err != nil {
 		prettylog.FatalError(err)
+	}
+
+	// display version and build time before exiting if the flag is set
+	if config.DisplayVersion {
+		displayVersion()
+		os.Exit(0)
 	}
 
 	// open database connection

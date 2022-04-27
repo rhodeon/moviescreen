@@ -16,15 +16,19 @@ confirm:
 
 # --- DEVELOPMENT ---
 ## run/api: run the cmd/api application
+current_time = $(shell date +"%Y-%m-%dT%H:%M:%S%z")
+git_description = $(shell git describe --always --dirty --tags --long)
+linker_flags = "-s -X main.buildTime=${current_time} -X main.version=${git_description}"
+
 .PHONY: run/api
 run/api:
-	go run ./cmd/api
+	go run -ldflags=${linker_flags} ./cmd/api
 
 ## build/api: build the cmd/api application
 .PHONY: build/api
 build/api:
-	@echo 'building cmd/api...'
-	go build -o=./bin/api ./cmd/api
+	@echo "building cmd/api..."
+	go build -ldflags=${linker_flags} -o=./bin/api ./cmd/api
 
 ## db/migrations/create name=$1: create a new database migration
 .PHONY: db/migrations/create
