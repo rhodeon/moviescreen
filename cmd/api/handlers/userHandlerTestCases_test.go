@@ -237,7 +237,7 @@ var authenticateUserTestCases = map[string]struct {
 		),
 	},
 
-	"nonexistent email": {
+	"non-existent email": {
 		RequestBody: `{
 			"email": "rhod@mail.com",
 			"password": "password"
@@ -274,6 +274,92 @@ var authenticateUserTestCases = map[string]struct {
 	},
 }
 
+var createActivationTokenTestCases = map[string]struct {
+	RequestBody string
+	WantCode    int
+	WantBody    response.BaseResponse
+}{
+	"valid request": {
+		RequestBody: `{
+			"email": "ruona@mail.com",
+			"password": "password"
+		}`,
+		WantCode: 202,
+		WantBody: response.SuccessResponse(
+			202,
+			map[string]string{"message": "an email will be sent to you containing activation instructions"},
+		),
+	},
+
+	"missing email": {
+		RequestBody: `{
+			"password": "password"
+		}`,
+		WantCode: 422,
+		WantBody: response.ErrorResponse(
+			422,
+			response.Error{
+				Type: "user",
+				Data: map[string]string{
+					"email": "must be provided",
+				},
+			},
+		),
+	},
+
+	"missing password": {
+		RequestBody: `{
+			"email": "ruona@mail.com"
+		}`,
+		WantCode: 422,
+		WantBody: response.ErrorResponse(
+			422,
+			response.Error{
+				Type: "user",
+				Data: map[string]string{
+					"password": "must be provided",
+				},
+			},
+		),
+	},
+
+	"non-existent email": {
+		RequestBody: `{
+			"email": "rhod@mail.com",
+			"password": "password"
+		}`,
+		WantCode: 401,
+		WantBody: response.ErrorResponse(
+			401,
+			response.GenericError("invalid user credentials"),
+		),
+	},
+
+	"wrong password": {
+		RequestBody: `{
+			"email": "rhodeon@dev.mail",
+			"password": "passwords"
+		}`,
+		WantCode: 401,
+		WantBody: response.ErrorResponse(
+			401,
+			response.GenericError("invalid user credentials"),
+		),
+	},
+
+	"already activated account": {
+		RequestBody: `{
+			"email": "rhodeon@dev.mail",
+			"password": "password"
+		}`,
+		WantCode: 403,
+		WantBody: response.ErrorResponse(
+			403,
+			response.GenericError("user has already been activated"),
+		),
+	},
+}
+
 var createPasswordResetTokenTestCases = map[string]struct {
 	RequestBody string
 	WantCode    int
@@ -304,7 +390,7 @@ var createPasswordResetTokenTestCases = map[string]struct {
 		),
 	},
 
-	"unactivated user": {
+	"unactivated account": {
 		RequestBody: `{
 			"email": "ruona@mail.com"
 		}`,

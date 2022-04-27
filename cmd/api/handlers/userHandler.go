@@ -293,7 +293,7 @@ func (u userHandler) CreateActivationToken(ctx *gin.Context) {
 	if user.Activated {
 		responseErrors.SetStatusAndBody(
 			ctx,
-			http.StatusCreated,
+			http.StatusForbidden,
 			response.GenericError("user has already been activated"),
 		)
 		return

@@ -63,6 +63,7 @@ func (e errorHandler) InvalidAuthenticationToken(ctx *gin.Context) {
 }
 
 func (e errorHandler) UnauthenticatedUser(ctx *gin.Context) {
+	ctx.Header("WWW-Authenticate", "Bearer")
 	SetStatusAndBody(
 		ctx,
 		http.StatusUnauthorized,

@@ -124,3 +124,26 @@ func TestUserHandler_UpdatePassword(t *testing.T) {
 		})
 	}
 }
+
+func TestUserHandler_CreateActivationToken(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	app := newTestApp(t)
+	testCases := createActivationTokenTestCases
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			rr := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodPost, "/v1/users/refresh-activation-token", strings.NewReader(tc.RequestBody))
+			app.Router(testRouteHandlers).ServeHTTP(rr, req)
+
+			code, body, _ := parseResponse(t, rr.Result())
+
+			// assert status code
+			testhelpers.AssertEqual(t, code, tc.WantCode)
+
+			// assert response body
+			wantBody, _ := json.Marshal(tc.WantBody)
+			testhelpers.AssertEqual(t, body, string(wantBody))
+		})
+	}
+}
