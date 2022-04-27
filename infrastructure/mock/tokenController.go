@@ -23,6 +23,13 @@ var tokens = []models.Token{
 		Scope:     models.ScopeAuthentication,
 		Expires:   ActivationExpiry,
 	},
+	{
+		PlainText: "2QRJK3S54HAIUNIHNXEF4WSZSI",
+		Hash:      []byte("84828986df43c6289a90a0001d01d2ec4fcbf045429a6bf9fe9275bb21cbaf7c"),
+		UserId:    1,
+		Scope:     models.ScopePasswordReset,
+		Expires:   ActivationExpiry,
+	},
 }
 
 type TokenController struct{}

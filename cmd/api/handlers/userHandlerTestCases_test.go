@@ -273,3 +273,128 @@ var authenticateUserTestCases = map[string]struct {
 		),
 	},
 }
+
+var createPasswordResetTokenTestCases = map[string]struct {
+	RequestBody string
+	WantCode    int
+	WantBody    response.BaseResponse
+}{
+	"valid email": {
+		RequestBody: `{
+			"email": "rhodeon@dev.mail"
+		}`,
+		WantCode: 202,
+		WantBody: response.SuccessResponse(
+			202,
+			map[string]string{"message": "an email will be sent to you containing password reset instructions"},
+		),
+	},
+
+	"missing email": {
+		RequestBody: `{}`,
+		WantCode:    422,
+		WantBody: response.ErrorResponse(
+			422,
+			response.Error{
+				Type: "user",
+				Data: map[string]string{
+					"email": "must be provided",
+				},
+			},
+		),
+	},
+
+	"unactivated user": {
+		RequestBody: `{
+			"email": "ruona@mail.com"
+		}`,
+		WantCode: 403,
+		WantBody: response.ErrorResponse(
+			403,
+			response.GenericError("your account must be activated to access this resource"),
+		),
+	},
+
+	"non-existent email": {
+		RequestBody: `{
+			"email": "ruona@dev.com"
+		}`,
+		WantCode: 422,
+		WantBody: response.ErrorResponse(
+			422,
+			response.Error{
+				Type: "user",
+				Data: map[string]string{
+					"email": "no matching email address found",
+				},
+			},
+		),
+	},
+}
+
+var updatePasswordTestCases = map[string]struct {
+	RequestBody string
+	WantCode    int
+	WantBody    response.BaseResponse
+}{
+	"valid request ": {
+		RequestBody: `{
+			"password": "newpassword",
+			"token": "2QRJK3S54HAIUNIHNXEF4WSZSI"
+		}`,
+		WantCode: 200,
+		WantBody: response.SuccessResponse(
+			200,
+			map[string]string{"message": "your password was successfully reset"},
+		),
+	},
+
+	"missing password": {
+		RequestBody: `{
+			"token": "2QRJK3S54HAIUNIHNXEF4WSZSI"
+		}`,
+		WantCode: 422,
+		WantBody: response.ErrorResponse(
+			422,
+			response.Error{
+				Type: "user",
+				Data: map[string]string{
+					"password": "must be provided",
+				},
+			},
+		),
+	},
+
+	"missing token": {
+		RequestBody: `{
+			"password": "newpassword"
+		}`,
+		WantCode: 422,
+		WantBody: response.ErrorResponse(
+			422,
+			response.Error{
+				Type: "user",
+				Data: map[string]string{
+					"token": "must be provided",
+				},
+			},
+		),
+	},
+
+	"invalid token": {
+		RequestBody: `{
+			"password": "newpassword",
+			"token": "JW65OCFMDV2SLQXSHY4AXIDLUY"
+		}`,
+		WantCode: 422,
+		WantBody: response.ErrorResponse(
+			422,
+			response.Error{
+				Type: "user",
+				Data: map[string]string{
+					"token": "invalid or expired reset token",
+				},
+			},
+		),
+	},
+}

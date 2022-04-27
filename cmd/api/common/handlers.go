@@ -40,8 +40,8 @@ type MovieHandler interface {
 type UserHandler interface {
 	Register(ctx *gin.Context)
 	Activate(ctx *gin.Context)
+	CreateActivationToken(ctx *gin.Context)
 	Authenticate(ctx *gin.Context)
 	CreatePasswordResetToken(ctx *gin.Context)
-	CreateActivationToken(ctx *gin.Context)
 	UpdatePassword(ctx *gin.Context)
 }

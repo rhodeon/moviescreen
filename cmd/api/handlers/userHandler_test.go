@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func Test_userHandler_Register(t *testing.T) {
+func TestUserHandler_Register(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	app := newTestApp(t)
 	testCases := registerUserTestCases
@@ -33,7 +33,7 @@ func Test_userHandler_Register(t *testing.T) {
 	}
 }
 
-func Test_userHandler_Activate(t *testing.T) {
+func TestUserHandler_Activate(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	app := newTestApp(t)
 	testCases := activateUserTestCases
@@ -56,7 +56,7 @@ func Test_userHandler_Activate(t *testing.T) {
 	}
 }
 
-func Test_userHandler_Authenticate(t *testing.T) {
+func TestUserHandler_Authenticate(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	app := newTestApp(t)
 	testCases := authenticateUserTestCases
@@ -65,6 +65,52 @@ func Test_userHandler_Authenticate(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			rr := httptest.NewRecorder()
 			req := httptest.NewRequest(http.MethodPost, "/v1/users/authenticate", strings.NewReader(tc.RequestBody))
+			app.Router(testRouteHandlers).ServeHTTP(rr, req)
+
+			code, body, _ := parseResponse(t, rr.Result())
+
+			// assert status code
+			testhelpers.AssertEqual(t, code, tc.WantCode)
+
+			// assert response body
+			wantBody, _ := json.Marshal(tc.WantBody)
+			testhelpers.AssertEqual(t, body, string(wantBody))
+		})
+	}
+}
+
+func TestUserHandler_CreatePasswordResetToken(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	app := newTestApp(t)
+	testCases := createPasswordResetTokenTestCases
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			rr := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodPost, "/v1/users/password-reset-token", strings.NewReader(tc.RequestBody))
+			app.Router(testRouteHandlers).ServeHTTP(rr, req)
+
+			code, body, _ := parseResponse(t, rr.Result())
+
+			// assert status code
+			testhelpers.AssertEqual(t, code, tc.WantCode)
+
+			// assert response body
+			wantBody, _ := json.Marshal(tc.WantBody)
+			testhelpers.AssertEqual(t, body, string(wantBody))
+		})
+	}
+}
+
+func TestUserHandler_UpdatePassword(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	app := newTestApp(t)
+	testCases := updatePasswordTestCases
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			rr := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodPut, "/v1/users/update-password", strings.NewReader(tc.RequestBody))
 			app.Router(testRouteHandlers).ServeHTTP(rr, req)
 
 			code, body, _ := parseResponse(t, rr.Result())
