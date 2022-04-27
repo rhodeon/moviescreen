@@ -9,7 +9,19 @@ import (
 	"time"
 )
 
-var movies = []models.Movie{
+type MovieController struct {
+	Data models.Movies
+}
+
+// NewMovieController creates a MovieController pointer with the data being
+// a copy of the movies slice to avoid persistent modification across tests.
+func NewMovieController() *MovieController {
+	newMovies := make(models.Movies, len(movies))
+	copy(newMovies, movies)
+	return &MovieController{Data: newMovies}
+}
+
+var movies = models.Movies{
 	{
 		Id:      1,
 		Title:   "Bullet Train",
@@ -29,8 +41,6 @@ var movies = []models.Movie{
 		Created: time.Now(),
 	},
 }
-
-type MovieController struct{}
 
 func (m MovieController) Create(movie *models.Movie) error {
 	movie.Id = 3

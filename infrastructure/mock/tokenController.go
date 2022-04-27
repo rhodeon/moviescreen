@@ -5,6 +5,18 @@ import (
 	"time"
 )
 
+type TokenController struct {
+	Data []models.Token
+}
+
+// NewTokenController creates a TokenController pointer with the data being
+// a copy of the tokens slice to avoid persistent modification across tests.
+func NewTokenController() *TokenController {
+	newTokens := make([]models.Token, len(tokens))
+	copy(newTokens, tokens)
+	return &TokenController{Data: newTokens}
+}
+
 var ActivationExpiry = time.Now().Add(2 * 24 * time.Hour)
 var AuthenticationBaseDate = time.Date(2023, 4, 10, 10, 00, 00, 00, time.UTC)
 
@@ -32,8 +44,6 @@ var tokens = []models.Token{
 	},
 }
 
-type TokenController struct{}
-
 func (t TokenController) New(userId int, scope string, lifetime time.Duration) (models.Token, error) {
 	return models.Token{
 		PlainText: "token",
@@ -44,7 +54,7 @@ func (t TokenController) New(userId int, scope string, lifetime time.Duration) (
 	}, nil
 }
 
-func (t TokenController) Insert(token models.Token) error {
+func (t TokenController) Insert(models.Token) error {
 	return nil
 }
 

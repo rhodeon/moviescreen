@@ -33,10 +33,10 @@ var testConfig = common.Config{
 }
 
 var testRepos = repository.Repositories{
-	Tokens:      mock.TokenController{},
-	Movies:      mock.MovieController{},
-	Users:       mock.UserController{},
-	Permissions: mock.PermissionController{},
+	Tokens:      mock.NewTokenController(),
+	Movies:      mock.NewMovieController(),
+	Users:       mock.NewUserController(),
+	Permissions: mock.NewPermissionController(),
 }
 
 var testWaitGroup = sync.WaitGroup{}

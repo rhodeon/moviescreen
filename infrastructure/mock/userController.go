@@ -9,6 +9,18 @@ import (
 	"time"
 )
 
+type UserController struct {
+	Data []models.User
+}
+
+// NewUserController creates a UserController pointer with the data being
+// a copy of the users slice to avoid persistent modification across tests.
+func NewUserController() *UserController {
+	newUsers := make([]models.User, len(users))
+	copy(newUsers, users)
+	return &UserController{Data: newUsers}
+}
+
 var MockDate = time.Date(2022, 4, 10, 10, 00, 00, 00, time.UTC)
 
 var users = []models.User{
@@ -50,10 +62,8 @@ var users = []models.User{
 	},
 }
 
-type UserController struct{}
-
-func (u UserController) Register(user *models.User) error {
-	for _, u := range users {
+func (u *UserController) Register(user *models.User) error {
+	for _, u := range u.Data {
 		if strings.EqualFold(u.Username, user.Username) {
 			return repository.ErrDuplicateUsername
 		}
@@ -62,14 +72,14 @@ func (u UserController) Register(user *models.User) error {
 		}
 	}
 
-	user.Id = len(users) + 1
+	user.Id = len(u.Data) + 1
 	user.Version = 1
 	user.Created = MockDate
 	return nil
 }
 
-func (u UserController) GetByEmail(email string) (models.User, error) {
-	for _, user := range users {
+func (u *UserController) GetByEmail(email string) (models.User, error) {
+	for _, user := range u.Data {
 		if user.Email == email {
 			return user, nil
 		}
@@ -78,9 +88,9 @@ func (u UserController) GetByEmail(email string) (models.User, error) {
 	return models.User{}, repository.ErrRecordNotFound
 }
 
-func (u UserController) Update(user *models.User) error {
-	for i, u := range users {
-		if u.Id == user.Id {
+func (u *UserController) Update(user *models.User) error {
+	for i, savedUser := range u.Data {
+		if savedUser.Id == user.Id {
 			users[i] = *user
 			return nil
 		}
@@ -88,10 +98,10 @@ func (u UserController) Update(user *models.User) error {
 	return repository.ErrRecordNotFound
 }
 
-func (u UserController) GetByToken(plainTextToken string, scope string) (models.User, error) {
+func (u *UserController) GetByToken(plainTextToken string, scope string) (models.User, error) {
 	for _, token := range tokens {
 		if token.PlainText == plainTextToken && token.Scope == scope {
-			for _, user := range users {
+			for _, user := range u.Data {
 				if user.Id == token.UserId {
 					return user, nil
 				}
