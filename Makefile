@@ -28,7 +28,11 @@ run/api:
 .PHONY: build/api
 build/api:
 	@echo "building cmd/api..."
+	# build for local machine
 	go build -ldflags=${linker_flags} -o=./bin/api ./cmd/api
+
+	# build for Linux
+	GOOS=linux GOARCH=amd64 go build -ldflags=${linker_flags} -o=./bin/linux_amd64/api ./cmd/api
 
 ## db/migrations/create name=$1: create a new database migration
 .PHONY: db/migrations/create
