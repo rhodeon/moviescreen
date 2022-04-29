@@ -83,3 +83,9 @@ vendor:
 
 	@echo "vendoring dependencies..."
 	go mod vendor
+
+# --- PRODUCTION ---
+## production/connect: connect to the production server
+.PHONY: production/connect
+production/connect:
+	ssh -i ${PRIVATE_KEY_PATH} ${PRODUCTION_USER}@${PRODUCTION_HOST_IP}
