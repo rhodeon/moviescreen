@@ -3,7 +3,7 @@ SHELL := /bin/bash
 include .env
 
 # --- HELPERS ---
-## help: print this help message
+## help: display this help message
 .PHONY: help
 help:
 	@echo 'Usage:'
@@ -89,7 +89,26 @@ vendor:
 	go mod vendor
 
 # --- PRODUCTION ---
+remote = ${PRODUCTION_USER}@${PRODUCTION_HOST_IP}
+remote_dir = ${remote}:~/service/
+
 ## production/connect: connect to the production server
 .PHONY: production/connect
 production/connect:
-	ssh -i ${PRIVATE_KEY_PATH} ${PRODUCTION_USER}@${PRODUCTION_HOST_IP}
+	ssh -i ${PRIVATE_KEY_PATH} ${remote}
+
+## production/deploy/api: deploy api build
+.PHONY: production/deploy/api
+production/deploy/api:
+	scp -i ${PRIVATE_KEY_PATH} ./bin/linux_amd64/api ${remote_dir}
+
+# production/deploy/env: deploy production dotenv file
+.PHONY: production/deploy/env
+production/deploy/env:
+	scp -i ${PRIVATE_KEY_PATH} ./remote/.env ${remote_dir}
+
+## production/migrations: deploy and execute database migrations
+.PHONY: production/migrations
+production/migrations:
+	scp -i ${PRIVATE_KEY_PATH} -r ./migrations ${remote_dir}
+	ssh -t -i ${PRIVATE_KEY_PATH} ${remote} 'migrate -path ~/migrations -database $$MOVIESCREEN_DB_DSN up'
