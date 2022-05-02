@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/rhodeon/moviescreen/cmd/api/common"
@@ -40,9 +41,14 @@ func main() {
 		prettylog.FatalError(err)
 	}
 	defer db.Close()
-	prettylog.InfoF("Database connection pool established")
+	prettylog.InfoF("database connection pool established")
 
 	setMetrics(config, db)
+
+	// set Gin to release mode on production
+	if config.Env == "production" {
+		gin.SetMode(gin.ReleaseMode)
+	}
 
 	app := internal.Application{
 		Config: config,
