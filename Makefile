@@ -122,3 +122,12 @@ production/configure/api.service:
 	&& sudo systemctl enable api \
 	&& sudo systemctl restart api \
 	'
+
+## production/configure/caddyfile: configure the production Caddyfile
+.PHONY: production/configure/caddyfile
+production/configure/caddyfile:
+	scp -i ${PRIVATE_KEY_PATH} -r ./remote/production/Caddyfile ${remote_dir}
+	ssh -t -i ${PRIVATE_KEY_PATH} ${remote} '\
+	sudo mv	~/service/Caddyfile /etc/caddy/ \
+	&& sudo systemctl reload caddy \
+	'

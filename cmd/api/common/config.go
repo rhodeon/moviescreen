@@ -84,7 +84,7 @@ func (c *Config) defaultEnv() string {
 }
 
 func (c *Config) defaultPort() int {
-	const defaultPort = 8080
+	const defaultPort = 4000
 
 	if portEnv, exists := os.LookupEnv("PORT"); exists {
 		port, err := strconv.Atoi(portEnv)

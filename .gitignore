@@ -1,4 +1,5 @@
 /.idea/
 /bin
 /.env
-/remote/.env
+/remote/production/.env
+/remote/production/Caddyfile
