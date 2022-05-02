@@ -8,6 +8,7 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/lib/pq v1.10.4
 	github.com/rhodeon/prettylog v1.0.3
+	github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce
 	golang.org/x/crypto v0.0.0-20220408190544-5352b0902921
 	golang.org/x/time v0.0.0-20220224211638-0e9765cccd65
 )
