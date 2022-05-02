@@ -99,7 +99,7 @@ production/connect:
 
 ## production/deploy/api: deploy api build
 .PHONY: production/deploy/api
-production/deploy/api:
+production/deploy/api: build/api
 	scp -i ${PRIVATE_KEY_PATH} ./bin/linux_amd64/api ${remote_dir}
 
 # production/deploy/env: deploy production dotenv file

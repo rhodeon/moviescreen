@@ -30,11 +30,7 @@ func (app Application) Router(handlers common.RouteHandlers) *gin.Engine {
 	router.GET(withVersion("healthcheck"), handlers.Misc.HealthCheck)
 
 	// metrics endpoint with "metrics:view" permission requirement
-	router.GET(
-		"/metrics",
-		middleware.RequirePermission(models.PermissionMetricsView, app.Repositories),
-		handlers.Misc.Metrics,
-	)
+	router.GET("/debug/vars", handlers.Misc.Metrics)
 
 	movies := router.Group(withVersion("movies"))
 	{

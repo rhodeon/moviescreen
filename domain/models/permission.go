@@ -5,7 +5,6 @@ type Permissions []string
 const (
 	PermissionMoviesRead  = "movies:read"
 	PermissionMoviesWrite = "movies:write"
-	PermissionMetricsView = "metrics:view"
 )
 
 // Includes returns true if the specified code is amongst the permissions,
