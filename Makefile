@@ -112,3 +112,13 @@ production/deploy/env:
 production/migrations:
 	scp -i ${PRIVATE_KEY_PATH} -r ./migrations ${remote_dir}
 	ssh -t -i ${PRIVATE_KEY_PATH} ${remote} 'migrate -path ~/migrations -database $$MOVIESCREEN_DB_DSN up'
+
+## production/configure/api.service: configure the production systemd api.service file
+.PHONY: production/configure/api.service
+production/configure/api.service:
+	scp -i ${PRIVATE_KEY_PATH} -r ./remote/production/api.service ${remote_dir}
+	ssh -t -i ${PRIVATE_KEY_PATH} ${remote} '\
+	sudo mv	~/service/api.service /etc/systemd/system/ \
+	&& sudo systemctl enable api \
+	&& sudo systemctl restart api \
+	'

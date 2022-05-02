@@ -1,0 +1,20 @@
+[Unit]
+Description=Moviescreen API service
+Wants=network-online.target
+After=network-online.target
+After=postgresql.service
+StartLimitIntervalSec=600
+StartLimitBurst=5
+
+[Service]
+Type=exec
+User=moviescreen
+Group=moviescreen
+EnvironmentFile=/etc/environment
+WorkingDirectory=/home/moviescreen/service
+ExecStart=/home/moviescreen/service/api
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

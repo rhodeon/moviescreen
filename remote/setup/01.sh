@@ -6,9 +6,9 @@ set -eu
 
 # --- VARIABLES ---
 TIMEZONE=Africa/Lagos
+USERNAME=moviescreen
 
 # prompt for admin username and project database password
-read -p "Enter new admin username: " USERNAME
 read -p "Enter password for moviescreen DB user: " DB_PASSWORD
 
 # force all output to be presented in en_US for the duration of this script
