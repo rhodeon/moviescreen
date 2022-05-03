@@ -60,6 +60,7 @@ func (request UserRequest) Validate(required []string) *validator.Validator {
 
 	if request.Username != nil {
 		v.Check(strings.TrimSpace(*request.Username) != "", UserFieldUsername, "must not be blank")
+		v.Check(rules.NoWhiteSpace(*request.Username), UserFieldUsername, "must not contain spaces")
 		v.Check(utf8.RuneCountInString(*request.Username) <= 500, UserFieldUsername, "must not have more than 500 characters")
 	}
 

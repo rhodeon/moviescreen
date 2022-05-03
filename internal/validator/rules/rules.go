@@ -3,6 +3,7 @@ package rules
 import (
 	"regexp"
 	"strings"
+	"unicode"
 )
 
 // Unique returns true if all elements in the string are unique.
@@ -39,4 +40,14 @@ func In[T comparable](data T, target []T) bool {
 // MatchesPattern returns true if a string value matches a specific regexp pattern.
 func MatchesPattern(value string, rx *regexp.Regexp) bool {
 	return rx.MatchString(value)
+}
+
+// NoWhiteSpace returns true if the string value contains no whitespace character.
+func NoWhiteSpace(value string) bool {
+	for _, char := range value {
+		if unicode.IsSpace(char) {
+			return false
+		}
+	}
+	return true
 }
