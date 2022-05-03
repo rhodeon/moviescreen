@@ -100,7 +100,10 @@ production/connect:
 ## production/deploy/api: deploy api build
 .PHONY: production/deploy/api
 production/deploy/api: build/api
+	# stop, copy and restart API on server
+	ssh -t -i ${PRIVATE_KEY_PATH} ${remote} 'sudo systemctl stop api'
 	scp -i ${PRIVATE_KEY_PATH} ./bin/linux_amd64/api ${remote_dir}
+	ssh -t -i ${PRIVATE_KEY_PATH} ${remote} 'sudo systemctl start api'
 
 # production/deploy/env: deploy production dotenv file
 .PHONY: production/deploy/env
