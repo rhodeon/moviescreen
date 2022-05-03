@@ -105,7 +105,7 @@ production/deploy/api: build/api
 # production/deploy/env: deploy production dotenv file
 .PHONY: production/deploy/env
 production/deploy/env:
-	scp -i ${PRIVATE_KEY_PATH} ./remote/.env ${remote_dir}
+	scp -i ${PRIVATE_KEY_PATH} ./remote/production/.env ${remote_dir}
 
 ## production/migrations: deploy and execute database migrations
 .PHONY: production/migrations
