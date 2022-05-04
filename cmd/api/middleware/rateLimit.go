@@ -5,7 +5,6 @@ import (
 	"github.com/rhodeon/moviescreen/cmd/api/common"
 	"github.com/rhodeon/moviescreen/cmd/api/models/response"
 	"github.com/rhodeon/moviescreen/cmd/api/responseErrors"
-	"github.com/rhodeon/prettylog"
 	"github.com/tomasen/realip"
 	"golang.org/x/time/rate"
 	"net/http"
@@ -44,7 +43,6 @@ func RateLimit(config common.Config) gin.HandlerFunc {
 		if config.Limiter.Enabled {
 			// extract real client's IP address
 			ip := realip.FromRequest(ctx.Request)
-			prettylog.InfoF("IP: %s", ip)
 
 			// add client to map if it doesn't exist
 			// and update last seen

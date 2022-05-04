@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/rhodeon/moviescreen/cmd/api/common"
 	"github.com/rhodeon/moviescreen/cmd/api/middleware"
@@ -20,6 +21,13 @@ func (app Application) Router(handlers common.RouteHandlers) *gin.Engine {
 	router.HandleMethodNotAllowed = true
 	router.NoRoute(handlers.Error.NotFound)
 	router.NoMethod(handlers.Error.MethodNotAllowed)
+
+	// set CORS behaviour
+	router.Use(cors.New(cors.Config{
+		AllowAllOrigins: true,
+		AllowHeaders:    []string{"Authorization", "Content-Type"},
+		AllowMethods:    []string{"PUT", "PATCH", "DELETE"},
+	}))
 
 	// set general middleware
 	router.Use(middleware.Metrics())
