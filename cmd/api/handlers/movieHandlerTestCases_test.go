@@ -16,7 +16,7 @@ var createMovieTestCases = map[string]struct {
 		requestBody: `{
 			"Title":   "The Shawshank Redemption",
 			"Year":    1994,
-			"Runtime": "142 mins",
+			"Runtime": 142,
 			"Genres":  ["Drama"]
 		}`,
 		wantCode: 201,
@@ -51,7 +51,7 @@ var createMovieTestCases = map[string]struct {
 		requestBody: `{
 			"Title":   "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
 			"Year":    1994,
-			"Runtime": "142 mins",
+			"Runtime": 142,
 			"Genres":  ["Drama"]
 		}`,
 		wantCode: 422,
@@ -67,7 +67,7 @@ var createMovieTestCases = map[string]struct {
 		requestBody: `{
 			"Title":   "The Shawshank Redemption",
 			"Year":    1666,
-			"Runtime": "142 mins",
+			"Runtime": 142,
 			"Genres":  ["Drama"]
 		}`,
 		wantCode: 422,
@@ -83,7 +83,7 @@ var createMovieTestCases = map[string]struct {
 		requestBody: `{
 			"Title":   "The Shawshank Redemption",
 			"Year":    3000,
-			"Runtime": "142 mins",
+			"Runtime": 142,
 			"Genres":  ["Drama"]
 		}`,
 		wantCode: 422,
@@ -99,7 +99,7 @@ var createMovieTestCases = map[string]struct {
 		requestBody: `{
 			"Title":   "The Shawshank Redemption",
 			"Year":    1994,
-			"Runtime": "-142 mins",
+			"Runtime": -142,
 			"Genres":  ["Drama"]
 		}`,
 		wantCode: 422,
@@ -115,7 +115,7 @@ var createMovieTestCases = map[string]struct {
 		requestBody: `{
 			"Title":   "The Shawshank Redemption",
 			"Year":    1994,
-			"Runtime": "142 mins",
+			"Runtime": 142,
 			"Genres":  []
 		}`,
 		wantCode: 422,
@@ -131,7 +131,7 @@ var createMovieTestCases = map[string]struct {
 		requestBody: `{
 			"Title":   "The Shawshank Redemption",
 			"Year":    1994,
-			"Runtime": "142 mins",
+			"Runtime": 142,
 			"Genres":  ["Drama", ""]
 		}`,
 		wantCode: 422,
@@ -147,7 +147,7 @@ var createMovieTestCases = map[string]struct {
 		requestBody: `{
 			"Title":   "The Shawshank Redemption",
 			"Year":    1994,
-			"Runtime": "142 mins",
+			"Runtime": 142,
 			"Genres":  ["Drama", "Drama"]
 		}`,
 		wantCode: 422,
@@ -704,7 +704,7 @@ var updateMovieTestCases = map[string]struct {
 		requestBody: `{
 			"Title":   "In The Heights",
 			"Year":    2021,
-			"Runtime": "110 mins",
+			"Runtime": 110,
 			"Genres":  ["musical", "comedy"]
 		}`,
 		wantCode: 200,
@@ -762,7 +762,7 @@ var updateMovieTestCases = map[string]struct {
 	"partial update (only runtime)": {
 		requestId: "1",
 		requestBody: `{
-			"Runtime": "200 min"
+			"Runtime": 200
 		}`,
 		wantCode: 200,
 		wantBody: response.SuccessResponse(
@@ -822,7 +822,7 @@ var updateMovieTestCases = map[string]struct {
 		requestBody: `{
 			"Title":   "In The Heights",
 			"Year":    2021,
-			"Runtime": "110 min",
+			"Runtime": 110,
 			"Genres":  ["musical", "comedy"]
 		}`,
 		wantCode: 404,

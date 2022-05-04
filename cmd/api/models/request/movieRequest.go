@@ -2,7 +2,6 @@ package request
 
 import (
 	"github.com/rhodeon/moviescreen/domain/models"
-	"github.com/rhodeon/moviescreen/internal/types"
 	"github.com/rhodeon/moviescreen/internal/validator"
 	"github.com/rhodeon/moviescreen/internal/validator/rules"
 	"strings"
@@ -11,10 +10,10 @@ import (
 )
 
 type MovieRequest struct {
-	Title   *string        `json:"title"`
-	Year    *int           `json:"year"`
-	Runtime *types.Runtime `json:"runtime"`
-	Genres  []string       `json:"genres"`
+	Title   *string  `json:"title"`
+	Year    *int     `json:"year"`
+	Runtime *int     `json:"runtime"`
+	Genres  []string `json:"genres"`
 }
 
 const (
