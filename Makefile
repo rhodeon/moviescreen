@@ -98,6 +98,7 @@ vendor:
 ## docs/generate: generate Swagger documentation specs in JSON format
 .PHONY: docs/generate
 docs/generate:
+	mkdir -p docs
 	swagger generate spec --scan-models -o ./docs/docs.json
 
 ## docs/serve: launch the API docs on a port
@@ -129,8 +130,9 @@ production/deploy/env:
 
 # production/deploy/docs: deploy API documentation specs
 .PHONY: production/deploy/docs
-production/deploy/docs:
+production/deploy/docs: docs/generate
 	scp -i ${PRIVATE_KEY_PATH} -r ./docs/docs.json ${remote_dir}
+	ssh -t -i ${PRIVATE_KEY_PATH} ${remote} 'sudo systemctl restart docs'
 
 ## production/migrations: deploy and execute database migrations
 .PHONY: production/migrations
