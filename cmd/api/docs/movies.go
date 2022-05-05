@@ -1,10 +1,5 @@
 package docs
 
-import (
-	"github.com/rhodeon/moviescreen/cmd/api/models/request"
-	"github.com/rhodeon/moviescreen/cmd/api/models/response"
-)
-
 // ROUTES
 
 // swagger:route POST /movies/ Movies createMovie
@@ -76,24 +71,37 @@ type movieIdPath struct {
 // swagger:parameters createMovie
 type movieRequestBody struct {
 	// in:body
-	Body request.MovieRequest
+	Body struct {
+		// example: For a Few Dollars More
+		Title *string `json:"title"`
+
+		// example: 1968
+		Year *int `json:"year"`
+
+		// Movie runtime in minutes
+		// example: 200
+		Runtime *int `json:"runtime"`
+
+		// example: ["action", "western"]
+		Genres []string `json:"genres"`
+	}
 }
 
 // swagger:parameters listMovies
 type listMovieQueries struct {
 	// Movie title (partial or complete).
-	// in:query
+	// in: query
 	Title string `json:"title"`
 
 	// Comma-separated list of movie genres.
 	// Example: genres=action,comedy
-	// in:query
+	// in: query
 	Genres []string `json:"genres"`
 
 	// Page number.
 	// minimum: 1
 	// maximum: 10_000_000
-	// in:query
+	// in: query
 	Page int `json:"page"`
 
 	// Number of movies per page.
@@ -104,7 +112,7 @@ type listMovieQueries struct {
 
 	// Possible values: id | title | year | runtime
 	// Sort values can be prefixed with a "-" to denote descending order.
-	// in:query
+	// in: query
 	Sort string `json:"sort"`
 }
 
@@ -118,12 +126,14 @@ type updateMovieParams struct {
 
 // swagger:response movieResponse
 type movieResponseWrapper struct {
-	// in:body
-	Body response.MovieResponse
+	// in: body
+	Body struct {
+		movieResponse
+	}
 }
 
 // swagger:response moviesResponse
 type moviesResponseWrapper struct {
-	// in:body
-	Body []response.MovieResponse
+	// in: body
+	Body []movieResponse
 }

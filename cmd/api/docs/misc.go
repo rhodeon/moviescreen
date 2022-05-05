@@ -1,7 +1,5 @@
 package docs
 
-import "github.com/rhodeon/moviescreen/cmd/api/models/response"
-
 // HEATLHCHECK
 
 // swagger:route GET /healthcheck Misc healthcheck
@@ -12,12 +10,21 @@ import "github.com/rhodeon/moviescreen/cmd/api/models/response"
 
 // swagger:response healthcheckResponse
 type healthcheckResponseWrapper struct {
-	// in:body
-	Body response.HealthCheckResponse
+	// in: body
+	Body struct {
+		// example: available
+		Status string `json:"status"`
+
+		// example: production
+		Environment string `json:"environment"`
+
+		// example: v1.0.0
+		Version string `json:"version"`
+	}
 }
 
 // swagger:response emptyResponse
 type emptyResponseWrapper struct {
-	// in:body
+	// in: body
 	Body struct{}
 }

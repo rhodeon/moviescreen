@@ -50,6 +50,45 @@ type unauthenticatedError struct {
 	}
 }
 
+// An InvalidCredentialsError is returned when the email and password in the request do not match or exist.
+// swagger:response invalidCredentialsError
+type invalidCredentialsError struct {
+	// in: body
+	Body struct {
+		genericType
+
+		// Required: true
+		// Example: {"message": "invalid user credentials"}
+		Data map[string]string `json:"data"`
+	}
+}
+
+// An unactivatedUserError is returned when the request is made by an unactivated user.
+// swagger:response unactivatedUserError
+type unactivatedUserError struct {
+	// in: body
+	Body struct {
+		genericType
+
+		// Required: true
+		// Example: {"message": "your account must be activated to access this resource"}
+		Data map[string]string `json:"data"`
+	}
+}
+
+// An alreadyActivateUserError is returned when an activation request is made for an already activated account.
+// swagger:response alreadyActivateUserError
+type alreadyActivateUserError struct {
+	// in: body
+	Body struct {
+		genericType
+
+		// Required: true
+		// Example: {"message": "your account must be activated to access this resource"}
+		Data map[string]string `json:"data"`
+	}
+}
+
 // An PermissionError is returned when the user has insufficient permissions to carry out the request.
 // swagger:response permissionError
 type permissionError struct {
@@ -70,12 +109,12 @@ type validationError struct {
 	Body struct {
 		// Request type with validation errors.
 		// Required: true
-		// Example: movie
+		// Example: movie | user
 		Type string `json:"type"`
 
-		// Mapping of invalidated fields to their error messages.
+		// Mapping of failed fields to their error messages.
 		// Required: true
-		// Example: {"title": "must not be blank", "runtime": "must be provided"}
+		// Example: {"field1": "error message", "field2": "error message"}
 		Data map[string]string `json:"data"`
 	}
 }
