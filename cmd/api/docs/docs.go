@@ -16,9 +16,6 @@
 //		Produces:
 //		- application/json
 //
-//     Security:
-//     - bearer:
-//
 //     SecurityDefinitions:
 //     bearer:
 //          type: apiKey

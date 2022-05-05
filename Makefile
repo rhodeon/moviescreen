@@ -98,13 +98,13 @@ vendor:
 ## docs/generate: generate Swagger documentation specs in JSON format
 .PHONY: docs/generate
 docs/generate:
-	mkdir -p docs
-	swagger generate spec --scan-models -o ./docs/docs.json
+	@mkdir -p docs
+	@swagger generate spec --scan-models -o ./docs/docs.json
 
 ## docs/serve: launch the API docs on a port
 .PHONY: docs/serve
-docs/serve:
-	swagger serve --flavor=swagger --no-open --port=8000 --path=/ ./docs/docs.json
+docs/serve: docs/generate
+	@swagger serve --flavor=swagger --no-open --port=8000 --path=/ ./docs/docs.json
 
 # --- PRODUCTION ---
 remote = ${PRODUCTION_USER}@${PRODUCTION_HOST_IP}

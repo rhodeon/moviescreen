@@ -2,7 +2,7 @@ package docs
 
 // HEATLHCHECK
 
-// swagger:route GET /healthcheck Misc healthcheck
+// swagger:route GET /healthcheck misc healthcheck
 // API status.
 //
 // Responses:

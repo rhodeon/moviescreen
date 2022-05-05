@@ -2,11 +2,14 @@ package docs
 
 // ROUTES
 
-// swagger:route POST /movies/ Movies createMovie
+// swagger:route POST /movies/ movies createMovie
 // Create movie.
 // Creates a movie with the given data in the request body.
 // All fields in the request body are required.
 // Requires a user with the "movies:write" permission.
+//
+// Security:
+//	bearer:
 //
 // Responses:
 //	201: movieResponse
@@ -15,29 +18,38 @@ package docs
 //	403: permissionError
 //  422: validationError
 
-// swagger:route GET /movies/ Movies listMovies
+// swagger:route GET /movies/ movies listMovies
 // List movies.
 // Returns a list of movies satisfying the query parameters.
+//
+// Security:
+//	bearer:
 //
 // Responses:
 //	200: moviesResponse
 //	401: unauthenticatedError
 //  422: validationError
 
-// swagger:route GET /movies/{id} Movies getMovie
+// swagger:route GET /movies/{id} movies getMovie
 // Get movie.
 // Returns the details of the movie with the given id.
+//
+// Security:
+//	bearer:
 //
 // Responses:
 //	200: movieResponse
 //	401: unauthenticatedError
 //	404: notFoundError
 
-// swagger:route PATCH /movies/{id} Movies updateMovie
+// swagger:route PATCH /movies/{id} movies updateMovie
 // Update movie.
 // Updates the details of the movie with the given id with those in the request body.
 // Fields in the request body are optional.
 // Requires a user with the "movies:write" permission.
+//
+// Security:
+//	bearer:
 //
 // Responses:
 //	200: movieResponse
@@ -48,10 +60,13 @@ package docs
 //	409: editConflictError
 //  422: validationError
 
-// swagger:route DELETE /movies/{id} Movies deleteMovie
+// swagger:route DELETE /movies/{id} movies deleteMovie
 // Delete movie.
 // Deletes the movie with the given id.
 // Requires a user with the "movies:write" permission.
+//
+// Security:
+//	bearer:
 //
 // Responses:
 //	200: deleteMovieResponse
