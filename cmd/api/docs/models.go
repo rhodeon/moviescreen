@@ -4,13 +4,13 @@ import (
 	"time"
 )
 
-// baseResponse
+// ApiResponse
 //
 // This is the root object returned from the API.
 // It wraps the success data or error along with their status codes and metadata (if applicable).
 // All response examples are in actuality nested in this object, with successes being in `data` and errors in `errors`.
 //
-// swagger:model baseResponse
+// swagger:model ApiResponse
 type baseModel struct {
 	// in: body
 	Body struct {
@@ -47,7 +47,7 @@ type baseModel struct {
 	}
 }
 
-// swagger:model movie
+// swagger:model Movie
 type movieResponse struct {
 	// example: 1
 	Id int `json:"id"`
@@ -69,7 +69,7 @@ type movieResponse struct {
 	Version int `json:"version"`
 }
 
-// swagger:model user
+// swagger:model User
 type userResponse struct {
 	// example: 1
 	Id int `json:"id"`
@@ -89,7 +89,7 @@ type userResponse struct {
 	Created time.Time `json:"created"`
 }
 
-// swagger:model token
+// swagger:model Token
 type tokenResponse struct {
 	// example: OTBJEQX2EUIMKZHAMEMIPHE6TQ
 	PlainText string `json:"token"`
