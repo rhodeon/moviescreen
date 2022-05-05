@@ -2,7 +2,7 @@
 
 An API service for fetching movie data.
 
-The movie data are not meant to be accurate and were generated with https://mockaroo.com/
+The movie data are not meant to be accurate and were generated with [mockaroo](https://mockaroo.com/).
 
 Codebase shows a demonstration of domain-driven design in Go.
 
