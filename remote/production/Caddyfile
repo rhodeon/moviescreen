@@ -2,7 +2,11 @@
     email rhodeondev@gmail.com
 }
 
-moviescreenapi.tk, www.moviescreenapi.tk {
+moviescreenapi.tk, www.moviescreenapi.tk, api.moviescreenapi.tk {
     reverse_proxy localhost:4000
     respond /debug/* "Not Permitted" 403
+}
+
+docs.moviescreenapi.tk {
+    reverse_proxy localhost:8000
 }

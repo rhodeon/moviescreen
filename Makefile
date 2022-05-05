@@ -34,6 +34,7 @@ build/api:
 	# build for Linux
 	GOOS=linux GOARCH=amd64 go build -ldflags=${linker_flags} -o=./bin/linux_amd64/api ./cmd/api
 
+# --- DATABASE ---
 ## db/migrations/create name=$1: create a new database migration
 .PHONY: db/migrations/create
 db/migrations/create: confirm
@@ -88,6 +89,17 @@ vendor:
 	@echo "vendoring dependencies..."
 	go mod vendor
 
+# --- DOCUMENTATION ---
+## docs/generate: generate Swagger documentation specs in JSON format
+.PHONY: docs/generate
+docs/generate:
+	swagger generate spec --scan-models -o ./docs/docs.json
+
+## docs/serve: launch the API docs on a port
+.PHONY: docs/serve
+docs/serve:
+	swagger serve --flavor=swagger --no-open --port=8000 --path=/ ./docs/docs.json
+
 # --- PRODUCTION ---
 remote = ${PRODUCTION_USER}@${PRODUCTION_HOST_IP}
 remote_dir = ${remote}:~/service/
@@ -110,11 +122,25 @@ production/deploy/api: build/api
 production/deploy/env:
 	scp -i ${PRIVATE_KEY_PATH} ./remote/production/.env ${remote_dir}
 
+# production/deploy/docs: deploy API documentation specs
+.PHONY: production/deploy/docs
+production/deploy/docs:
+	scp -i ${PRIVATE_KEY_PATH} -r ./docs/docs.json ${remote_dir}
+
 ## production/migrations: deploy and execute database migrations
 .PHONY: production/migrations
 production/migrations:
 	scp -i ${PRIVATE_KEY_PATH} -r ./migrations ${remote_dir}
 	ssh -t -i ${PRIVATE_KEY_PATH} ${remote} 'migrate -path ~/migrations -database $$MOVIESCREEN_DB_DSN up'
+
+## production/configure/caddyfile: configure the production Caddyfile
+.PHONY: production/configure/caddyfile
+production/configure/caddyfile:
+	scp -i ${PRIVATE_KEY_PATH} -r ./remote/production/Caddyfile ${remote_dir}
+	ssh -t -i ${PRIVATE_KEY_PATH} ${remote} '\
+	sudo mv	~/service/Caddyfile /etc/caddy/ \
+	&& sudo systemctl reload caddy \
+	'
 
 ## production/configure/api.service: configure the production systemd api.service file
 .PHONY: production/configure/api.service
@@ -126,11 +152,12 @@ production/configure/api.service:
 	&& sudo systemctl restart api \
 	'
 
-## production/configure/caddyfile: configure the production Caddyfile
-.PHONY: production/configure/caddyfile
-production/configure/caddyfile:
-	scp -i ${PRIVATE_KEY_PATH} -r ./remote/production/Caddyfile ${remote_dir}
+## production/configure/docs.service: configure the production systemd docs.service file
+.PHONY: production/configure/docs.service
+production/configure/docs.service:
+	scp -i ${PRIVATE_KEY_PATH} -r ./remote/production/docs.service ${remote_dir}
 	ssh -t -i ${PRIVATE_KEY_PATH} ${remote} '\
-	sudo mv	~/service/Caddyfile /etc/caddy/ \
-	&& sudo systemctl reload caddy \
+	sudo mv	~/service/docs.service /etc/systemd/system/ \
+	&& sudo systemctl enable docs \
+	&& sudo systemctl restart docs \
 	'

@@ -4,8 +4,8 @@
 // The movie data are not meant to be accurate and were generated with https://mockaroo.com/
 // Source: https://github.com/rhodeon/moviescreen
 //
-//		Schemes: http, https
-//		Host: localhost:4000
+//		Schemes: https
+//		Host: api.moviescreenapi.tk
 //		BasePath: /v1
 //		Version: 1.0.0
 //		Contact: Ruona Onobrakpeya<rhodeondev@gmail.com>

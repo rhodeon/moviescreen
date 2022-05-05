@@ -1,5 +1,6 @@
 /.idea/
 /bin
+/docs
 /.env
 /remote/production/.env
 /swagger.json
