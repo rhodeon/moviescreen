@@ -33,7 +33,6 @@ func (app Application) Router(handlers common.RouteHandlers) *gin.Engine {
 	router.Use(middleware.Metrics())
 	router.Use(middleware.RateLimit(app.Config))
 	router.Use(middleware.MaxSizeLimit())
-	router.Use(middleware.Authenticate(app.Repositories))
 
 	router.GET(withVersion("healthcheck"), handlers.Misc.HealthCheck)
 
@@ -43,6 +42,7 @@ func (app Application) Router(handlers common.RouteHandlers) *gin.Engine {
 	movies := router.Group(withVersion("movies"))
 	{
 		// set middleware for activation and permission requirements
+		movies.Use(middleware.Authenticate(app.Repositories))
 		movies.Use(middleware.RequireActivatedUser())
 		requireRead := middleware.RequirePermission(models.PermissionMoviesRead, app.Repositories)
 		requireWrite := middleware.RequirePermission(models.PermissionMoviesWrite, app.Repositories)
