@@ -222,7 +222,7 @@ func (m movieHandler) Delete(ctx *gin.Context) {
 		http.StatusOK,
 		response.SuccessResponse(
 			http.StatusOK,
-			struct{}{},
+			map[string]string{"message": "movie deleted successfully"},
 		),
 	)
 }

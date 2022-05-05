@@ -22,9 +22,3 @@ type healthcheckResponseWrapper struct {
 		Version string `json:"version"`
 	}
 }
-
-// swagger:response emptyResponse
-type emptyResponseWrapper struct {
-	// in: body
-	Body struct{}
-}

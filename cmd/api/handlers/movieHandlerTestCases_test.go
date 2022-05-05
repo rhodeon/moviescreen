@@ -848,7 +848,7 @@ var deleteMovieTestCases = map[string]struct {
 		wantCode:  200,
 		wantBody: response.SuccessResponse(
 			200,
-			struct{}{},
+			map[string]string{"message": "movie deleted successfully"},
 		),
 	},
 

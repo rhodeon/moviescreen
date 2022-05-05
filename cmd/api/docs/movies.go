@@ -54,7 +54,7 @@ package docs
 // Requires a user with the "movies:write" permission.
 //
 // Responses:
-//	200: emptyResponse
+//	200: deleteMovieResponse
 //	401: unauthenticatedError
 //	403: permissionError
 //	404: notFoundError
@@ -136,4 +136,13 @@ type movieResponseWrapper struct {
 type moviesResponseWrapper struct {
 	// in: body
 	Body []movieResponse
+}
+
+// swagger:response deleteMovieResponse
+type deleteMovieResponse struct {
+	// in: body
+	Body struct {
+		// example: movie deleted successfully
+		Message string `json:"message"`
+	}
 }
