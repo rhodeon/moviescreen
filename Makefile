@@ -9,17 +9,22 @@ help:
 	@echo 'Usage:'
 	@sed -n 's/^##//p' ${MAKEFILE_LIST} | column -t -s ':' | sed -e 's/^/ /'
 
+## help/api: display API usage
+.PHONY: help/api
+help/api:
+	@go run ./cmd/api --help
+
 # confirm: display confirmation prompt
 .PHONY: confirm
 confirm:
 	@echo -n "Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ]
 
 # --- DEVELOPMENT ---
-## run/api: run the cmd/api application
 current_time = $(shell date +"%Y-%m-%dT%H:%M:%S%z")
 git_description = $(shell git describe --always --dirty --tags --long)
 linker_flags = "-s -X main.buildTime=${current_time} -X main.version=${git_description}"
 
+## run/api: run the cmd/api application
 .PHONY: run/api
 run/api:
 	go run -ldflags=${linker_flags} ./cmd/api

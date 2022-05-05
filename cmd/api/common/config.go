@@ -36,24 +36,24 @@ type Config struct {
 }
 
 func (c *Config) Parse() {
-	flag.StringVar(&c.Env, "env", c.defaultEnv(), "Environment (development|staging|production)")
-	flag.IntVar(&c.Port, "port", c.defaultPort(), "API server port")
+	flag.StringVar(&c.Env, "env", c.defaultEnv(), "Environment (development|staging|production)\nDotenv variable: ENV\n")
+	flag.IntVar(&c.Port, "port", c.defaultPort(), "API server port\nDotenv variable: PORT\n")
 	flag.BoolVar(&c.DisplayVersion, "version", false, "Display version and build time")
 
-	flag.StringVar(&c.Db.Dsn, "db-dsn", c.defaultDbDsn(), "PostgreSQL DSN")
-	flag.IntVar(&c.Db.MaxOpenConns, "db-max-open-conns", c.defaultDbMaxOpenConns(), "PostgreSQL maximum number of open connections")
-	flag.IntVar(&c.Db.MaxIdleConns, "db-max-idle-conns", c.defaultDbMaxIdleConns(), "PostgreSQL maximum number of idle connections")
-	flag.StringVar(&c.Db.MaxIdleTime, "db-max-idle-time", c.defaultDbMaxIdleTime(), "PostgreSQL maximumn idle time")
+	flag.StringVar(&c.Db.Dsn, "db-dsn", c.defaultDbDsn(), "PostgreSQL DSN\nDotenv variable: DB_DSN\n")
+	flag.IntVar(&c.Db.MaxOpenConns, "db-max-open-conns", c.defaultDbMaxOpenConns(), "PostgreSQL maximum number of open connections\nDotenv variable: DB_MAX_OPEN_CONNS\n")
+	flag.IntVar(&c.Db.MaxIdleConns, "db-max-idle-conns", c.defaultDbMaxIdleConns(), "PostgreSQL maximum number of idle connections\nDotenv variable: DB_MAX_IDLE_CONNS\n")
+	flag.StringVar(&c.Db.MaxIdleTime, "db-max-idle-time", c.defaultDbMaxIdleTime(), "PostgreSQL maximumn idle time\nDotenv variable: DB_MAX_IDLE_TIME\n")
 
-	flag.BoolVar(&c.Limiter.Enabled, "limiter-enabled", c.defaultLimiterEnabled(), "Enable rate limiter")
-	flag.Float64Var(&c.Limiter.Rps, "limiter-rps", c.defaultLimiterRps(), "Rate limiter maximum requests per second")
-	flag.IntVar(&c.Limiter.Burst, "limiter-burst", c.defaultLimiterBurst(), "Rate limiter maximum burst")
+	flag.BoolVar(&c.Limiter.Enabled, "limiter-enabled", c.defaultLimiterEnabled(), "Enable rate limiter\nDotenv variable: LIMITER_ENABLED\n")
+	flag.Float64Var(&c.Limiter.Rps, "limiter-rps", c.defaultLimiterRps(), "Rate limiter maximum requests per second\nDotenv variable: LIMITER_RPS\n")
+	flag.IntVar(&c.Limiter.Burst, "limiter-burst", c.defaultLimiterBurst(), "Rate limiter maximum burst\nDotenv variable: LIMITER_BURST\n")
 
-	flag.StringVar(&c.Smtp.Host, "smtp-host", c.defaultSmtpHost(), "SMTP hostname")
-	flag.IntVar(&c.Smtp.Port, "smtp-port", c.defaultSmtpPort(), "SMTP port")
-	flag.StringVar(&c.Smtp.User, "smtp-user", c.defaultSmtpUser(), "SMTP username")
-	flag.StringVar(&c.Smtp.Password, "smtp-pass", c.defaultSmtpPassword(), "SMTP password")
-	flag.StringVar(&c.Smtp.Sender, "smtp-sender", c.defaultSmtpSender(), "SMTP sender")
+	flag.StringVar(&c.Smtp.Host, "smtp-host", c.defaultSmtpHost(), "SMTP hostname\nDotenv variable: SMTP_HOST\n")
+	flag.IntVar(&c.Smtp.Port, "smtp-port", c.defaultSmtpPort(), "SMTP port\nDotenv variable: SMTP_PORT\n")
+	flag.StringVar(&c.Smtp.User, "smtp-user", c.defaultSmtpUser(), "SMTP username\nDotenv variable: SMTP_USER\n")
+	flag.StringVar(&c.Smtp.Password, "smtp-pass", c.defaultSmtpPassword(), "SMTP password\nDotenv variable: SMTP_PASS\n")
+	flag.StringVar(&c.Smtp.Sender, "smtp-sender", c.defaultSmtpSender(), "SMTP sender\nDotenv variable: SMTP_SENDER\n")
 
 	flag.Parse()
 }
